@@ -30,35 +30,30 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
+# turn off Ctrl + s XOFF (XON is Ctrl + q)
+stty ixany
+stty ixoff -ixon
+stty stop undef
+stty start undef
 
 # PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
 # PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
 
 # PS1='⛆⛆⛆⛆⛆⛆⛆⛆⛆⛆ ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 
-print_pre_prompt (){ 
-  local EXIT="$?" # This needs to be first 
-  if [ $EXIT != 0 ]; then
-    local err='\e[41m'$EXIT'\e[0m'
-  else
-    local err=''
-  fi
-  printf $err'⛆⛆⛆⛆⛆⛆⛆⛆⛆⛆'
 
-}
-PROMPT_COMMAND=print_pre_prompt
-
-# print_pre_prompt () 
-# { 
-#     # PS1L=$PWD
-#     # if [[ $PS1L/ = "$HOME"/* ]]; then PS1L=\~${PS1L#$HOME}; fi
-#     # PS1R=$USER@$HOSTNAME
-#     # printf "%s%$(($COLUMNS-${#PS1L}))s" "$PS1L" "$PS1R"
-#     local EXIT="$?" # This needs to be first 
-#     # printf "%$(echo $(expr $COLUMNS - 5))s $(echo $EXIT)\n\[\e[0m\]" | sed 's/ /⛆/g'
-#     printf "\e[m%$(echo $(expr $COLUMNS - 5))s $(echo $EXIT)\e[0m\n" | sed 's/ /⛆/g'
+# print_pre_prompt (){ 
+#   local EXIT="$?" # This needs to be first 
+#   if [ $EXIT != 0 ]; then
+#     local err=$EXIT # "\[\e[41m\]"$EXIT"\[\e[0m\]"
+#   else
+#     local err=''
+#   fi
+#   printf $err'⛆⛆⛆⛆⛆⛆⛆⛆⛆⛆  '
 # }
 # PROMPT_COMMAND=print_pre_prompt
+
+
 
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -94,3 +89,5 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+source ~/.acd_func.sh

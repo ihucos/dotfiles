@@ -17,7 +17,7 @@ Plugin 'lokaltog/vim-easymotion'
 Plugin 'morhetz/gruvbox' " a color scheme
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
-Plugin 'terryma/vim-expand-region'
+Plugin 'terryma/vim-expand-region' 
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
@@ -30,7 +30,7 @@ Plugin 'chrisbra/csv.vim'
 Plugin 'ap/vim-css-color'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'vim-scripts/ZoomWin'
-Plugin 'jiangmiao/auto-pairs'
+Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
 " Plugin 'python-rope/ropevim'
 Plugin 'https://github.com/chriskempson/base16-vim'
 Plugin 'sjl/gundo.vim' 
@@ -38,15 +38,33 @@ Plugin 'fholgado/minibufexpl.vim'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'kien/rainbow_parentheses.vim'
+" Plugin 'jszakmeister/vim-togglecursor' does not work in xterm with tmux
+Plugin 'jnurmine/Zenburn'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'michaeljsmith/vim-indent-object' " ii / ai
+Plugin 'mileszs/ack.vim' 
+Plugin 'xuhdev/SingleCompile'
+Plugin 'majutsushi/tagbar'
+Plugin 'rhysd/clever-f.vim'
+Plugin 'rhysd/eunuch-vim' " TODO: document
+Plugin 'matze/vim-move'
+Plugin 'mikewest/vimroom'
 
 " required by Vundle
 call vundle#end()
 filetype plugin indent on
 
-
 syntax on
 
-" set laststatus=2
+
+" set nobackup
+" set nowb
+" set noswapfile 
+set undofile
+set ttyfast
+set laststatus=2
+set nowrap
+set hidden
 set autochdir
 set background=dark
 set cursorline
@@ -54,21 +72,41 @@ set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard lang
 set ffs=unix,dos,mac " Use Unix as the standard file type
 set guioptions-=T guioptions-=m
 set history=1000         " remember more commands and search history
-set hlsearch      " highlight search terms
+" set hlsearch      " highlight search terms
 set ignorecase    " ignore case when searching
 set incsearch     " show search matches as you type
 set number
 set scrolloff=999   " Keep x lines below and above the cursor
 set t_Co=256
 set undolevels=1000      " use many muchos levels of undo
+set lazyredraw
+set nomodeline
+" No annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+" set noshowmode # enable later and show status in status bar
+set nobackup
+set nowb
+set noswapfile
+
 let mapleader = "\<Space>"
 
-autocmd FileType python set colorcolumn=80
+" Asesome 80-character limiter
+execute "set colorcolumn=" . join(range(81,335), ',')
 
+vmap > >gv
+vmap < <gv
 
 nnoremap j gj
 nnoremap k gk
 nnoremap <Leader>o :CtrlP<CR>
+nnoremap Y y$
+noremap gV `[v`]
+
+map <C-s> :w<cr>
+imap <C-s> <ESC>:w<cr>a
 
 vmap <Leader>y "+y
 vmap <Leader>d "+d
@@ -76,6 +114,8 @@ nmap <Leader>p "+p
 nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
+
+noremap gV `[v`]
 
 map <up> <nop>
 map <down> <nop>
@@ -96,12 +136,42 @@ map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 
-cmap w!! w !sudo tee % >/dev/null
 imap jk <Esc> " alternative for ESC
-map q: :q " common typo
+map q: :q " common typo (seems not to work)
+
+au VimEnter * :hi SignColumn ctermbg=0
+au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0 
+au InsertEnter * :hi LineNr ctermfg=0 ctermbg=10 
+au InsertLeave * :hi SignColumn ctermbg=0
+au InsertEnter * :hi SignColumn ctermbg=10
 
 colo solarized
-"
+
+" === config clever-vim-move ===
+" TODO: config, maybe not used. does not automatically go to fullscreen and is
+" slow
+let g:vimroom_sidebar_height=0
+
+" === config clever-vim-move ===
+" TODO: config
+let g:move_map_keys = 0
+vmap <C-j> <Plug>MoveBlockDown
+vmap <C-k> <Plug>MoveBlockUp
+nmap <A-j> <Plug>MoveLineDown
+nmap <A-k> <Plug>MoveLineUp
+
+" === config clever-f ===
+let g:clever_f_mark_cursor = 0
+let g:clever_f_mark_char_color='BetterF'
+hi BetterF ctermfg=5 ctermbg=0
+
+" === config tagbar ===
+nnoremap <Leader>t :Tagbar<CR>
+
+" === config kien/rainbow_parentheses.vim ===
+nmap <Leader>c :SCCompile<cr>
+nmap <Leader>x :SCCompileRun<cr>
+
 " === config kien/rainbow_parentheses.vim ===
 " TODO: doit (make nice colors)
 
@@ -123,10 +193,18 @@ autocmd VimEnter * :nmap <leader><leader> <Plug>(easymotion-lineanywhere)
 " === config vim-expand-region === 
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
+let g:expand_region_text_objects = {
+      \ 'iw'  :0,
+      \ 'i"'  :0,
+      \ 'i''' :0,
+      \ 'i]'  :1,
+      \ 'ib'  :1,
+      \ 'iB'  :1,
+      \ }
 
 " === config nerdtree ===
 let NERDTreeChDirMode=2
-map <C-n> :NERDTreeToggle<CR>
+nmap <leader>m :NERDTreeToggle<CR>
 
 
 " === config ctrlp ===
@@ -141,13 +219,34 @@ let g:jedi#popup_on_dot = 0
 let g:syntastic_python_checkers = ['flake8'] 
 autocmd BufEnter * :SyntasticCheck
 hi SignColumn ctermbg=8
+let g:syntastic_error_symbol = '╳'
+let g:syntastic_warning_symbol = '╳'
+let g:syntastic_style_warning_symbol = '✖'
+let g:syntastic_style_error_symbol = '✖'
+
+" TODO: better colors
+au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=0
+au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=0
+au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
+au VimEnter * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=0
+
+au InsertLeave * hi SyntasticErrorSign ctermbg=0
+au InsertLeave * hi SyntasticWarningSign ctermbg=0
+au InsertLeave * hi SyntasticStyleErrorSign ctermbg=0
+au InsertLeave * hi SyntasticStyleWarningSign ctermbg=0
+
+au InsertEnter * hi SyntasticErrorSign ctermbg=10
+au InsertEnter * hi SyntasticWarningSign ctermbg=10
+au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
+au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
 
 " Use local vimrc if available
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 
-
+" TODO: config ctags
+" tags+=tags;$HOME
 
 
 
@@ -174,7 +273,7 @@ endif
 " autocmd BufEnter * :call ColorizeSignColumn()
 
 " hi StatusLine term=reverse ctermbg=5 gui=undercurl guisp=Magenta
-" set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P
+"" set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P
 
 " custom highlighting modz
 "
@@ -234,4 +333,3 @@ endif
 "
 " com! -bar W     cal WriteAndReload()
 " com! -bar SetBrowserWindow     cal SetBrowserWindow()
-
