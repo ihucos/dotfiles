@@ -7,7 +7,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 " ### plugins ###
-Plugin 'Lokaltog/powerline'
+" Plugin 'Lokaltog/powerline'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
@@ -27,7 +27,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'buztard/vim-nomad'
 Plugin 'chrisbra/csv.vim'
 " Plugin 'bling/vim-airline'
-Plugin 'ap/vim-css-color'
+Plugin 'lilydjwg/colorizer'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'vim-scripts/ZoomWin'
 Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
@@ -39,16 +39,24 @@ Plugin 'vim-scripts/matchit.zip'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'kien/rainbow_parentheses.vim'
 " Plugin 'jszakmeister/vim-togglecursor' does not work in xterm with tmux
-Plugin 'jnurmine/Zenburn'
+Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'sheerun/vim-polyglot'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mileszs/ack.vim' 
 Plugin 'xuhdev/SingleCompile'
 Plugin 'majutsushi/tagbar'
 Plugin 'rhysd/clever-f.vim'
-Plugin 'rhysd/eunuch-vim' " TODO: document
+Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'matze/vim-move'
 Plugin 'mikewest/vimroom'
+Plugin 'sickill/vim-monokai'
+Plugin 'tommcdo/vim-exchange'
+Plugin 'airblade/vim-rooter'
+Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
+Plugin 'Yggdroot/indentLine' " vertical indentantion lines
+Plugin 'baskerville/bubblegum' " color scheme, I like it
+Plugin 'fs111/pydoc.vim'
+
 
 " required by Vundle
 call vundle#end()
@@ -60,6 +68,7 @@ syntax on
 " set nobackup
 " set nowb
 " set noswapfile 
+" set showbreak=↪
 set undofile
 set ttyfast
 set laststatus=2
@@ -91,7 +100,13 @@ set nobackup
 set nowb
 set noswapfile
 
-let mapleader = "\<Space>"
+" let mapleader = "\<Space>"
+let mapleader = ","
+
+" test this one out
+imap , <ESC>
+noremap <Space> a,<Space>
+" noremap , a,
 
 " Asesome 80-character limiter
 execute "set colorcolumn=" . join(range(81,335), ',')
@@ -136,7 +151,7 @@ map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 
-imap jk <Esc> " alternative for ESC
+" imap jk <Esc>
 map q: :q " common typo (seems not to work)
 
 au VimEnter * :hi SignColumn ctermbg=0
@@ -147,7 +162,11 @@ au InsertEnter * :hi SignColumn ctermbg=10
 
 colo solarized
 
-" === config clever-vim-move ===
+
+" === config pydoc ===
+autocmd BufNewFile,BufRead *.py set keywordprg=pydoc
+
+" === config vimroom ===
 " TODO: config, maybe not used. does not automatically go to fullscreen and is
 " slow
 let g:vimroom_sidebar_height=0
@@ -214,6 +233,20 @@ let g:ctrlp_working_path_mode = 'ra'
 let g:jedi#auto_vim_configuration = 0
 let g:SuperTabDefaultCompletionType = "context"
 let g:jedi#popup_on_dot = 0
+
+" === config syntastic === 
+let g:tmux_navigator_no_mappings = 1
+inoremap <silent> <C-h> <ESC>:TmuxNavigateLeft<cr>a
+inoremap <silent> <C-j> <ESC>:TmuxNavigateDown<cr>a
+inoremap <silent> <C-k> <ESC>:TmuxNavigateUp<cr>a
+inoremap <silent> <C-l> <ESC>:TmuxNavigateRight<cr>a
+inoremap <silent> <C-\> <ESC>:TmuxNavigatePrevious<cr>a
+
+nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 
 " === config syntastic === 
 let g:syntastic_python_checkers = ['flake8'] 

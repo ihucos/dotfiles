@@ -1,0 +1,48 @@
+60% got to 60% of the file 
+<count>ai         (A)n (I)ndentation level and line above.
+<count>ii         (I)nner (I)ndentation level (no line above).
+<count>aI         (A)n (I)ndentation level and lines above/below.
+<count>iI         (I)nner (I)ndentation level (no lines above/below). 
+
+<Leader>c compile programm
+<Leader>x run programm
+
+ctrl-s in normal or insert mode saves file
+
+zL zH: scroll half a page to the right or left
+zj zk jump to next/prev fold
+
+<leader>t taglist toggle
+
+cd -- : list cd history
+cd -3 : jump to 3. elemnt in cd history
+
+<leader>m nerdtree toggle
+
+use f/F/t/T to search, for charachter, and f/F/t/T to jumpt to next.
+movement resets (this frees , and ;)
+
+:changes
+'. last edited position
+
+Ctrl-a Ctrl-x to encreaase/decrease a number
+
+ctrl-x ctrl-l (ctrl-n/p)    - line completion
+
+g; and g, forward/backward changelist
+
+* searches forward for the word, while # searches backwards. 
+
+Hit CTRL-N once in insert mode and it will try to complete the current word with the first match in the current file. CTRL-P does the same thing but searches backwards. 
+
+:earlier 15m --undo text to before 15 minutes, also :after
+
+[e and e] move line/selection up or down
+
+cx excange. cxc abort current excange
+
+text objects
+===========
+
+hint: ab same as a(
+
