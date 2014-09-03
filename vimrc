@@ -56,6 +56,14 @@ Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with t
 Plugin 'Yggdroot/indentLine' " vertical indentantion lines
 Plugin 'baskerville/bubblegum' " color scheme, I like it
 Plugin 'fs111/pydoc.vim'
+Plugin 'zaiste/tmux.vim'
+Plugin 'koron/nyancat-vim'
+Plugin 'wellle/tmux-complete.vim.git' " TODO: configure with supertab
+Plugin 'wellle/targets.vim'
+Plugin 'flazz/vim-colorschemes'
+Plugin 'jpo/vim-railscasts-theme'
+Plugin 'xolox/vim-easytags'
+Plugin 'xolox/vim-misc'
 
 
 " required by Vundle
@@ -64,11 +72,31 @@ filetype plugin indent on
 
 syntax on
 
+" map 11 !
+" map 22 @
+" map 33 #
+" map 44 $
+" map 55 %
+" map 66 ^
+" map 77 &
+" map 88 *
+" map 99 (
+" map 00 )
+
+" imap 99 )
+" imap 88 (
+" map 88 (
+" imap 99 )
 
 " set nobackup
 " set nowb
 " set noswapfile 
 " set showbreak=↪
+set sidescrolloff=15
+set sidescroll=1
+set foldmethod=indent "fold based on indent
+" set foldnestmax=3 "deepest fold is 3 levels
+set nofoldenable "dont fold by default
 set undofile
 set ttyfast
 set laststatus=2
@@ -100,6 +128,29 @@ set nobackup
 set nowb
 set noswapfile
 
+" Time out on key codes but not mappings.
+" Basically this makes terminal Vim work sanely.
+set notimeout
+set ttimeout
+set ttimeoutlen=10
+
+
+vnoremap <leader>S y:execute @@<cr>:echo 'Sourced selection.'<cr>
+nnoremap <leader>S ^vg_y:execute @@<cr>:echo 'Sourced line.'<cr>
+iabbrev ihcm irae.hueck.costa@gmail.com
+map <Tab> %
+
+set list
+set listchars=extends:┣,precedes:┫,trail:␣
+set showbreak=┊
+
+" does not work?
+autocmd WinLeave * set nocursorline
+autocmd WinEnter * set cursorline
+
+highlight WhitespaceEOL ctermbg=0  
+match WhitespaceEOL /\s\+$/
+
 " let mapleader = "\<Space>"
 let mapleader = ","
 
@@ -116,13 +167,18 @@ vmap < <gv
 
 nnoremap j gj
 nnoremap k gk
-nnoremap <Leader>o :CtrlP<CR>
+noremap gj j
+noremap gk k
+
 nnoremap Y y$
 noremap gV `[v`]
 
-map <C-s> :w<cr>
-imap <C-s> <ESC>:w<cr>a
+" map <C-s> :w<cr>
+" imap <C-s> <ESC>:w<cr>a
+map <leader>s :w<cr>
+map <leader>q :qa<cr>
 
+nmap <Leader>y "+y
 vmap <Leader>y "+y
 vmap <Leader>d "+d
 nmap <Leader>p "+p
@@ -154,13 +210,49 @@ map <C-l> <C-w>l
 " imap jk <Esc>
 map q: :q " common typo (seems not to work)
 
+" Resize splits when the window is resized
+au VimResized * :wincmd =
+
+augroup cline
+    au!
+    au WinLeave * set nocursorline
+    au WinEnter * set cursorline
+augroup END
+
 au VimEnter * :hi SignColumn ctermbg=0
+au VimEnter * :hi CursorLineNr ctermbg=10 ctermfg=0
+au VimEnter * :hi clear CursorLine
+
 au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0 
 au InsertEnter * :hi LineNr ctermfg=0 ctermbg=10 
 au InsertLeave * :hi SignColumn ctermbg=0
 au InsertEnter * :hi SignColumn ctermbg=10
 
+
 colo solarized
+
+" === indentline ===
+let g:indentLine_char = '│' 
+let g:indentLine_color_term=0
+"
+" === swap an backup file related ===
+set backup                        " enable backups
+set noswapfile
+
+set undodir=~/.vim/tmp/undo//     " undo files
+set backupdir=~/.vim/tmp/backup// " backups
+set directory=~/.vim/tmp/swap//   " swap files
+
+" Make those folders automatically if they don't already exist.
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&directory))
+    call mkdir(expand(&directory), "p")
+endif
 
 
 " === config pydoc ===
@@ -185,7 +277,7 @@ let g:clever_f_mark_char_color='BetterF'
 hi BetterF ctermfg=5 ctermbg=0
 
 " === config tagbar ===
-nnoremap <Leader>t :Tagbar<CR>
+nnoremap <Leader>t :Tagbar<cr>
 
 " === config kien/rainbow_parentheses.vim ===
 nmap <Leader>c :SCCompile<cr>
@@ -202,8 +294,8 @@ nmap <leader>j <Plug>(easymotion-bd-jk)
 autocmd VimEnter * :unmap <leader><leader>
 autocmd VimEnter * :nmap <leader><leader> <Plug>(easymotion-lineanywhere)
 
-" " === config for airline ===
-" let g:airline_theme='powerlineish'
+" " " === config for airline ===
+" let g:airline_theme='solarized'
 " let g:airline_left_sep=''
 " let g:airline_right_sep=''
 " let g:airline_section_z=''
@@ -228,6 +320,11 @@ nmap <leader>m :NERDTreeToggle<CR>
 
 " === config ctrlp ===
 let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+nnoremap <Leader><space>f :CtrlP<CR>
+nnoremap <Leader><space>t :CtrlPTag<CR>
+nnoremap <Leader><space>b :CtrlPBufTagAll<CR>
+
 
 " === config jedi-vim and supertab ===
 let g:jedi#auto_vim_configuration = 0
@@ -257,7 +354,6 @@ let g:syntastic_warning_symbol = '╳'
 let g:syntastic_style_warning_symbol = '✖'
 let g:syntastic_style_error_symbol = '✖'
 
-" TODO: better colors
 au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=0
 au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=0
 au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
@@ -273,6 +369,9 @@ au InsertEnter * hi SyntasticWarningSign ctermbg=10
 au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
 au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
 
+" Highlight VCS conflict markers
+match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
+
 " Use local vimrc if available
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
@@ -281,12 +380,50 @@ endif
 " TODO: config ctags
 " tags+=tags;$HOME
 
+" TODO: think about this one
+" Kill window
+nnoremap K :q<cr>
+" Man
+nnoremap M K
 
+" Typos
+command! -bang E e<bang>
+command! -bang Q q<bang>
+command! -bang W w<bang>
+command! -bang QA qa<bang>
+command! -bang Qa qa<bang>
+command! -bang Wa wa<bang>
+command! -bang WA wa<bang>
+command! -bang Wq wq<bang>
+command! -bang WQ wq<bang>
 
-
+ 
+" autocmd BufEnter * :hi Conceal ctermfg= 
 " =========================
 " === some experimation ===
 " =========================
+
+
+" autocmd BufEnter * :syntax match Self /self\./ " a hack, put this is after 
+" autocmd BufEnter * :syntax match Self /self\,/ " a hack, put this is after 
+" hi Self ctermfg=11
+
+" autocmd BufEnter * :syntax match Def /def/ " a hack, put this is after 
+" hi Def ctermfg=11
+
+" autocmd BufEnter * :syntax match Dot /\./ conceal cchar=▦ " a hack, put this is after 
+" hi Dot ctermfg=0
+
+" imap (【
+" autocmd VimEnter * :syntax match Bra /(/ " a hack, put this is after 
+" autocmd VimEnter * :syntax match Bra /)/ " a hack, put this is after 
+" autocmd VimEnter * :syntax match Bra /*/ " a hack, put this is after 
+" autocmd VimEnter * :syntax match Bra /,/ " a hack, put this is after 
+" autocmd VimEnter * :syntax match Bra /\./ " a hack, put this is after 
+" autocmd VimEnter * :hi Bra cterm=bold ctermfg=11
+
+autocmd VimEnter * :syntax match Equal / = / " a hack, put this is after 
+hi Equal ctermfg=7 
 
 " always show syntastic sign column (https://gist.github.com/timonv/5115411)
 " autocmd BufEnter * sign define dummy
@@ -366,3 +503,100 @@ endif
 "
 " com! -bar W     cal WriteAndReload()
 " com! -bar SetBrowserWindow     cal SetBrowserWindow()
+
+
+" = maybe there is a plugin for that
+" }}}
+" Highlight Word {{{
+"
+" This mini-plugin provides a few mappings for highlighting words temporarily.
+"
+" Sometimes you're looking at a hairy piece of code and would like a certain
+" word or two to stand out temporarily.  You can search for it, but that only
+" gives you one color of highlighting.  Now you can use <leader>N where N is
+" a number from 1-6 to highlight the current word in a specific color.
+
+function! HiInterestingWord(n) " {{{
+    " Save our location.
+    normal! mz
+
+    " Yank the current word into the z register.
+    normal! "zyiw
+
+    " Calculate an arbitrary match ID.  Hopefully nothing else is using it.
+    let mid = 86750 + a:n
+
+    " Clear existing matches, but don't worry if they don't exist.
+    silent! call matchdelete(mid)
+
+    " Construct a literal pattern that has to match at boundaries.
+    let pat = '\V\<' . escape(@z, '\') . '\>'
+
+    " Actually match the words.
+    call matchadd("InterestingWord" . a:n, pat, 1, mid)
+
+    " Move back to our original location.
+    normal! `z
+endfunction " }}}
+
+" Mappings {{{
+
+nnoremap <silent> <leader>1 :call HiInterestingWord(1)<cr>
+nnoremap <silent> <leader>2 :call HiInterestingWord(2)<cr>
+nnoremap <silent> <leader>3 :call HiInterestingWord(3)<cr>
+nnoremap <silent> <leader>4 :call HiInterestingWord(4)<cr>
+nnoremap <silent> <leader>5 :call HiInterestingWord(5)<cr>
+nnoremap <silent> <leader>6 :call HiInterestingWord(6)<cr>
+
+" }}}
+" Default Highlights {{{
+
+hi def InterestingWord1 guifg=#000000 ctermfg=16 guibg=#ffa724 ctermbg=214
+hi def InterestingWord2 guifg=#000000 ctermfg=16 guibg=#aeee00 ctermbg=154
+hi def InterestingWord3 guifg=#000000 ctermfg=16 guibg=#8cffba ctermbg=121
+hi def InterestingWord4 guifg=#000000 ctermfg=16 guibg=#b88853 ctermbg=137
+hi def InterestingWord5 guifg=#000000 ctermfg=16 guibg=#ff9eb8 ctermbg=211
+hi def InterestingWord6 guifg=#000000 ctermfg=16 guibg=#ff2c4b ctermbg=195
+
+
+
+
+" Ack motions {{{  
+
+" Motions to Ack for things.  Works with pretty much everything, including:
+"
+"   w, W, e, E, b, B, t*, f*, i*, a*, and custom text objects
+"
+" Awesome.
+"
+" Note: If the text covered by a motion contains a newline it won't work.  Ack
+" searches line-by-line.
+
+nnoremap <silent> <leader>A :set opfunc=<SID>AckMotion<CR>g@
+xnoremap <silent> <leader>A :<C-U>call <SID>AckMotion(visualmode())<CR>
+
+nnoremap <bs> :Ack! '\b<c-r><c-w>\b'<cr>
+xnoremap <silent> <bs> :<C-U>call <SID>AckMotion(visualmode())<CR>
+
+function! s:CopyMotionForType(type)
+    if a:type ==# 'v'
+        silent execute "normal! `<" . a:type . "`>y"
+    elseif a:type ==# 'char'
+        silent execute "normal! `[v`]y"
+    endif
+endfunction
+
+function! s:AckMotion(type) abort
+    let reg_save = @@
+
+    call s:CopyMotionForType(a:type)
+
+    execute "normal! :Ack! --literal " . shellescape(@@) . "\<cr>"
+
+    let @@ = reg_save
+endfunction
+
+" ========= misc ========
+au VimEnter * :hi PythonComment cterm=italic
+au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
+au BufEnter * :hi PythonStatement cterm=bold ctermbg=NONE ctermfg=9

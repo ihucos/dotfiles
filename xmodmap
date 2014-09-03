@@ -3,3 +3,7 @@
 keycode 66 = Control_L
 clear Lock
 add Control = Control_L
+
+! remove mod4 = Super_R
+! keycode 134 = Alt_R
+! add control = Super_L

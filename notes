@@ -1,3 +1,22 @@
+=== ideas ===
+map tab to %
+better HJKL?
+override S?
+switch ' and `?
+select inside file plugin (i needed it sometimes)
+
+leader/ opens search in quickfix windo
+ack text object
+search text object
+TODO: make tab different
+TODO leader wq to quit?
+====
+
+map <Tab> %
+iabbrev ihcm irae.hueck.costa@gmail.com
+
+tmux hide/show status bar: prefix h
+
 60% got to 60% of the file 
 <count>ai         (A)n (I)ndentation level and line above.
 <count>ii         (I)nner (I)ndentation level (no line above).
@@ -6,6 +25,10 @@
 
 <Leader>c compile programm
 <Leader>x run programm
+
+<Leader><space>f find file
+<Leader><space>t find tag
+<Leader><space>b find tag in this buffer only
 
 ctrl-s in normal or insert mode saves file
 
@@ -41,8 +64,30 @@ Hit CTRL-N once in insert mode and it will try to complete the current word with
 
 cx excange. cxc abort current excange
 
+gi -- last place insert mode was left
+
 text objects
 ===========
 
 hint: ab same as a(
+targtes.vim:
+   make all text objects auto search (even over multiple lines).
+   cin( change inside next (
+   also adds: i, i. i; i: i+ i- i= i~ i_ i* i# i/ i| i\ i& i$
+   cI( cA( leaves surrounding spaces
+   ciL( change previous (also , seeks)
+   cia a is the same as parenthis
 
+
+                         ..cursor.
+a ( bbbbbb , ccccccc , d ( eeeeee , fffffff ) , gggggg ) h
+  ││├2Ila┘│││└─Ila─┘││││ ││├─Ia─┘│││└─Ina─┘│││││└2Ina┘│ │
+  │└┼2ila─┘│├──ila──┤│││ │└┼─ia──┘│├──ina──┤│││├─2ina─┤ │
+  │ └2ala──┼┤       ││││ │ └─aa───┼┤       │││├┼─2ana─┘ │
+  └──2Ala──┼┘       ││││ └───Aa───┼┘       │││└┼─2Ana───┘
+           ├───ala──┘│││          ├───ana──┘││ │
+           └───Ala───┼┤│          └───Ana───┼┤ │
+                     ││└─────2Ia────────────┘│ │
+                     │└──────2ia─────────────┤ │
+                     ├───────2aa─────────────┘ │
+                     └───────2Aa───────────────┘
