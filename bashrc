@@ -1,5 +1,6 @@
 
-alias tmux='TERM=xterm-256color tmux'
+alias tmux='TERM=rxvt-unicode-256color tmux'
+
 source /usr/share/autojump/autojump.sh
 
 
@@ -39,19 +40,20 @@ stty start undef
 # PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
 # PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
 
-# PS1='⛆⛆⛆⛆⛆⛆⛆⛆⛆⛆ ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+PS1='\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\]  \[\e[1;37m\]$ \[\e[0m\]'
 
 
-# print_pre_prompt (){ 
-#   local EXIT="$?" # This needs to be first 
-#   if [ $EXIT != 0 ]; then
-#     local err=$EXIT # "\[\e[41m\]"$EXIT"\[\e[0m\]"
-#   else
-#     local err=''
-#   fi
-#   printf $err'⛆⛆⛆⛆⛆⛆⛆⛆⛆⛆  '
-# }
-# PROMPT_COMMAND=print_pre_prompt
+print_pre_prompt (){ 
+  local EXIT="$?" # This needs to be first 
+  if [ $EXIT != 0 ]; then
+    # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
+    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n"
+  else
+    local err=''
+  fi
+  echo -en $err
+}
+PROMPT_COMMAND=print_pre_prompt
 
 
 
@@ -70,6 +72,7 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+alias s="printf '\n\n\n\n'"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert

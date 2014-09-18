@@ -4,6 +4,15 @@ keycode 66 = Control_L
 clear Lock
 add Control = Control_L
 
+! remap right super to alt
+remove mod4 = Super_R
+add mod1 = Super_R
+
+! remap left super to ctrl
+remove mod4 = Super_L
+add control = Super_L
+
+
 ! remove mod4 = Super_R
 ! keycode 134 = Alt_R
 ! add control = Super_L

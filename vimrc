@@ -30,7 +30,7 @@ Plugin 'chrisbra/csv.vim'
 Plugin 'lilydjwg/colorizer'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'vim-scripts/ZoomWin'
-Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
+" Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
 " Plugin 'python-rope/ropevim'
 Plugin 'https://github.com/chriskempson/base16-vim'
 Plugin 'sjl/gundo.vim' 
@@ -62,9 +62,10 @@ Plugin 'wellle/tmux-complete.vim.git' " TODO: configure with supertab
 Plugin 'wellle/targets.vim'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'jpo/vim-railscasts-theme'
-Plugin 'xolox/vim-easytags'
+" Plugin 'xolox/vim-easytags'
 Plugin 'xolox/vim-misc'
-
+Plugin 'hdima/python-syntax'
+Plugin 'kana/vim-textobj-syntax' " y is a text object for syntax hilighted text
 
 " required by Vundle
 call vundle#end()
@@ -141,15 +142,15 @@ iabbrev ihcm irae.hueck.costa@gmail.com
 map <Tab> %
 
 set list
-set listchars=extends:┣,precedes:┫,trail:␣
+set listchars=extends:▶,precedes:◀,trail:␣
 set showbreak=┊
 
 " does not work?
 autocmd WinLeave * set nocursorline
 autocmd WinEnter * set cursorline
 
-highlight WhitespaceEOL ctermbg=0  
-match WhitespaceEOL /\s\+$/
+" highlight WhitespaceEOL ctermbg=14
+" match WhitespaceEOL /\s\+$/
 
 " let mapleader = "\<Space>"
 let mapleader = ","
@@ -160,7 +161,7 @@ noremap <Space> a,<Space>
 " noremap , a,
 
 " Asesome 80-character limiter
-execute "set colorcolumn=" . join(range(81,335), ',')
+au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
 
 vmap > >gv
 vmap < <gv
@@ -188,10 +189,10 @@ vmap <Leader>P "+P
 
 noremap gV `[v`]
 
-map <up> <nop>
-map <down> <nop>
-map <left> <nop>
-map <right> <nop> 
+map <up> 2<C-w>+
+map <down> 2<C-w>-
+map <left> 2<C-w><
+map <right> 2<C-w>>
 
 inoremap <up> <Nop>
 inoremap <down> <Nop>
@@ -232,7 +233,7 @@ au InsertEnter * :hi SignColumn ctermbg=10
 colo solarized
 
 " === indentline ===
-let g:indentLine_char = '│' 
+let g:indentLine_char = '│'
 let g:indentLine_color_term=0
 "
 " === swap an backup file related ===
@@ -310,6 +311,7 @@ let g:expand_region_text_objects = {
       \ 'i''' :0,
       \ 'i]'  :1,
       \ 'ib'  :1,
+      \ 'it'  :1,
       \ 'iB'  :1,
       \ }
 
@@ -346,11 +348,11 @@ nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 
 " === config syntastic === 
-let g:syntastic_python_checkers = ['flake8'] 
+let g:syntastic_python_checkers = ['flake8']
 autocmd BufEnter * :SyntasticCheck
 hi SignColumn ctermbg=8
-let g:syntastic_error_symbol = '╳'
-let g:syntastic_warning_symbol = '╳'
+let g:syntastic_error_symbol = '✖'
+let g:syntastic_warning_symbol = '✖'
 let g:syntastic_style_warning_symbol = '✖'
 let g:syntastic_style_error_symbol = '✖'
 
@@ -421,9 +423,6 @@ command! -bang WQ wq<bang>
 " autocmd VimEnter * :syntax match Bra /,/ " a hack, put this is after 
 " autocmd VimEnter * :syntax match Bra /\./ " a hack, put this is after 
 " autocmd VimEnter * :hi Bra cterm=bold ctermfg=11
-
-autocmd VimEnter * :syntax match Equal / = / " a hack, put this is after 
-hi Equal ctermfg=7 
 
 " always show syntastic sign column (https://gist.github.com/timonv/5115411)
 " autocmd BufEnter * sign define dummy
@@ -597,6 +596,26 @@ function! s:AckMotion(type) abort
 endfunction
 
 " ========= misc ========
-au VimEnter * :hi PythonComment cterm=italic
-au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
-au BufEnter * :hi PythonStatement cterm=bold ctermbg=NONE ctermfg=9
+" let python_highlight_builtins = 0
+hi Comment cterm=italic
+hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
+hi NonText ctermbg=0 ctermbg=0
+hi SpecialKey ctermbg=8 ctermfg=NONE
+hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
+hi pythonFunction ctermbg=NONE ctermfg=2
+
+hi pythonStatement   ctermbg=NONE ctermfg=4
+hi pythonRepeat      ctermbg=NONE ctermfg=4
+hi pythonConditional ctermbg=NONE ctermfg=4
+hi pythonException   ctermbg=NONE ctermfg=4
+hi pythonOperator    ctermbg=NONE ctermfg=4
+
+
+" function s:PythonStuff()
+"     au VimEnter * :hi PythonComment cterm=italic
+"     au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
+"     au BufEnter * :hi PythonStatement cterm=bold ctermbg=NONE ctermfg=9
+"     autocmd VimEnter * :syntax match Equal / = / " a hack, put this is after 
+"     hi Equal ctermfg=7 
+" endfunction
+" au FileType python s:PythonStuff()

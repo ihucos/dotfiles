@@ -30,7 +30,11 @@ URxvt.letterSpace: -1
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.iso14755: False
-URxvt.perl-ext-common: default,clipboard
+URxvt.perl-ext-common: default,clipboard,font-size
+
+URxvt.keysym.C-Up:     perl:font-size:increase
+URxvt.keysym.C-Down:   perl:font-size:decrease
+URxvt.keysym.C-Right:  perl:font-size:reset
 
 ! Compile xft: Turn on/off double-buffering for xft (default enabled).  On some card/driver
 ! URxvt*buffered: boolean

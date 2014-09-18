@@ -91,3 +91,9 @@ a ( bbbbbb , ccccccc , d ( eeeeee , fffffff ) , gggggg ) h
                      │└──────2ia─────────────┤ │
                      ├───────2aa─────────────┘ │
                      └───────2Aa───────────────┘
+
+
+
+install this to another computer
+===============================
+sudo wget https://github.com/muennich/urxvt-perls/raw/master/clipboard -O /usr/lib/urxvt/perl/clipboard 

@@ -1,11 +1,3 @@
-set editing-mode vi
-set keymap vi
-
-$if mode=vi
-    set keymap vi-insert
-    "jk": vi-movement-mode
-$endif
-
 TAB: menu-complete
 set show-all-if-ambiguous on
 
