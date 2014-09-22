@@ -181,6 +181,8 @@ map <leader>q :qa<cr>
 
 nmap <Leader>y "+y
 vmap <Leader>y "+y
+nmap <Leader>Y "+Y
+vmap <Leader>Y "+Y
 vmap <Leader>d "+d
 nmap <Leader>p "+p
 nmap <Leader>P "+P

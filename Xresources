@@ -3,6 +3,9 @@ Xft*dpi:                227
 Xft*antialias:          true
 Xft*hinting:            full
 
+# enable double buffering
+URxvt*buffered: true
+
 ! make colors "normal" for solarized
 URxvt.intensityStyles: false
 
