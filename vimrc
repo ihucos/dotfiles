@@ -1,21 +1,19 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
 
-" required by Vundle
+" boilerplate (do not edit) {{{
+set nocompatible
+filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
-
-" ### plugins ###
+" }}}
+" plugins {{{
 " Plugin 'Lokaltog/powerline'
+Plugin 'gmarik/Vundle.vim'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
 Plugin 'kana/vim-textobj-user'
 " Plugin 'kien/ctrlp.vim'
 " Plugin 'lokaltog/vim-easymotion'
 Plugin 'morhetz/gruvbox' " a color scheme
-Plugin 'scrooloose/syntastic'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
@@ -41,9 +39,6 @@ Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'sheerun/vim-polyglot'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mileszs/ack.vim' 
-Plugin 'xuhdev/SingleCompile'
-Plugin 'majutsushi/tagbar'
-Plugin 'rhysd/clever-f.vim'
 Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'matze/vim-move'
 Plugin 'mikewest/vimroom'
@@ -51,9 +46,7 @@ Plugin 'sickill/vim-monokai'
 Plugin 'tommcdo/vim-exchange'
 Plugin 'airblade/vim-rooter'
 Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
-Plugin 'Yggdroot/indentLine' " vertical indentantion lines
 Plugin 'baskerville/bubblegum' " color scheme, I like it
-Plugin 'zaiste/tmux.vim'
 Plugin 'koron/nyancat-vim'
 Plugin 'wellle/targets.vim'
 Plugin 'flazz/vim-colorschemes'
@@ -64,42 +57,24 @@ Plugin 'hdima/python-syntax'
 Plugin 'kana/vim-textobj-syntax' " y is a text object for syntax hilighted text
 " Plugin 'gorkunov/smartpairs.vim'
 " Plugin 'cakebaker/scss-syntax.vim' " seems not to work
-Plugin 'Shougo/unite.vim'
-Plugin 'ujihisa/unite-locate'
-Plugin 'Shougo/neomru.vim' " mru for unite
 Plugin 'Shougo/vimproc'
 " Plugin 'gorodinskiy/vim-coloresque' " hilight color names
-
-
-" required by Vundle
+Plugin 'mhinz/vim-startify'
+" }}}
+" boilerplace (do not edit) {{{
 call vundle#end()
 filetype plugin indent on
-
 syntax on
-
-" map 11 !
-" map 22 @
-" map 33 #
-" map 44 $
-" map 55 %
-" map 66 ^
-" map 77 &
-" map 88 *
-" map 99 (
-" map 00 )
-
-" imap 99 )
-" imap 88 (
-" map 88 (
-" imap 99 )
-
+" }}}
+" set {{{
 " set nobackup
 " set nowb
 " set noswapfile 
 " set showbreak=↪
 set sidescrolloff=15
 set sidescroll=1
-set foldmethod=indent "fold based on indent
+set foldmethod=marker
+set foldlevel=0
 " set foldnestmax=3 "deepest fold is 3 levels
 set nofoldenable "dont fold by default
 set undofile
@@ -139,7 +114,6 @@ set notimeout
 set ttimeout
 set ttimeoutlen=10
 
-
 iabbrev @@ irae.hueck.costa@gmail.com
 map <Tab> %
 
@@ -149,9 +123,15 @@ set showbreak=┊
 set splitbelow
 set splitright
 
-" does not work?
-autocmd WinLeave * set nocursorline
-autocmd WinEnter * set cursorline
+" swap an backup file related
+set backup                        " enable backups
+set noswapfile
+set undodir=~/.vim/tmp/undo//     " undo files
+set backupdir=~/.vim/tmp/backup// " backups
+set directory=~/.vim/tmp/swap//   " swap files
+" }}}
+"
+" maps {{{
 
 " When typing %% expand it into the path to the current file
 cnoremap %% <C-R>=expand('%:h') . '/'<cr>
@@ -165,18 +145,12 @@ let mapleader = "4"
 nmap 8 4
 
 " TODO: only when esc whas pressed just before!
-imap , <ESC>
+imap , <ESC>l
 map , <ESC>
 noremap <Space> a,<Space>
 noremap <CR> a,<CR>
 " noremap , a,
 noremap 4 :echo 'mapleader command not found'<cr>
-
-map <leader>v <C-w>v
-map <leader>s <C-w>s
-
-" Asesome 80-character limiter
-au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
 
 vmap > >gv
 vmap < <gv
@@ -185,6 +159,17 @@ nnoremap j gj
 nnoremap k gk
 noremap gj j
 noremap gk k
+
+vnoremap J }
+vnoremap K {
+nnoremap J }
+nnoremap K {
+nnoremap H 5j
+nnoremap L 5k
+nnoremap <leader>K K
+nnoremap <leader>J J
+nnoremap <leader>H H
+nnoremap <leader>L L
 
 nnoremap Y y$
 noremap gV `[v`]
@@ -204,17 +189,6 @@ nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
 
-nnoremap L }
-nnoremap H {
-nnoremap J 5j
-nnoremap K 5k
-nnoremap <leader>K K
-nnoremap <leader>J J
-nnoremap <leader>H H
-nnoremap <leader>L L
-
-noremap gV `[v`]
-
 map <up> 2<C-w>+
 map <down> 2<C-w>-
 map <left> 2<C-w><
@@ -232,54 +206,15 @@ map <C-k> <C-w>k
 map <C-l> <C-w>l
 
 " imap jk <Esc>
-map q: :q " common typo (seems not to work)
+map q: :q<cr>
+" }}}
 
-" Resize splits when the window is resized
-au VimResized * :wincmd =
-
-augroup cline
-    au!
-    au WinLeave * set nocursorline
-    au WinEnter * set cursorline
-augroup END
-
-au VimEnter * :hi SignColumn ctermbg=0
-au VimEnter * :hi CursorLineNr ctermbg=10 ctermfg=0
-au VimEnter * :hi clear CursorLine
-
-au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0 
-au InsertEnter * :hi LineNr ctermfg=0 ctermbg=10 
-au InsertLeave * :hi SignColumn ctermbg=0
-au InsertEnter * :hi SignColumn ctermbg=10
-
-
-colo solarized
-
-" === indentline ===
+" plugin indentline {{{
+Plugin 'Yggdroot/indentLine' " vertical indentantion lines
 let g:indentLine_char = '│'
 let g:indentLine_color_term=0
-"
-" === swap an backup file related ===
-set backup                        " enable backups
-set noswapfile
-
-set undodir=~/.vim/tmp/undo//     " undo files
-set backupdir=~/.vim/tmp/backup// " backups
-set directory=~/.vim/tmp/swap//   " swap files
-
-" Make those folders automatically if they don't already exist.
-if !isdirectory(expand(&undodir))
-    call mkdir(expand(&undodir), "p")
-endif
-if !isdirectory(expand(&backupdir))
-    call mkdir(expand(&backupdir), "p")
-endif
-if !isdirectory(expand(&directory))
-    call mkdir(expand(&directory), "p")
-endif
-
-
-" === config switch/toggle/bla ===
+" }}}
+" plugin switch/toggle/bla {{{
 " TODO: use plugins
 let g:switch_custom_definitions =
 \ [
@@ -293,8 +228,11 @@ let g:switch_custom_definitions =
 \ ['foo', 'bar', 'baz'],
 \ ['block', 'inline-block', 'inline']
 \ ]
-
-" === config unite ===
+" }}}
+" plugin unite {{{
+Plugin 'Shougo/unite.vim'
+Plugin 'ujihisa/unite-locate'
+Plugin 'Shougo/neomru.vim' " mru for unite
 " FIXME: use file_rer/git when appropriate
 map <leader>j :Unite -buffer-name=files -prompt-direction="top" -start-insert -no-split -wrap file_rec<cr>
 " map <leader>r :Unite -buffer-name=mru -prompt-direction="top" -start-insert -winheight=20 file_mru<cr>
@@ -335,62 +273,36 @@ function! s:unite_settings()
     nmap <silent><buffer><expr> v unite#do_action('vsplit')
     nmap <silent><buffer><expr> t unite#do_action('tabopen')
 endfunction
-
-" === config pydoc ===
-autocmd BufNewFile,BufRead *.py set keywordprg=pydoc
-
-
-" === config netrw ===
-let g:netrw_banner       = 0
-let g:netrw_keepdir      = 0
-let g:netrw_liststyle    = 3 " or 3
-let g:netrw_sort_options = 'i'
-autocmd VimEnter * if !argc() | Explore | endif
-autocmd VimEnter * if isdirectory(expand('<afile>')) | Explore | endif
-map <tilde>f :edit .<cr>
-
-" === config vimroom ===
+" }}}
+" plugin vimroom {{{
 " TODO: config, maybe not used. does not automatically go to fullscreen and is
 " slow
 let g:vimroom_sidebar_height=0
-
-" " === config clever-vim-move ===
-" " TODO: config
-" let g:move_map_keys = 0
-" vmap <C-j> <Plug>MoveBlockDown
-" vmap <C-k> <Plug>MoveBlockUp
-" nmap <A-j> <Plug>MoveLineDown
-" nmap <A-k> <Plug>MoveLineUp
-
-" === config clever-f ===
+" }}}
+" plugin clever-f {{{
+Plugin 'rhysd/clever-f.vim'
 let g:clever_f_mark_cursor = 0
 let g:clever_f_mark_char_color='BetterF'
 hi BetterF ctermfg=5 ctermbg=0
-
-" === config tagbar ===
+" }}}
+" plugin tagbar {{{
+Plugin 'majutsushi/tagbar'
 nnoremap <Leader>t :Tagbar<cr>
-
-" === config kien/rainbow_parentheses.vim ===
+" }}}
+" plugin SingleCompile {{{
+Plugin 'xuhdev/SingleCompile'
 nmap <Leader>c :SCCompile<cr>
 nmap <Leader>x :SCCompileRun<cr>
-
-" === config kien/rainbow_parentheses.vim ===
-" TODO: doit (make nice colors)
-
-" === config Gundo ===
-nmap <leader>u :GundoToggle<CR>
-
-" " === config easymotion ===
-" nmap <leader>j <Plug>(easymotion-bd-jk)
-" autocmd VimEnter * :unmap <leader><leader>
-" autocmd VimEnter * :nmap <leader><leader> <Plug>(easymotion-lineanywhere)
-
-" === config jedi-vim and supertab ===
+" }}}
+" plugin jedi-vim {{{
+Plugin 'davidhalter/jedi-vim'
+let g:jedi#auto_initialization = 0
 let g:jedi#auto_vim_configuration = 0
 let g:SuperTabDefaultCompletionType = "context"
 let g:jedi#popup_on_dot = 0
-
-" === config syntastic === 
+" }}}
+" plugin tmux {{{
+Plugin 'zaiste/tmux.vim'
 let g:tmux_navigator_no_mappings = 1
 inoremap <silent> <C-h> <ESC>:TmuxNavigateLeft<cr>a
 inoremap <silent> <C-j> <ESC>:TmuxNavigateDown<cr>a
@@ -403,8 +315,9 @@ nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
-
-" === config syntastic === 
+" }}}
+" plugin Syntastic {{{
+Plugin 'scrooloose/syntastic'
 let g:syntastic_python_checkers = ['flake8']
 autocmd BufEnter * :SyntasticCheck
 hi SignColumn ctermbg=8
@@ -427,40 +340,67 @@ au InsertEnter * hi SyntasticErrorSign ctermbg=10
 au InsertEnter * hi SyntasticWarningSign ctermbg=10
 au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
 au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
+" }}}
 
-" " The Silver Searcher
-" if executable('ag')
-"     " Use ag over grep
-"     set grepprg=ag\ --nogroup\ --nocolor
-"     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-"     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-"     " ag is fast enough that CtrlP doesn't need to cache
-"     let g:ctrlp_use_caching = 0
-" endif
+" gui/syntax/color stuff {{{
+colo solarized
 
 " Highlight VCS conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
-" Use local vimrc if available
-if filereadable(expand("~/.vimrc.local"))
-    source ~/.vimrc.local
-endif
+" Resize splits when the window is resized
+au VimResized * :wincmd =
 
-" TODO: config ctags
-" tags+=tags;$HOME
+let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>[1 q\<Esc>\\"
+let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
 
-" Typos
-command! -bang E e<bang>
-command! -bang Q q<bang>
-command! -bang W w<bang>
-command! -bang QA qa<bang>
-command! -bang Qa qa<bang>
-command! -bang Wa wa<bang>
-command! -bang WA wa<bang>
-command! -bang Wq wq<bang>
-command! -bang WQ wq<bang>
+" does not work?
+autocmd WinLeave * set nocursorline
+autocmd WinEnter * set cursorline
 
- 
+" awesome 80-character limiter
+au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
+
+hi Comment cterm=italic
+hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
+hi NonText ctermbg=0 ctermbg=0
+hi SpecialKey ctermbg=8 ctermfg=NONE
+hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
+hi pythonFunction ctermbg=NONE ctermfg=2
+
+hi pythonStatement   ctermbg=NONE ctermfg=4
+hi pythonRepeat      ctermbg=NONE ctermfg=4
+hi pythonConditional ctermbg=NONE ctermfg=4
+hi pythonException   ctermbg=NONE ctermfg=4
+hi pythonOperator    ctermbg=NONE ctermfg=4
+
+
+augroup cline
+    au!
+    au WinLeave * set nocursorline
+    au WinEnter * set cursorline
+augroup END
+
+au VimEnter * :hi SignColumn ctermbg=0
+au VimEnter * :hi CursorLineNr ctermbg=10 ctermfg=0
+au VimEnter * :hi clear CursorLine
+
+au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0 
+au InsertEnter * :hi LineNr ctermfg=0 ctermbg=10 
+au InsertLeave * :hi SignColumn ctermbg=0
+au InsertEnter * :hi SignColumn ctermbg=10
+" function s:PythonStuff()
+"     au VimEnter * :hi PythonComment cterm=italic
+"     au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
+"     au BufEnter * :hi PythonStatement cterm=bold ctermbg=NONE ctermfg=9
+"     autocmd VimEnter * :syntax match Equal / = / " a hack, put this is after 
+"     hi Equal ctermfg=7 
+" endfunction
+" au FileType python s:PythonStuff()
+
+
+
+
 " autocmd BufEnter * :hi Conceal ctermfg= 
 " =========================
 " === some experimation ===
@@ -563,120 +503,46 @@ command! -bang WQ wq<bang>
 "
 " com! -bar W     cal WriteAndReload()
 " com! -bar SetBrowserWindow     cal SetBrowserWindow()
-
-
-" = maybe there is a plugin for that
 " }}}
-" Highlight Word {{{
-"
-" This mini-plugin provides a few mappings for highlighting words temporarily.
-"
-" Sometimes you're looking at a hairy piece of code and would like a certain
-" word or two to stand out temporarily.  You can search for it, but that only
-" gives you one color of highlighting.  Now you can use <leader>N where N is
-" a number from 1-6 to highlight the current word in a specific color.
+" misc {{{
+" Use local vimrc if available
+if filereadable(expand("~/.vimrc.local"))
+    source ~/.vimrc.local
+endif
 
-function! HiInterestingWord(n) " {{{
-    " Save our location.
-    normal! mz
+" TODO: config ctags
+" tags+=tags;$HOME
 
-    " Yank the current word into the z register.
-    normal! "zyiw
+" Typos
+command! -bang E e<bang>
+command! -bang Q q<bang>
+command! -bang W w<bang>
+command! -bang QA qa<bang>
+command! -bang Qa qa<bang>
+command! -bang Wa wa<bang>
+command! -bang WA wa<bang>
+command! -bang Wq wq<bang>
+command! -bang WQ wq<bang>
 
-    " Calculate an arbitrary match ID.  Hopefully nothing else is using it.
-    let mid = 86750 + a:n
-
-    " Clear existing matches, but don't worry if they don't exist.
-    silent! call matchdelete(mid)
-
-    " Construct a literal pattern that has to match at boundaries.
-    let pat = '\V\<' . escape(@z, '\') . '\>'
-
-    " Actually match the words.
-    call matchadd("InterestingWord" . a:n, pat, 1, mid)
-
-    " Move back to our original location.
-    normal! `z
-endfunction " }}}
-
-" Mappings {{{
-
-nnoremap <silent> <leader>1 :call HiInterestingWord(1)<cr>
-nnoremap <silent> <leader>2 :call HiInterestingWord(2)<cr>
-nnoremap <silent> <leader>3 :call HiInterestingWord(3)<cr>
-nnoremap <silent> <leader>4 :call HiInterestingWord(4)<cr>
-nnoremap <silent> <leader>5 :call HiInterestingWord(5)<cr>
-nnoremap <silent> <leader>6 :call HiInterestingWord(6)<cr>
-
+" Make those folders automatically if they don't already exist.
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&directory))
+    call mkdir(expand(&directory), "p")
+endif
 " }}}
-" Default Highlights {{{
-
-hi def InterestingWord1 guifg=#000000 ctermfg=16 guibg=#ffa724 ctermbg=214
-hi def InterestingWord2 guifg=#000000 ctermfg=16 guibg=#aeee00 ctermbg=154
-hi def InterestingWord3 guifg=#000000 ctermfg=16 guibg=#8cffba ctermbg=121
-hi def InterestingWord4 guifg=#000000 ctermfg=16 guibg=#b88853 ctermbg=137
-hi def InterestingWord5 guifg=#000000 ctermfg=16 guibg=#ff9eb8 ctermbg=211
-hi def InterestingWord6 guifg=#000000 ctermfg=16 guibg=#ff2c4b ctermbg=195
-
-
-
-
-" Ack motions {{{  
-
-" Motions to Ack for things.  Works with pretty much everything, including:
-"
-"   w, W, e, E, b, B, t*, f*, i*, a*, and custom text objects
-"
-" Awesome.
-"
-" Note: If the text covered by a motion contains a newline it won't work.  Ack
-" searches line-by-line.
-
-nnoremap <silent> <leader>A :set opfunc=<SID>AckMotion<CR>g@
-xnoremap <silent> <leader>A :<C-U>call <SID>AckMotion(visualmode())<CR>
-
-" nnoremap <bs> :Ack! '\b<c-r><c-w>\b'<cr>
-xnoremap <silent> <bs> :<C-U>call <SID>AckMotion(visualmode())<CR>
-
-function! s:CopyMotionForType(type)
-    if a:type ==# 'v'
-        silent execute "normal! `<" . a:type . "`>y"
-    elseif a:type ==# 'char'
-        silent execute "normal! `[v`]y"
-    endif
-endfunction
-
-function! s:AckMotion(type) abort
-    let reg_save = @@
-
-    call s:CopyMotionForType(a:type)
-
-    execute "normal! :Ack! --literal " . shellescape(@@) . "\<cr>"
-
-    let @@ = reg_save
-endfunction
-
-" ========= misc ========
-" let python_highlight_builtins = 0
-hi Comment cterm=italic
-hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
-hi NonText ctermbg=0 ctermbg=0
-hi SpecialKey ctermbg=8 ctermfg=NONE
-hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
-hi pythonFunction ctermbg=NONE ctermfg=2
-
-hi pythonStatement   ctermbg=NONE ctermfg=4
-hi pythonRepeat      ctermbg=NONE ctermfg=4
-hi pythonConditional ctermbg=NONE ctermfg=4
-hi pythonException   ctermbg=NONE ctermfg=4
-hi pythonOperator    ctermbg=NONE ctermfg=4
-
-
-" function s:PythonStuff()
-"     au VimEnter * :hi PythonComment cterm=italic
-"     au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
-"     au BufEnter * :hi PythonStatement cterm=bold ctermbg=NONE ctermfg=9
-"     autocmd VimEnter * :syntax match Equal / = / " a hack, put this is after 
-"     hi Equal ctermfg=7 
-" endfunction
-" au FileType python s:PythonStuff()
+" Baustelle {{{
+" " The Silver Searcher
+" if executable('ag')
+"     " Use ag over grep
+"     set grepprg=ag\ --nogroup\ --nocolor
+"     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+"     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+"     " ag is fast enough that CtrlP doesn't need to cache
+"     let g:ctrlp_use_caching = 0
+" endif
+" }}}
