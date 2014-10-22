@@ -12,29 +12,27 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
 Plugin 'kana/vim-textobj-user'
-Plugin 'kien/ctrlp.vim'
-Plugin 'lokaltog/vim-easymotion'
+" Plugin 'kien/ctrlp.vim'
+" Plugin 'lokaltog/vim-easymotion'
 Plugin 'morhetz/gruvbox' " a color scheme
-Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
-Plugin 'terryma/vim-expand-region' 
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-rsi' " readline like bindings in insert mode
 Plugin 'tpope/vim-sleuth'
 Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-vinegar'
 Plugin 'buztard/vim-nomad'
 Plugin 'chrisbra/csv.vim'
 " Plugin 'bling/vim-airline'
-Plugin 'lilydjwg/colorizer'
+" Plugin 'lilydjwg/colorizer'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'vim-scripts/ZoomWin'
 " Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
 " Plugin 'python-rope/ropevim'
-Plugin 'https://github.com/chriskempson/base16-vim'
+Plugin 'chriskempson/base16-vim'
 Plugin 'sjl/gundo.vim' 
-Plugin 'fholgado/minibufexpl.vim'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'kien/rainbow_parentheses.vim'
@@ -55,10 +53,8 @@ Plugin 'airblade/vim-rooter'
 Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
 Plugin 'Yggdroot/indentLine' " vertical indentantion lines
 Plugin 'baskerville/bubblegum' " color scheme, I like it
-Plugin 'fs111/pydoc.vim'
 Plugin 'zaiste/tmux.vim'
 Plugin 'koron/nyancat-vim'
-Plugin 'wellle/tmux-complete.vim.git' " TODO: configure with supertab
 Plugin 'wellle/targets.vim'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'jpo/vim-railscasts-theme'
@@ -66,6 +62,14 @@ Plugin 'jpo/vim-railscasts-theme'
 Plugin 'xolox/vim-misc'
 Plugin 'hdima/python-syntax'
 Plugin 'kana/vim-textobj-syntax' " y is a text object for syntax hilighted text
+" Plugin 'gorkunov/smartpairs.vim'
+" Plugin 'cakebaker/scss-syntax.vim' " seems not to work
+Plugin 'Shougo/unite.vim'
+Plugin 'ujihisa/unite-locate'
+Plugin 'Shougo/neomru.vim' " mru for unite
+Plugin 'Shougo/vimproc'
+" Plugin 'gorodinskiy/vim-coloresque' " hilight color names
+
 
 " required by Vundle
 call vundle#end()
@@ -99,11 +103,10 @@ set foldmethod=indent "fold based on indent
 " set foldnestmax=3 "deepest fold is 3 levels
 set nofoldenable "dont fold by default
 set undofile
-set ttyfast
-set laststatus=2
+" set laststatus=2
 set nowrap
 set hidden
-set autochdir
+" set autochdir
 set background=dark
 set cursorline
 set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
@@ -118,6 +121,7 @@ set scrolloff=999   " Keep x lines below and above the cursor
 set t_Co=256
 set undolevels=1000      " use many muchos levels of undo
 set lazyredraw
+set ttyfast
 set nomodeline
 " No annoying sound on errors
 set noerrorbells
@@ -136,29 +140,40 @@ set ttimeout
 set ttimeoutlen=10
 
 
-vnoremap <leader>S y:execute @@<cr>:echo 'Sourced selection.'<cr>
-nnoremap <leader>S ^vg_y:execute @@<cr>:echo 'Sourced line.'<cr>
-iabbrev ihcm irae.hueck.costa@gmail.com
+iabbrev @@ irae.hueck.costa@gmail.com
 map <Tab> %
 
 set list
 set listchars=extends:▶,precedes:◀,trail:␣
 set showbreak=┊
+set splitbelow
+set splitright
 
 " does not work?
 autocmd WinLeave * set nocursorline
 autocmd WinEnter * set cursorline
 
+" When typing %% expand it into the path to the current file
+cnoremap %% <C-R>=expand('%:h') . '/'<cr>
+
 " highlight WhitespaceEOL ctermbg=14
 " match WhitespaceEOL /\s\+$/
 
 " let mapleader = "\<Space>"
-let mapleader = ","
+" let mapleader = ","
+let mapleader = "4"
+nmap 8 4
 
-" test this one out
+" TODO: only when esc whas pressed just before!
 imap , <ESC>
+map , <ESC>
 noremap <Space> a,<Space>
+noremap <CR> a,<CR>
 " noremap , a,
+noremap 4 :echo 'mapleader command not found'<cr>
+
+map <leader>v <C-w>v
+map <leader>s <C-w>s
 
 " Asesome 80-character limiter
 au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
@@ -189,6 +204,15 @@ nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
 
+nnoremap L }
+nnoremap H {
+nnoremap J 5j
+nnoremap K 5k
+nnoremap <leader>K K
+nnoremap <leader>J J
+nnoremap <leader>H H
+nnoremap <leader>L L
+
 noremap gV `[v`]
 
 map <up> 2<C-w>+
@@ -200,9 +224,6 @@ inoremap <up> <Nop>
 inoremap <down> <Nop>
 inoremap <left> <Nop>
 inoremap <right> <Nop>
-
-map <BS> <Nop>
-inoremap <BS> <Nop>
 
 " Easy window navigation
 map <C-h> <C-w>h
@@ -258,21 +279,88 @@ if !isdirectory(expand(&directory))
 endif
 
 
+" === config switch/toggle/bla ===
+" TODO: use plugins
+let g:switch_custom_definitions =
+\ [
+\ ['white', 'black'],
+\ ['right', 'left'],
+\ ['top', 'bottom'],
+\ ['red', 'blue'],
+\ ['width', 'height'],
+\ ['min', 'max'],
+\ ['margin', 'padding'],
+\ ['foo', 'bar', 'baz'],
+\ ['block', 'inline-block', 'inline']
+\ ]
+
+" === config unite ===
+" FIXME: use file_rer/git when appropriate
+map <leader>j :Unite -buffer-name=files -prompt-direction="top" -start-insert -no-split -wrap file_rec<cr>
+" map <leader>r :Unite -buffer-name=mru -prompt-direction="top" -start-insert -winheight=20 file_mru<cr>
+map <leader>k :Unite -buffer-name=buffers -no-split buffer:-<cr>
+" map <leader>k :Unite -buffer-name=locate locate<cr>
+map <leader>/ :Unite line -start-insert<cr>
+nnoremap <silent> <leader>y :<C-u>Unite -buffer-name=yanks history/yank<CR>
+
+let g:unite_source_file_mru_limit = 100 " set up mru limit
+call unite#custom#profile('default', 'context', { 'marked_icon':'✓'})
+let g:unite_cursor_line_highlight = 'CursorLine'
+let g:unite_prompt = '➜ ' " set up coolguy arrow prompt
+call unite#filters#sorter_default#use(['sorter_rank']) " Use the rank sorter for everything
+
+" Set up some custom ignores
+call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
+            \ 'ignore_pattern', join([
+            \ '\.git/',
+            \ 'tmp/',
+            \ ], '\|'))
+
+if executable('ag')
+    let g:unite_source_grep_command = 'ag'
+    let g:unite_source_grep_default_opts =
+                \ '--line-numbers --nocolor --nogroup --hidden --ignore ' .
+                \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+    let g:unite_source_grep_recursive_opt = ''
+endif
+
+" Custom mappings for the unite buffer
+autocmd FileType unite call s:unite_settings()
+function! s:unite_settings()
+    let b:SuperTabDisabled=1
+    nmap <buffer> <ESC> <Plug>(unite_exit)
+    " nmap <buffer> <C-P> <Plug>(unite_exit)
+    " imap <buffer> <C-P> <Plug>(unite_exit)
+    nmap <silent><buffer><expr> s unite#do_action('split')
+    nmap <silent><buffer><expr> v unite#do_action('vsplit')
+    nmap <silent><buffer><expr> t unite#do_action('tabopen')
+endfunction
+
 " === config pydoc ===
 autocmd BufNewFile,BufRead *.py set keywordprg=pydoc
+
+
+" === config netrw ===
+let g:netrw_banner       = 0
+let g:netrw_keepdir      = 0
+let g:netrw_liststyle    = 3 " or 3
+let g:netrw_sort_options = 'i'
+autocmd VimEnter * if !argc() | Explore | endif
+autocmd VimEnter * if isdirectory(expand('<afile>')) | Explore | endif
+map <tilde>f :edit .<cr>
 
 " === config vimroom ===
 " TODO: config, maybe not used. does not automatically go to fullscreen and is
 " slow
 let g:vimroom_sidebar_height=0
 
-" === config clever-vim-move ===
-" TODO: config
-let g:move_map_keys = 0
-vmap <C-j> <Plug>MoveBlockDown
-vmap <C-k> <Plug>MoveBlockUp
-nmap <A-j> <Plug>MoveLineDown
-nmap <A-k> <Plug>MoveLineUp
+" " === config clever-vim-move ===
+" " TODO: config
+" let g:move_map_keys = 0
+" vmap <C-j> <Plug>MoveBlockDown
+" vmap <C-k> <Plug>MoveBlockUp
+" nmap <A-j> <Plug>MoveLineDown
+" nmap <A-k> <Plug>MoveLineUp
 
 " === config clever-f ===
 let g:clever_f_mark_cursor = 0
@@ -292,43 +380,10 @@ nmap <Leader>x :SCCompileRun<cr>
 " === config Gundo ===
 nmap <leader>u :GundoToggle<CR>
 
-" === config easymotion ===
-nmap <leader>j <Plug>(easymotion-bd-jk)
-autocmd VimEnter * :unmap <leader><leader>
-autocmd VimEnter * :nmap <leader><leader> <Plug>(easymotion-lineanywhere)
-
-" " " === config for airline ===
-" let g:airline_theme='solarized'
-" let g:airline_left_sep=''
-" let g:airline_right_sep=''
-" let g:airline_section_z=''
-" autocmd VimEnter * :AirlineTheme solarized
-
-" === config vim-expand-region === 
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
-let g:expand_region_text_objects = {
-      \ 'iw'  :0,
-      \ 'i"'  :0,
-      \ 'i''' :0,
-      \ 'i]'  :1,
-      \ 'ib'  :1,
-      \ 'it'  :1,
-      \ 'iB'  :1,
-      \ }
-
-" === config nerdtree ===
-let NERDTreeChDirMode=2
-nmap <leader>m :NERDTreeToggle<CR>
-
-
-" === config ctrlp ===
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-nnoremap <Leader><space>f :CtrlP<CR>
-nnoremap <Leader><space>t :CtrlPTag<CR>
-nnoremap <Leader><space>b :CtrlPBufTagAll<CR>
-
+" " === config easymotion ===
+" nmap <leader>j <Plug>(easymotion-bd-jk)
+" autocmd VimEnter * :unmap <leader><leader>
+" autocmd VimEnter * :nmap <leader><leader> <Plug>(easymotion-lineanywhere)
 
 " === config jedi-vim and supertab ===
 let g:jedi#auto_vim_configuration = 0
@@ -373,6 +428,16 @@ au InsertEnter * hi SyntasticWarningSign ctermbg=10
 au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
 au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
 
+" " The Silver Searcher
+" if executable('ag')
+"     " Use ag over grep
+"     set grepprg=ag\ --nogroup\ --nocolor
+"     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+"     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+"     " ag is fast enough that CtrlP doesn't need to cache
+"     let g:ctrlp_use_caching = 0
+" endif
+
 " Highlight VCS conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
@@ -383,12 +448,6 @@ endif
 
 " TODO: config ctags
 " tags+=tags;$HOME
-
-" TODO: think about this one
-" Kill window
-nnoremap K :q<cr>
-" Man
-nnoremap M K
 
 " Typos
 command! -bang E e<bang>
@@ -576,7 +635,7 @@ hi def InterestingWord6 guifg=#000000 ctermfg=16 guibg=#ff2c4b ctermbg=195
 nnoremap <silent> <leader>A :set opfunc=<SID>AckMotion<CR>g@
 xnoremap <silent> <leader>A :<C-U>call <SID>AckMotion(visualmode())<CR>
 
-nnoremap <bs> :Ack! '\b<c-r><c-w>\b'<cr>
+" nnoremap <bs> :Ack! '\b<c-r><c-w>\b'<cr>
 xnoremap <silent> <bs> :<C-U>call <SID>AckMotion(visualmode())<CR>
 
 function! s:CopyMotionForType(type)
