@@ -1,7 +1,6 @@
+# TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda098a0516f41416f4 -n "annoyance description"
 
 alias tmux='TERM=rxvt-unicode-256color tmux'
-
-source /usr/share/autojump/autojump.sh
 
 export EDITOR='vim'
 
@@ -139,7 +138,7 @@ matrix (){
 
 dict(){ local y="$@";curl -sA"Opera" "http://www.google.com/search?q=define:${y// /+}"|grep -Po '(?<=<li>)[^<]+'|nl|perl -MHTML::Entities -pe 'decode_entities($_)' 2>/dev/null;}
 
-md () { mkdir -p "$@" && cd "$@"; }
+mkcd () { mkdir -p "$@" && cd "$@"; }
 
 calc () { echo "$*" | bc -l; }
 
@@ -225,7 +224,6 @@ psgrep() {
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 ### autocomplete stuff ###
-shopt -s hostcomplete           # tab-completion of hostnames after @
 shopt -s cdable_vars # look at variables that might hold directory paths
 shopt -s nocaseglob         # pathname expansion will be treated as case-insensitive
 
@@ -244,34 +242,62 @@ if ! shopt -oq posix; then
   fi
 fi
 
+
+source /usr/share/autojump/autojump.sh
 source ~/.acd_func.sh
 
-function sshh {
-  ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
+_sshh_background() {
+  tmp=$1
+  a2=$2
+  inotifywait $tmp
+  ssh -o "ControlPath=$tmp/%r@%h:%p" $a2 -t "touch /it_works2" # "bash -c '[ -d /tmp/iraes_dotfiles ]'"
 }
+
+sshh() {
+  tmp=$(mktemp -d)
+  # nohup _sshh_background > /dev/null 2>&1 &
+  _sshh_background $tmp $@ &
+  ssh -o "ControlMaster=yes" -o "ControlPath=$tmp/%r@%h:%p" $@
+    # -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)" $@
+
+
+
+
+  # # sshreuse $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
+  # sshreuse HOST "bash -c '[ -d /tmp/iraes_dotfiles ]'"
+  # if [ $? = 1 ]; then
+  #   scpreuse ~/{.vim,.vimrc} HOST:/tmp/iraes_dotfiles # with tar.gz
+  #   # tar zcf - <files> | sshreuse user@host "cd /wherever; tar zxf -"
+  # fi
+}
+
+sshreuse() { # ssh with controlmaster #FIXME: safe control path dir
+  ssh -o "ControlMaster=auto" -o "ControlPath=/tmp/%r@%h:%p" -o "ControlPersist=yes" $@
+}
+
+scpreuse() { # ssh with controlmaster #FIXME: safe control path dir
+  scp -o "ControlMaster=auto" -o "ControlPath=/tmp/%r@%h:%p" -o "ControlPersist=yes" $@
+}
+
 # tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)
 
 getdots() {
   export DOTFILES=/tmp/iraes_dotfiles
-  curl -L https://github.com/nomoral/dotfiles/archive/master.zip > /tmp/iraes_dotfiles.zip
-  rm /tmp/dotfiles-master -r
+  curl -L --connect-timeout 15 https://github.com/nomoral/dotfiles/archive/master.zip > /tmp/iraes_dotfiles.zip
+  rm -f /tmp/dotfiles-master -r
   unzip /tmp/iraes_dotfiles.zip -d /tmp
   for f in /tmp/dotfiles-master/*; do
     mv $f $(dirname $f)/.$(basename $f)
   done;
-  rm $DOTFILES -r
+  rm -f $DOTFILES -r
   mv /tmp/dotfiles-master/ $DOTFILES
+
+  # for vim to use the dotfiles
+  # FIXME: VIMRUNTIME is set at compile time in vim, nevertheless it seems i have to set it
+  export VIMRUNTIME=/usr/share/vim/vim74/
+  export VIM=$DOTFILES/.vim
+  export VIMRC=$DOTFILES/.vimrc
 }
-
-vim (){
-  if [ -n "$DOTFILES" ]; then
-    VIM=$DOTFILES/.vim /usr/bin/env vim -u $DOTFILES/.vimrc $@
-  else
-    /usr/bin/env vim $@
-  fi
-}
-
-
 
 # Colorize these commands if possible
 if which grc &>/dev/null; then
@@ -319,3 +345,8 @@ fi
 #   --form-string "user=user123" \
 #   --form-string "message=hello world" \
 #   https://api.pushover.net/1/messages.json
+# Local customized path and environment settings, etc.
+
+if [ -f ~/.bashrc.local ]; then
+    . ~/.bashrc.local
+fi

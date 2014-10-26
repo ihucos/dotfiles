@@ -1,5 +1,4 @@
 === ideas ===
-map tab to %
 better HJKL?
 override S?
 switch ' and `?
@@ -26,11 +25,11 @@ tmux hide/show status bar: prefix h
 <Leader>c compile programm
 <Leader>x run programm
 
-<Leader><space>f find file
-<Leader><space>t find tag
-<Leader><space>b find tag in this buffer only
+<Leader>f find file
+/* <Leader><space>t find tag */
+/* <Leader><space>b find tag in this buffer only */
 
-ctrl-s in normal or insert mode saves file
+<leader>s in normal or insert mode saves file
 
 zL zH: scroll half a page to the right or left
 zj zk jump to next/prev fold

@@ -20,7 +20,6 @@ Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-rsi' " readline like bindings in insert mode
 Plugin 'tpope/vim-sleuth'
 Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-vinegar'
 Plugin 'buztard/vim-nomad'
 Plugin 'chrisbra/csv.vim'
 " Plugin 'bling/vim-airline'
@@ -30,7 +29,7 @@ Plugin 'vim-scripts/ZoomWin'
 " Plugin 'jiangmiao/auto-pairs' "insert " ater ", ) after (
 " Plugin 'python-rope/ropevim'
 Plugin 'chriskempson/base16-vim'
-Plugin 'sjl/gundo.vim' 
+Plugin 'sjl/gundo.vim'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'kien/rainbow_parentheses.vim'
@@ -54,12 +53,14 @@ Plugin 'jpo/vim-railscasts-theme'
 " Plugin 'xolox/vim-easytags'
 Plugin 'xolox/vim-misc'
 Plugin 'hdima/python-syntax'
-Plugin 'kana/vim-textobj-syntax' " y is a text object for syntax hilighted text
+" Plugin 'kana/vim-textobj-syntax' " does not work well enough. y is a text object for syntax hilighted text
 " Plugin 'gorkunov/smartpairs.vim'
 " Plugin 'cakebaker/scss-syntax.vim' " seems not to work
 Plugin 'Shougo/vimproc'
 " Plugin 'gorodinskiy/vim-coloresque' " hilight color names
 Plugin 'mhinz/vim-startify'
+Plugin 'mjbrownie/django-template-textobjects'
+
 " }}}
 " boilerplace (do not edit) {{{
 call vundle#end()
@@ -114,9 +115,6 @@ set notimeout
 set ttimeout
 set ttimeoutlen=10
 
-iabbrev @@ irae.hueck.costa@gmail.com
-map <Tab> %
-
 set list
 set listchars=extends:▶,precedes:◀,trail:␣
 set showbreak=┊
@@ -130,8 +128,10 @@ set undodir=~/.vim/tmp/undo//     " undo files
 set backupdir=~/.vim/tmp/backup// " backups
 set directory=~/.vim/tmp/swap//   " swap files
 " }}}
-"
+
 " maps {{{
+
+iabbrev @@ irae.hueck.costa@gmail.com
 
 " When typing %% expand it into the path to the current file
 cnoremap %% <C-R>=expand('%:h') . '/'<cr>
@@ -139,18 +139,54 @@ cnoremap %% <C-R>=expand('%:h') . '/'<cr>
 " highlight WhitespaceEOL ctermbg=14
 " match WhitespaceEOL /\s\+$/
 
-" let mapleader = "\<Space>"
-" let mapleader = ","
-let mapleader = "4"
-nmap 8 4
+inoremap 1 <Esc>`^
+inoremap 2 <Esc>`^
+inoremap 3 <Esc>`^
+inoremap 4 <Esc>`^
+inoremap 5 <Esc>`^
+inoremap 6 <Esc>`^
+inoremap 7 <Esc>`^
+inoremap 8 <Esc>`^
+inoremap 9 <Esc>`^
+inoremap 0 <Esc>`^
 
-" TODO: only when esc whas pressed just before!
-imap , <ESC>l
-map , <ESC>
-noremap <Space> a,<Space>
-noremap <CR> a,<CR>
-" noremap , a,
-noremap 4 :echo 'mapleader command not found'<cr>
+map 1 <Esc>
+map 2 <Esc>
+map 3 <Esc>
+map 4 <Esc>
+map 5 <Esc>
+map 6 <Esc>
+map 7 <Esc>
+map 8 <Esc>
+map 9 <Esc>
+map 0 <Esc>
+
+let mapleader = "\<Space>"
+noremap <Space> :echo '   **Command Not Found**'<cr>
+
+inoremap ,a 0
+inoremap ,s 1
+inoremap ,d 2
+inoremap ,f 3
+inoremap ,g 4
+inoremap ,h 5
+inoremap ,j 6
+inoremap ,k 7
+inoremap ,l 8
+inoremap ,; 9
+inoremap ,, ,
+
+noremap ,a 0
+noremap ,s 1
+noremap ,d 2
+noremap ,f 3
+noremap ,g 4
+noremap ,h 5
+noremap ,j 6
+noremap ,k 7
+noremap ,l 8
+noremap ,; 9
+noremap ,, ,
 
 vmap > >gv
 vmap < <gv
@@ -164,8 +200,11 @@ vnoremap J }
 vnoremap K {
 nnoremap J }
 nnoremap K {
-nnoremap H 5j
-nnoremap L 5k
+nnoremap H ^
+nnoremap L $
+vnoremap H ^
+vnoremap L $
+
 nnoremap <leader>K K
 nnoremap <leader>J J
 nnoremap <leader>H H
@@ -174,9 +213,7 @@ nnoremap <leader>L L
 nnoremap Y y$
 noremap gV `[v`]
 
-" map <C-s> :w<cr>
-" imap <C-s> <ESC>:w<cr>a
-map <leader>s :w<cr>
+map <leader>w :w<cr>
 map <leader>q :qa<cr>
 
 nmap <Leader>y "+y
@@ -188,6 +225,9 @@ nmap <Leader>p "+p
 nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
+
+map <leader>s :split<cr>
+map <leader>v :vsplit<cr>
 
 map <up> 2<C-w>+
 map <down> 2<C-w>-
@@ -205,8 +245,37 @@ map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 
-" imap jk <Esc>
-map q: :q<cr>
+" inoremap 4j (
+" inoremap 4k )
+" inoremap 4h [
+" inoremap 4l ]
+" inoremap 4n {
+" inoremap 4m }
+
+" inoremap 4j 1
+" inoremap 4k 2
+" inoremap 4l 3
+" inoremap 4y 4
+" inoremap 4u 5
+" inoremap 4i 6
+" inoremap 4o 7
+" inoremap 4n 8
+" inoremap 4m 9
+
+" noremap 11 !
+" noremap 22 @
+" noremap 33 #
+" noremap 44 $
+" noremap 55 %
+" noremap 66 ^
+" noremap 77 &
+" noremap 88 *
+" noremap 99 (
+" noremap 00 )
+
+
+map q: :q<cr> " common typo
+
 " }}}
 
 " plugin indentline {{{
@@ -214,37 +283,69 @@ Plugin 'Yggdroot/indentLine' " vertical indentantion lines
 let g:indentLine_char = '│'
 let g:indentLine_color_term=0
 " }}}
-" plugin switch/toggle/bla {{{
-" TODO: use plugins
+" plugin switch {{{
+Plugin 'AndrewRadev/switch.vim'
+nmap <tab> :Switch<cr>
 let g:switch_custom_definitions =
 \ [
 \ ['white', 'black'],
 \ ['right', 'left'],
 \ ['top', 'bottom'],
-\ ['red', 'blue'],
+\ ['#000000', '#FFFFFF'],
+\ ['#000', '#FFF'],
 \ ['width', 'height'],
 \ ['min', 'max'],
 \ ['margin', 'padding'],
 \ ['foo', 'bar', 'baz'],
-\ ['block', 'inline-block', 'inline']
+\ ['block', 'inline-block', 'inline'],
+\ ['static', 'absolute', 'fixed', 'relative'],
+\ ['def', 'class'],
+\ ['request', 'response'],
+\ ['GET', 'POST'],
+\ ['(', '[', '{'],
+\ [')', ']', '}'],
+\ ['return', 'yield'],
+\ ['True', 'False'],
+\ ['0', '1'],
+\ ['yes', 'no'],
+\ ['on', 'off'],
+\ ['true', 'false'],
+\ ['"', "'"],
+\ ['if', "else", 'elsif'],
+\ ['try', "except", 'finally'],
+\ ['import', 'from'],
+\ ['==', '!='],
+\ ['is', 'is not'],
+\ ['+', '-'],
+\ ['&&', '||'],
+\ ['id', 'class'],
+\ ['ul', 'li'],
+\ ['\\', '/'],
+\ ['?', '!'],
+\ ['<', '>'],
+\ ['div', 'span', 'p'],
+\ ['hate', 'love'],
 \ ]
+
 " }}}
 " plugin unite {{{
+
 Plugin 'Shougo/unite.vim'
 Plugin 'ujihisa/unite-locate'
 Plugin 'Shougo/neomru.vim' " mru for unite
+
 " FIXME: use file_rer/git when appropriate
-map <leader>j :Unite -buffer-name=files -prompt-direction="top" -start-insert -no-split -wrap file_rec<cr>
+map <leader>f :Unite -buffer-name=files -prompt-direction="top" -start-insert -no-split -wrap file_rec<cr>
 " map <leader>r :Unite -buffer-name=mru -prompt-direction="top" -start-insert -winheight=20 file_mru<cr>
 map <leader>k :Unite -buffer-name=buffers -no-split buffer:-<cr>
-" map <leader>k :Unite -buffer-name=locate locate<cr>
-map <leader>/ :Unite line -start-insert<cr>
-nnoremap <silent> <leader>y :<C-u>Unite -buffer-name=yanks history/yank<CR>
+map <leader>/ :Unite -buffer-name=locate -no-split -start-insert line<cr>
+" map <leader>h :Unite -buffer-name=xxx -no-split -start-insert locate<cr>
+map <leader>l :Unite -buffer-name=register register<CR>
 
 let g:unite_source_file_mru_limit = 100 " set up mru limit
 call unite#custom#profile('default', 'context', { 'marked_icon':'✓'})
 let g:unite_cursor_line_highlight = 'CursorLine'
-let g:unite_prompt = '➜ ' " set up coolguy arrow prompt
+let g:unite_prompt = '➜ '
 call unite#filters#sorter_default#use(['sorter_rank']) " Use the rank sorter for everything
 
 " Set up some custom ignores
@@ -267,12 +368,11 @@ autocmd FileType unite call s:unite_settings()
 function! s:unite_settings()
     let b:SuperTabDisabled=1
     nmap <buffer> <ESC> <Plug>(unite_exit)
-    " nmap <buffer> <C-P> <Plug>(unite_exit)
-    " imap <buffer> <C-P> <Plug>(unite_exit)
     nmap <silent><buffer><expr> s unite#do_action('split')
     nmap <silent><buffer><expr> v unite#do_action('vsplit')
     nmap <silent><buffer><expr> t unite#do_action('tabopen')
 endfunction
+
 " }}}
 " plugin vimroom {{{
 " TODO: config, maybe not used. does not automatically go to fullscreen and is
@@ -318,28 +418,51 @@ nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 " }}}
 " plugin Syntastic {{{
 Plugin 'scrooloose/syntastic'
+let g:syntastic_css_checkers = []
 let g:syntastic_python_checkers = ['flake8']
 autocmd BufEnter * :SyntasticCheck
 hi SignColumn ctermbg=8
 let g:syntastic_error_symbol = '✖'
 let g:syntastic_warning_symbol = '✖'
-let g:syntastic_style_warning_symbol = '✖'
-let g:syntastic_style_error_symbol = '✖'
+let g:syntastic_style_warning_symbol = '◍'
+let g:syntastic_style_error_symbol = '◍'
 
 au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=0
 au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=0
 au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
 au VimEnter * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=0
 
-au InsertLeave * hi SyntasticErrorSign ctermbg=0
-au InsertLeave * hi SyntasticWarningSign ctermbg=0
-au InsertLeave * hi SyntasticStyleErrorSign ctermbg=0
-au InsertLeave * hi SyntasticStyleWarningSign ctermbg=0
+" FIXME: code duplication
+au InsertLeave * hi SyntasticErrorSign ctermfg=1 ctermbg=0
+au InsertLeave * hi SyntasticWarningSign ctermfg=9 ctermbg=0
+au InsertLeave * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
+au InsertLeave * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=0
 
-au InsertEnter * hi SyntasticErrorSign ctermbg=10
-au InsertEnter * hi SyntasticWarningSign ctermbg=10
-au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
-au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
+au InsertEnter * hi SyntasticErrorSign ctermbg=0 ctermfg=0
+au InsertEnter * hi SyntasticWarningSign ctermbg=0 ctermfg=0
+au InsertEnter * hi SyntasticStyleErrorSign ctermbg=0 ctermfg=0
+au InsertEnter * hi SyntasticStyleWarningSign ctermbg=0 ctermfg=0
+
+" au InsertEnter * hi SyntasticErrorSign ctermbg=10
+" au InsertEnter * hi SyntasticWarningSign ctermbg=10
+" au InsertEnter * hi SyntasticStyleErrorSign ctermbg=10
+" au InsertEnter * hi SyntasticStyleWarningSign ctermbg=10
+
+" }}}
+" plugin vimfiler {{{
+Plugin 'Shougo/vimfiler.vim'
+Plugin 'ton/vim-bufsurf'
+
+let g:vimfiler_as_default_explorer = 1
+let g:vimfiler_tree_leaf_icon = ' '
+let g:vimfiler_tree_opened_icon = '▾'
+let g:vimfiler_tree_closed_icon = '▸'
+let g:vimfiler_file_icon = '-'
+let g:vimfiler_marked_file_icon = '*'
+
+autocmd FileType vimfiler call s:exit_on_esc()
+map <leader>d :VimFiler<cr>T
+
 " }}}
 
 " gui/syntax/color stuff {{{
@@ -361,19 +484,25 @@ autocmd WinEnter * set cursorline
 " awesome 80-character limiter
 au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
 
+hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
+hi LineNr cterm=italic,bold
+hi MatchParen cterm=bold ctermbg=NONE ctermfg=5
 hi Comment cterm=italic
 hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=8 ctermfg=NONE
+hi NonText ctermbg=bg
+
 hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
 hi pythonFunction ctermbg=NONE ctermfg=2
-
 hi pythonStatement   ctermbg=NONE ctermfg=4
 hi pythonRepeat      ctermbg=NONE ctermfg=4
 hi pythonConditional ctermbg=NONE ctermfg=4
 hi pythonException   ctermbg=NONE ctermfg=4
 hi pythonOperator    ctermbg=NONE ctermfg=4
 
+au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0
+au InsertEnter * :hi LineNr ctermfg=0 ctermbg=0
 
 augroup cline
     au!
@@ -382,13 +511,11 @@ augroup cline
 augroup END
 
 au VimEnter * :hi SignColumn ctermbg=0
-au VimEnter * :hi CursorLineNr ctermbg=10 ctermfg=0
 au VimEnter * :hi clear CursorLine
 
-au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0 
-au InsertEnter * :hi LineNr ctermfg=0 ctermbg=10 
-au InsertLeave * :hi SignColumn ctermbg=0
-au InsertEnter * :hi SignColumn ctermbg=10
+" au InsertLeave * :hi SignColumn ctermbg=0
+" au InsertEnter * :hi SignColumn ctermbg=10
+
 " function s:PythonStuff()
 "     au VimEnter * :hi PythonComment cterm=italic
 "     au BufEnter * :hi PythonString cterm=italic,bold ctermbg=NONE ctermfg=12
@@ -534,6 +661,19 @@ endif
 if !isdirectory(expand(&directory))
     call mkdir(expand(&directory), "p")
 endif
+
+autocmd FileType help call s:exit_on_esc()
+
+function! s:exit_on_esc()
+    nmap <buffer> <ESC> :BufSurfBack<cr>
+endfunction
+
+function! s:MyHelp(arg)
+    exe ":tab h ".a:arg
+endfunction
+command! -nargs=1 H call s:MyHelp(<f-args>)
+
+
 " }}}
 " Baustelle {{{
 " " The Silver Searcher
@@ -545,4 +685,28 @@ endif
 "     " ag is fast enough that CtrlP doesn't need to cache
 "     let g:ctrlp_use_caching = 0
 " endif
+"
+
+" ▂▂▂▂▂▂▂▂▂▂▂▂▂▃▄▅▆▇█
+
+" █▉▊▋▌▍▎▏-----
+
+
+" set statusline=━━━━━━━━%#myhl2#(%#myhl#\ %f\ %#myhl2#)%#StatusLine#
+set statusline=%#myhl#%t\ %#StatusLine#)
+
+hi myhl ctermbg=10 ctermfg=bg
+" hi myhl2 ctermbg=0 ctermfg=10
+hi StatusLineNC ctermbg=15 ctermfg=bg
+hi StatusLine ctermbg=14 ctermfg=bg
+" hi StatusLine ctermfg=0 ctermbg=14
+hi VertSplit ctermfg=14 ctermbg=bg
+
+set fillchars=stl:━
+set fillchars+=stlnc:━
+set fillchars+=vert:┃
+
+set fillchars+=fold:\⋅
+set fillchars+=diff:-
+
 " }}}

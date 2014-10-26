@@ -12,6 +12,8 @@ add mod1 = Super_R
 remove mod4 = Super_L
 add control = Super_L
 
+! add mod3 = Hyper_R
+keycode 212 = Alt_R NoSymbol NoSymbol NoSymbol
 
 ! remove mod4 = Super_R
 ! keycode 134 = Alt_R
