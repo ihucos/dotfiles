@@ -1,6 +1,6 @@
 
 " boilerplate (do not edit) {{{
-set nocompatible
+ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -64,8 +64,8 @@ Plugin 'mjbrownie/django-template-textobjects'
 " }}}
 " boilerplace (do not edit) {{{
 call vundle#end()
-filetype plugin indent on
-syntax on
+ filetype plugin indent on
+ syntax on
 " }}}
 " set {{{
 " set nobackup
