@@ -131,157 +131,157 @@ set directory=~/.vim/tmp/swap//   " swap files
 
 " maps {{{
 
-iabbrev @@ irae.hueck.costa@gmail.com
+ iabbrev @@ irae.hueck.costa@gmail.com
 
 " When typing %% expand it into the path to the current file
-cnoremap %% <C-R>=expand('%:h') . '/'<cr>
+ cnoremap %% <C-R>=expand('%:h') . '/'<cr>
 
 " highlight WhitespaceEOL ctermbg=14
 " match WhitespaceEOL /\s\+$/
 
-let mapleader = "\<Space>"
-noremap <Space> :echo '   **Command Not Found**'<cr>
+ let mapleader = "\<Space>"
+ noremap <Space> :echo '   **Command Not Found**'<cr>
 
-inoremap 1 <Esc>`^
-inoremap 2 <Esc>`^
-inoremap 3 <Esc>`^
-inoremap 4 <Esc>`^
-inoremap 5 <Esc>`^
-inoremap 6 <Esc>`^
-inoremap 7 <Esc>`^
-inoremap 8 <Esc>`^
-inoremap 9 <Esc>`^
-inoremap 0 <Esc>`^
-
-map 1 <Esc>
-map 2 <Esc>
-map 3 <Esc>
-map 4 <Esc>
-map 5 <Esc>
-map 6 <Esc>
-map 7 <Esc>
-map 8 <Esc>
-map 9 <Esc>
-map 0 <Esc>
-
-inoremap ,a 1
-inoremap ,s 2
-inoremap ,d 3
-inoremap ,f 4
-inoremap ,g 5
-inoremap ,h 6
-inoremap ,j 7
-inoremap ,k 8
-inoremap ,l 9
-inoremap ,; 0
-inoremap ,, ,
-
-noremap ,a 0
-noremap ,s 1
-noremap ,d 2
-noremap ,f 3
-noremap ,g 4
-noremap ,h 5
-noremap ,j 6
-noremap ,k 7
-noremap ,l 8
-noremap ,; 9
-noremap ,, ,
-
-vmap > >gv
-vmap < <gv
-
-nnoremap j gj
-nnoremap k gk
-noremap gj j
-noremap gk k
-
-vnoremap J }
-vnoremap K {
-nnoremap J }
-nnoremap K {
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L $
-onoremap H ^
-onoremap L $
-
-nnoremap <leader>K K
-nnoremap <leader>J J
-nnoremap <leader>H H
-nnoremap <leader>L L
-
-nnoremap Y y$
-noremap gV `[v`]
-
-map <leader>w :w<cr>
-map <leader>q :qa<cr>
-
-noremap p P
-noremap P p
-
-nmap <Leader>y "+y
-vmap <Leader>y "+y
-nmap <Leader>Y "+Y
-vmap <Leader>Y "+Y
-vmap <Leader>d "+d
-nmap <Leader>p "+p
-nmap <Leader>P "+P
-vmap <Leader>p "+p
-vmap <Leader>P "+P
-
-map <leader>s :split<cr>
-map <leader>v :vsplit<cr>
-
-nmap <leader>= mzgg=G\`z
-
-map <up> 2<C-w>+
-map <down> 2<C-w>-
-map <left> 2<C-w><
-map <right> 2<C-w>>
-
-inoremap <up> <Nop>
-inoremap <down> <Nop>
-inoremap <left> <Nop>
-inoremap <right> <Nop>
-
-" Easy window navigation
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
-
-" inoremap 4j (
-" inoremap 4k )
-" inoremap 4h [
-" inoremap 4l ]
-" inoremap 4n {
-" inoremap 4m }
-
-" inoremap 4j 1
-" inoremap 4k 2
-" inoremap 4l 3
-" inoremap 4y 4
-" inoremap 4u 5
-" inoremap 4i 6
-" inoremap 4o 7
-" inoremap 4n 8
-" inoremap 4m 9
-
-" noremap 11 !
-" noremap 22 @
-" noremap 33 #
-" noremap 44 $
-" noremap 55 %
-" noremap 66 ^
-" noremap 77 &
-" noremap 88 *
-" noremap 99 (
-" noremap 00 )
-
-
-map q: :q<cr> " common typo
+ inoremap 1 <Esc>`^
+ inoremap 2 <Esc>`^
+ inoremap 3 <Esc>`^
+ inoremap 4 <Esc>`^
+ inoremap 5 <Esc>`^
+ inoremap 6 <Esc>`^
+ inoremap 7 <Esc>`^
+ inoremap 8 <Esc>`^
+ inoremap 9 <Esc>`^
+ inoremap 0 <Esc>`^
+ 
+ map 1 <Esc>
+ map 2 <Esc>
+ map 3 <Esc>
+ map 4 <Esc>
+ map 5 <Esc>
+ map 6 <Esc>
+ map 7 <Esc>
+ map 8 <Esc>
+ map 9 <Esc>
+ map 0 <Esc>
+ 
+ inoremap ,a 1
+ inoremap ,s 2
+ inoremap ,d 3
+ inoremap ,f 4
+ inoremap ,g 5
+ inoremap ,h 6
+ inoremap ,j 7
+ inoremap ,k 8
+ inoremap ,l 9
+ inoremap ,; 0
+ inoremap ,, ,
+ 
+ noremap ,a 0
+ noremap ,s 1
+ noremap ,d 2
+ noremap ,f 3
+ noremap ,g 4
+ noremap ,h 5
+ noremap ,j 6
+ noremap ,k 7
+ noremap ,l 8
+ noremap ,; 9
+ noremap ,, ,
+ 
+ vmap > >gv
+ vmap < <gv
+ 
+ nnoremap j gj
+ nnoremap k gk
+ noremap gj j
+ noremap gk k
+ 
+ vnoremap J }
+ vnoremap K {
+ nnoremap J }
+ nnoremap K {
+ nnoremap H ^
+ nnoremap L $
+ vnoremap H ^
+ vnoremap L $
+ onoremap H ^
+ onoremap L $
+ 
+ nnoremap <leader>K K
+ nnoremap <leader>J J
+ nnoremap <leader>H H
+ nnoremap <leader>L L
+ 
+ nnoremap Y y$
+ noremap gV `[v`]
+ 
+ map <leader>w :w<cr>
+ map <leader>q :qa<cr>
+ 
+ noremap p P
+ noremap P p
+ 
+ nmap <Leader>y "+y
+ vmap <Leader>y "+y
+ nmap <Leader>Y "+Y
+ vmap <Leader>Y "+Y
+ vmap <Leader>d "+d
+ nmap <Leader>p "+p
+ nmap <Leader>P "+P
+ vmap <Leader>p "+p
+ vmap <Leader>P "+P
+ 
+ map <leader>s :split<cr>
+ map <leader>v :vsplit<cr>
+ 
+ nmap <leader>= mzgg=G\`z
+ 
+ map <up> 2<C-w>+
+ map <down> 2<C-w>-
+ map <left> 2<C-w><
+ map <right> 2<C-w>>
+ 
+ inoremap <up> <Nop>
+ inoremap <down> <Nop>
+ inoremap <left> <Nop>
+ inoremap <right> <Nop>
+ 
+ " Easy window navigation
+ map <C-h> <C-w>h
+ map <C-j> <C-w>j
+ map <C-k> <C-w>k
+ map <C-l> <C-w>l
+ 
+ " inoremap 4j (
+ " inoremap 4k )
+ " inoremap 4h [
+ " inoremap 4l ]
+ " inoremap 4n {
+ " inoremap 4m }
+ 
+ " inoremap 4j 1
+ " inoremap 4k 2
+ " inoremap 4l 3
+ " inoremap 4y 4
+ " inoremap 4u 5
+ " inoremap 4i 6
+ " inoremap 4o 7
+ " inoremap 4n 8
+ " inoremap 4m 9
+ 
+ " noremap 11 !
+ " noremap 22 @
+ " noremap 33 #
+ " noremap 44 $
+ " noremap 55 %
+ " noremap 66 ^
+ " noremap 77 &
+ " noremap 88 *
+ " noremap 99 (
+ " noremap 00 )
+ 
+ 
+ map q: :q<cr> " common typo
 
 " }}}
 
