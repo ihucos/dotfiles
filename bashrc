@@ -1,6 +1,6 @@
 # TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda098a0516f41416f4 -n "annoyance description"
 
-alias tmux='TERM=rxvt-unicode-256color tmux'
+# alias tmux='TERM=rxvt-unicode-256color tmux'
 
 export EDITOR='vim'
 
