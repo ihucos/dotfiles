@@ -142,7 +142,7 @@ mkcd () { mkdir -p "$@" && cd "$@"; }
 
 calc () { echo "$*" | bc -l; }
 
-genpasswd() {
+password() {
   local l=$1
   [ "$l" == "" ] && l=8
   tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
@@ -245,6 +245,12 @@ fi
 
 source /usr/share/autojump/autojump.sh
 source ~/.acd_func.sh
+
+myssh() {
+  ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
+}
+
+alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
 
 _sshh_background() {
   tmp=$1

@@ -58,7 +58,7 @@ Plugin 'hdima/python-syntax'
 " Plugin 'cakebaker/scss-syntax.vim' " seems not to work
 Plugin 'Shougo/vimproc'
 " Plugin 'gorodinskiy/vim-coloresque' " hilight color names
-Plugin 'mhinz/vim-startify'
+" Plugin 'mhinz/vim-startify'
 Plugin 'mjbrownie/django-template-textobjects'
 
 " }}}
@@ -79,9 +79,9 @@ set foldlevel=0
 " set foldnestmax=3 "deepest fold is 3 levels
 set nofoldenable "dont fold by default
 set undofile
-" set laststatus=2
+set laststatus=2
 set nowrap
-set hidden
+" set hidden
 " set autochdir
 set background=dark
 set cursorline
@@ -92,7 +92,7 @@ set history=1000         " remember more commands and search history
 " set hlsearch      " highlight search terms
 set ignorecase    " ignore case when searching
 set incsearch     " show search matches as you type
-set number
+" set number
 set scrolloff=999   " Keep x lines below and above the cursor
 set t_Co=256
 set undolevels=1000      " use many muchos levels of undo
@@ -104,7 +104,7 @@ set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
-" set noshowmode # enable later and show status in status bar
+" set noshowmode " enable later and show status in status bar
 set nobackup
 set nowb
 set noswapfile
@@ -139,6 +139,9 @@ cnoremap %% <C-R>=expand('%:h') . '/'<cr>
 " highlight WhitespaceEOL ctermbg=14
 " match WhitespaceEOL /\s\+$/
 
+let mapleader = "\<Space>"
+noremap <Space> :echo '   **Command Not Found**'<cr>
+
 inoremap 1 <Esc>`^
 inoremap 2 <Esc>`^
 inoremap 3 <Esc>`^
@@ -161,19 +164,16 @@ map 8 <Esc>
 map 9 <Esc>
 map 0 <Esc>
 
-let mapleader = "\<Space>"
-noremap <Space> :echo '   **Command Not Found**'<cr>
-
-inoremap ,a 0
-inoremap ,s 1
-inoremap ,d 2
-inoremap ,f 3
-inoremap ,g 4
-inoremap ,h 5
-inoremap ,j 6
-inoremap ,k 7
-inoremap ,l 8
-inoremap ,; 9
+inoremap ,a 1
+inoremap ,s 2
+inoremap ,d 3
+inoremap ,f 4
+inoremap ,g 5
+inoremap ,h 6
+inoremap ,j 7
+inoremap ,k 8
+inoremap ,l 9
+inoremap ,; 0
 inoremap ,, ,
 
 noremap ,a 0
@@ -204,6 +204,8 @@ nnoremap H ^
 nnoremap L $
 vnoremap H ^
 vnoremap L $
+onoremap H ^
+onoremap L $
 
 nnoremap <leader>K K
 nnoremap <leader>J J
@@ -215,6 +217,9 @@ noremap gV `[v`]
 
 map <leader>w :w<cr>
 map <leader>q :qa<cr>
+
+noremap p P
+noremap P p
 
 nmap <Leader>y "+y
 vmap <Leader>y "+y
@@ -228,6 +233,8 @@ vmap <Leader>P "+P
 
 map <leader>s :split<cr>
 map <leader>v :vsplit<cr>
+
+nmap <leader>= mzgg=G\`z
 
 map <up> 2<C-w>+
 map <down> 2<C-w>-
@@ -285,7 +292,7 @@ let g:indentLine_color_term=0
 " }}}
 " plugin switch {{{
 Plugin 'AndrewRadev/switch.vim'
-nmap <tab> :Switch<cr>
+" noremap <tab> :Switch<cr> " tab == ctrl+I in vim :-(
 let g:switch_custom_definitions =
 \ [
 \ ['white', 'black'],
@@ -333,6 +340,8 @@ let g:switch_custom_definitions =
 Plugin 'Shougo/unite.vim'
 Plugin 'ujihisa/unite-locate'
 Plugin 'Shougo/neomru.vim' " mru for unite
+Plugin 'tsukkee/unite-tag'
+
 
 " FIXME: use file_rer/git when appropriate
 map <leader>f :Unite -buffer-name=files -prompt-direction="top" -start-insert -no-split -wrap file_rec<cr>
@@ -341,6 +350,7 @@ map <leader>k :Unite -buffer-name=buffers -no-split buffer:-<cr>
 map <leader>/ :Unite -buffer-name=locate -no-split -start-insert line<cr>
 " map <leader>h :Unite -buffer-name=xxx -no-split -start-insert locate<cr>
 map <leader>l :Unite -buffer-name=register register<CR>
+map <leader>j :Unite -buffer-name=tag -start-insert -no-split -wrap tag<cr>
 
 let g:unite_source_file_mru_limit = 100 " set up mru limit
 call unite#custom#profile('default', 'context', { 'marked_icon':'✓'})
@@ -355,11 +365,26 @@ call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
             \ 'tmp/',
             \ ], '\|'))
 
+let g:unite_source_grep_max_candidates = 200
+
 if executable('ag')
+    " Use ag in unite grep source.
     let g:unite_source_grep_command = 'ag'
     let g:unite_source_grep_default_opts =
-                \ '--line-numbers --nocolor --nogroup --hidden --ignore ' .
-                \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+    \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
+    \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+    let g:unite_source_grep_recursive_opt = ''
+elseif executable('pt')
+    " Use pt in unite grep source.
+    " https://github.com/monochromegane/the_platinum_searcher
+    let g:unite_source_grep_command = 'pt'
+    let g:unite_source_grep_default_opts = '--nogroup --nocolor'
+    let g:unite_source_grep_recursive_opt = ''
+elseif executable('ack-grep')
+    " Use ack in unite grep source
+    let g:unite_source_grep_command = 'ack-grep'
+    let g:unite_source_grep_default_opts =
+    \ '-i --no-heading --no-color -k -H'
     let g:unite_source_grep_recursive_opt = ''
 endif
 
@@ -418,30 +443,34 @@ nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 " }}}
 " plugin Syntastic {{{
 Plugin 'scrooloose/syntastic'
+
+autocmd BufEnter * :SyntasticCheck
+
 let g:syntastic_css_checkers = []
 let g:syntastic_python_checkers = ['flake8']
-autocmd BufEnter * :SyntasticCheck
-hi SignColumn ctermbg=8
-let g:syntastic_error_symbol = '✖'
-let g:syntastic_warning_symbol = '✖'
-let g:syntastic_style_warning_symbol = '◍'
-let g:syntastic_style_error_symbol = '◍'
+" let g:syntastic_scss_scss_lint_args = ['']
+" let g:syntastic_error_symbol = '✖'
+" let g:syntastic_warning_symbol = '✖'
+let g:syntastic_error_symbol = '●'
+let g:syntastic_warning_symbol = '●'
+let g:syntastic_style_warning_symbol = '◌'
+let g:syntastic_style_error_symbol = '◌'
 
-au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=0
-au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=0
-au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
-au VimEnter * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=0
+au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=bg
+au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=bg
+au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=bg
+au VimEnter * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=bg
 
-" FIXME: code duplication
-au InsertLeave * hi SyntasticErrorSign ctermfg=1 ctermbg=0
-au InsertLeave * hi SyntasticWarningSign ctermfg=9 ctermbg=0
-au InsertLeave * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=0
-au InsertLeave * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=0
+" " FIXME: code duplication
+" au InsertLeave * hi SyntasticErrorSign ctermfg=1 ctermbg=bg
+" au InsertLeave * hi SyntasticWarningSign ctermfg=9 ctermbg=bg
+" au InsertLeave * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=bg
+" au InsertLeave * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=bg
 
-au InsertEnter * hi SyntasticErrorSign ctermbg=0 ctermfg=0
-au InsertEnter * hi SyntasticWarningSign ctermbg=0 ctermfg=0
-au InsertEnter * hi SyntasticStyleErrorSign ctermbg=0 ctermfg=0
-au InsertEnter * hi SyntasticStyleWarningSign ctermbg=0 ctermfg=0
+" au InsertEnter * hi SyntasticErrorSign ctermbg=bg ctermfg=0
+" au InsertEnter * hi SyntasticWarningSign ctermbg=bg ctermfg=0
+" au InsertEnter * hi SyntasticStyleErrorSign ctermbg=bg ctermfg=0
+" au InsertEnter * hi SyntasticStyleWarningSign ctermbg=bg ctermfg=0
 
 " au InsertEnter * hi SyntasticErrorSign ctermbg=10
 " au InsertEnter * hi SyntasticWarningSign ctermbg=10
@@ -472,19 +501,19 @@ colo solarized
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 " Resize splits when the window is resized
-au VimResized * :wincmd =
+" au VimResized * :wincmd =
 
-let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>[1 q\<Esc>\\"
-let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
-
-" does not work?
-autocmd WinLeave * set nocursorline
-autocmd WinEnter * set cursorline
+" let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>[1 q\<Esc>\\"
+" let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
 
 " awesome 80-character limiter
-au FileType python :execute "set colorcolumn=" . join(range(81,335), ',')
+execute "set colorcolumn=" . join(range(81,335), ',')
+hi ColorColumn ctermbg=0
+" au BufLeave * :hi ColorColumn ctermbg=bg
+" au BufEnter * :hi ColorColumn ctermbg=0
 
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
+hi CursorLine ctermbg=1
 hi LineNr cterm=italic,bold
 hi MatchParen cterm=bold ctermbg=NONE ctermfg=5
 hi Comment cterm=italic
@@ -492,6 +521,10 @@ hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=8 ctermfg=NONE
 hi NonText ctermbg=bg
+hi Folded ctermbg=bg cterm=NONE ctermbg=bg ctermfg=14
+hi Visual ctermfg=12 ctermbg=bg
+hi ModeMsg ctermbg=3 ctermfg=bg
+hi Todo ctermfg=3
 
 hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
 hi pythonFunction ctermbg=NONE ctermfg=2
@@ -500,6 +533,19 @@ hi pythonRepeat      ctermbg=NONE ctermfg=4
 hi pythonConditional ctermbg=NONE ctermfg=4
 hi pythonException   ctermbg=NONE ctermfg=4
 hi pythonOperator    ctermbg=NONE ctermfg=4
+
+set statusline=%#StatusLineFile#%t:%l\ %#StatusLine#)
+hi StatusLineFile ctermbg=fg ctermfg=bg
+" italic is a hack, statuslineNC and statusline cant be the same hilight
+hi StatusLineNC ctermbg=14 ctermfg=bg cterm=italic 
+hi StatusLine ctermbg=14 ctermfg=bg
+hi VertSplit ctermfg=14 ctermbg=bg
+
+set fillchars=stl:━
+set fillchars+=stlnc:━
+set fillchars+=vert:┃
+set fillchars+=fold:\ 
+set fillchars+=fold:\⋅
 
 au InsertLeave * :hi LineNr ctermfg=10 ctermbg=0
 au InsertEnter * :hi LineNr ctermfg=0 ctermbg=0
@@ -510,8 +556,16 @@ augroup cline
     au WinEnter * set cursorline
 augroup END
 
-au VimEnter * :hi SignColumn ctermbg=0
+au VimEnter * :hi SignColumn ctermbg=bg
 au VimEnter * :hi clear CursorLine
+
+autocmd BufEnter * sign define dummy
+autocmd BufEnter * execute 'sign place 9999 line=1 name=dummy buffer=' . bufnr('')
+
+" au InsertEnter * :hi ModeMsg ctermfg=bg ctermbg=5
+" " au InsertChange * :hi ModeMsg ctermfg=bg ctermbg=5
+" au InsertLeave * :hi ModeMsg ctermfg=fg ctermbg=bg
+
 
 " au InsertLeave * :hi SignColumn ctermbg=0
 " au InsertEnter * :hi SignColumn ctermbg=10
@@ -637,8 +691,7 @@ if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 
-" TODO: config ctags
-" tags+=tags;$HOME
+set tags=.git/tags;
 
 " Typos
 command! -bang E e<bang>
@@ -651,6 +704,14 @@ command! -bang WA wa<bang>
 command! -bang Wq wq<bang>
 command! -bang WQ wq<bang>
 
+" taken from http://vim.wikia.com/wiki/Avoiding_the_%22Hit_ENTER_to_continue%22_prompt
+command! -nargs=1 Silent
+\ | execute ':silent !'.<q-args>
+\ | execute ':redraw!'
+
+" command! BrowserReload
+"     :Silent python ~/projects/wintoggle.py hide<cr>
+
 " Make those folders automatically if they don't already exist.
 if !isdirectory(expand(&undodir))
     call mkdir(expand(&undodir), "p")
@@ -662,7 +723,10 @@ if !isdirectory(expand(&directory))
     call mkdir(expand(&directory), "p")
 endif
 
-autocmd FileType help call s:exit_on_esc()
+autocmd FileType help call s:quit_window()
+function! s:exit_on_esc()
+    nmap <buffer> <ESC> :BufSurfBack<cr> " TODO: implement
+endfunction
 
 function! s:exit_on_esc()
     nmap <buffer> <ESC> :BufSurfBack<cr>
@@ -686,27 +750,4 @@ command! -nargs=1 H call s:MyHelp(<f-args>)
 "     let g:ctrlp_use_caching = 0
 " endif
 "
-
-" ▂▂▂▂▂▂▂▂▂▂▂▂▂▃▄▅▆▇█
-
-" █▉▊▋▌▍▎▏-----
-
-
-" set statusline=━━━━━━━━%#myhl2#(%#myhl#\ %f\ %#myhl2#)%#StatusLine#
-set statusline=%#myhl#%t\ %#StatusLine#)
-
-hi myhl ctermbg=10 ctermfg=bg
-" hi myhl2 ctermbg=0 ctermfg=10
-hi StatusLineNC ctermbg=15 ctermfg=bg
-hi StatusLine ctermbg=14 ctermfg=bg
-" hi StatusLine ctermfg=0 ctermbg=14
-hi VertSplit ctermfg=14 ctermbg=bg
-
-set fillchars=stl:━
-set fillchars+=stlnc:━
-set fillchars+=vert:┃
-
-set fillchars+=fold:\⋅
-set fillchars+=diff:-
-
 " }}}
