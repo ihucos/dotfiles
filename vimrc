@@ -67,66 +67,66 @@ call vundle#end()
  filetype plugin indent on
  syntax on
 " }}}
-" set {{{
-" set nobackup
-" set nowb
-" set noswapfile 
-" set showbreak=↪
-set sidescrolloff=15
-set sidescroll=1
-set foldmethod=marker
-set foldlevel=0
-" set foldnestmax=3 "deepest fold is 3 levels
-set nofoldenable "dont fold by default
-set undofile
-set laststatus=2
-set nowrap
-" set hidden
-" set autochdir
-set background=dark
-set cursorline
-set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
-set ffs=unix,dos,mac " Use Unix as the standard file type
-set guioptions-=T guioptions-=m
-set history=1000         " remember more commands and search history
-" set hlsearch      " highlight search terms
-set ignorecase    " ignore case when searching
-set incsearch     " show search matches as you type
-" set number
-set scrolloff=999   " Keep x lines below and above the cursor
-set t_Co=256
-set undolevels=1000      " use many muchos levels of undo
-set lazyredraw
-set ttyfast
-set nomodeline
-" No annoying sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
-" set noshowmode " enable later and show status in status bar
-set nobackup
-set nowb
-set noswapfile
-
-" Time out on key codes but not mappings.
-" Basically this makes terminal Vim work sanely.
-set notimeout
-set ttimeout
-set ttimeoutlen=10
-
-set list
-set listchars=extends:▶,precedes:◀,trail:␣
-set showbreak=┊
-set splitbelow
-set splitright
-
-" swap an backup file related
-set backup                        " enable backups
-set noswapfile
-set undodir=~/.vim/tmp/undo//     " undo files
-set backupdir=~/.vim/tmp/backup// " backups
-set directory=~/.vim/tmp/swap//   " swap files
+ " set {{{
+ " set nobackup
+ " set nowb
+ " set noswapfile 
+ " set showbreak=↪
+  set sidescrolloff=15
+ set sidescroll=1
+ set foldmethod=marker
+ set foldlevel=0
+ " set foldnestmax=3 "deepest fold is 3 levels
+ set nofoldenable "dont fold by default
+ set undofile
+ set laststatus=2
+ set nowrap
+ " set hidden
+ " set autochdir
+ set background=dark
+ set cursorline
+ set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
+ set ffs=unix,dos,mac " Use Unix as the standard file type
+ set guioptions-=T guioptions-=m
+ set history=1000         " remember more commands and search history
+ " set hlsearch      " highlight search terms
+ set ignorecase    " ignore case when searching
+ set incsearch     " show search matches as you type
+ " set number
+ set scrolloff=999   " Keep x lines below and above the cursor
+ set t_Co=256
+ set undolevels=1000      " use many muchos levels of undo
+ set lazyredraw
+ set ttyfast
+ set nomodeline
+ " No annoying sound on errors
+ set noerrorbells
+ set novisualbell
+ set t_vb=
+ set tm=500
+ " set noshowmode " enable later and show status in status bar
+ set nobackup
+ set nowb
+ set noswapfile
+ 
+ " Time out on key codes but not mappings.
+ " Basically this makes terminal Vim work sanely.
+ set notimeout
+ set ttimeout
+ set ttimeoutlen=10
+ 
+ set list
+ set listchars=extends:▶,precedes:◀,trail:␣
+ set showbreak=┊
+ set splitbelow
+ set splitright
+ 
+ " swap an backup file related
+ set backup                        " enable backups
+ set noswapfile
+ set undodir=~/.vim/tmp/undo//     " undo files
+ set backupdir=~/.vim/tmp/backup// " backups
+ set directory=~/.vim/tmp/swap//   " swap files
 " }}}
 
 " maps {{{
