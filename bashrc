@@ -246,11 +246,12 @@ fi
 source /usr/share/autojump/autojump.sh
 source ~/.acd_func.sh
 
+alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
+alias mybash="bash --rcfile <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/bashrc)"
+
 myssh() {
   ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
 }
-
-alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
 
 _sshh_background() {
   tmp=$1
