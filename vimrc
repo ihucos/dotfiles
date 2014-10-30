@@ -78,7 +78,7 @@ call vundle#end()
  set foldlevel=0
  " set foldnestmax=3 "deepest fold is 3 levels
  set nofoldenable "dont fold by default
- set undofile
+set undofile
  set laststatus=2
  set nowrap
  " set hidden
@@ -124,7 +124,7 @@ call vundle#end()
  " swap an backup file related
  set backup                        " enable backups
  set noswapfile
- set undodir=~/.vim/tmp/undo//     " undo files
+set undodir=~/.vim/tmp/undo//     " undo files
  set backupdir=~/.vim/tmp/backup// " backups
  set directory=~/.vim/tmp/swap//   " swap files
 " }}}
