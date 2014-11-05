@@ -47,17 +47,22 @@ stty start undef
 # PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
 # PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
 
+_jobs(){
+  jobs | awk '{ print $3}' | xargs | sed s/autojump//g | sed s/\ $//g | sed s/\ /\|/g
+
+}
+export PS1='  \[\e[38;5;10m\][$(_jobs)]\[\e[0m\] '
 
 if [ "$HOSTNAME" = macbook ] && [ "$USER" = resu ] ; then
-  PS1='  \[\e[38;5;10m\]\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
+  PS1=$PS1'\[\e[38;5;10m\]\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
 else
   # FIXME: not working
   if [ "$USER" = root ] ; then
     # prompt='#'
-    PS1='  \[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]▶ \[\e[0m\]'
+    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]▶ \[\e[0m\]'
   else
     # prompt='▶'
-    PS1='  \[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
+    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
   fi
   # PS1='  \[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]'$prompt' \[\e[0m\]'
 fi
@@ -248,6 +253,7 @@ source ~/.acd_func.sh
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
 alias mybash="bash --rcfile <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/bashrc)"
+alias myvim="vim -u <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/vimrc | grep '^ [a-zA-Z]\+ ')"
 
 myssh() {
   ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
@@ -299,11 +305,11 @@ getdots() {
   rm -f $DOTFILES -r
   mv /tmp/dotfiles-master/ $DOTFILES
 
-  # for vim to use the dotfiles
-  # FIXME: VIMRUNTIME is set at compile time in vim, nevertheless it seems i have to set it
-  export VIMRUNTIME=/usr/share/vim/vim74/
-  export VIM=$DOTFILES/.vim
-  export VIMRC=$DOTFILES/.vimrc
+  # # for vim to use the dotfiles
+  # # FIXME: VIMRUNTIME is set at compile time in vim, nevertheless it seems i have to set it
+  # export VIMRUNTIME=/usr/share/vim/vim74/
+  # export VIM=$DOTFILES/.vim
+  # export VIMRC=$DOTFILES/.vimrc
 }
 
 # Colorize these commands if possible

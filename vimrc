@@ -152,7 +152,7 @@ set undodir=~/.vim/tmp/undo//     " undo files
  inoremap 8 <Esc>`^
  inoremap 9 <Esc>`^
  inoremap 0 <Esc>`^
- 
+
  map 1 <Esc>
  map 2 <Esc>
  map 3 <Esc>
@@ -163,64 +163,65 @@ set undodir=~/.vim/tmp/undo//     " undo files
  map 8 <Esc>
  map 9 <Esc>
  map 0 <Esc>
- 
- inoremap ,a 1
- inoremap ,s 2
- inoremap ,d 3
- inoremap ,f 4
- inoremap ,g 5
- inoremap ,h 6
- inoremap ,j 7
- inoremap ,k 8
- inoremap ,l 9
- inoremap ,; 0
+
+ inoremap ,q 1
+ inoremap ,w 2
+ inoremap ,e 3
+ inoremap ,r 4
+ inoremap ,t 5
+ inoremap ,y 6
+ inoremap ,u 7
+ inoremap ,i 8
+ inoremap ,o 9
+ inoremap ,p 0
  inoremap ,, ,
- 
- noremap ,a 0
- noremap ,s 1
- noremap ,d 2
- noremap ,f 3
- noremap ,g 4
- noremap ,h 5
- noremap ,j 6
- noremap ,k 7
- noremap ,l 8
- noremap ,; 9
- noremap ,, ,
- 
+
+"  noremap ,a 0
+"  noremap ,s 1
+"  noremap ,d 2
+"  noremap ,f 3
+"  noremap ,g 4
+"  noremap ,h 5
+"  noremap ,j 6
+"  noremap ,k 7
+"  noremap ,l 8
+"  noremap ,; 9
+"  noremap ,, ,
+
  vmap > >gv
  vmap < <gv
- 
+
  nnoremap j gj
  nnoremap k gk
  noremap gj j
  noremap gk k
- 
- vnoremap J }
- vnoremap K {
- nnoremap J }
- nnoremap K {
+
+ nnoremap m }}{w
+ vnoremap m }
+ nnoremap , {{{}}{w
+ vnoremap , {
+
  nnoremap H ^
  nnoremap L $
  vnoremap H ^
  vnoremap L $
  onoremap H ^
  onoremap L $
- 
- nnoremap <leader>K K
- nnoremap <leader>J J
- nnoremap <leader>H H
- nnoremap <leader>L L
- 
+
+ nnoremap <leader>m m
+
  nnoremap Y y$
  noremap gV `[v`]
- 
+
  map <leader>w :w<cr>
- map <leader>q :qa<cr>
- 
- noremap p P
- noremap P p
- 
+ map <leader>w :w<cr>
+ vmap <leader>q <ESC>:qa<cr>
+
+ " TODO: integrate with tpopes undo plugin
+ noremap p P`[v`]=
+ noremap P p`[v`]=
+
+
  nmap <Leader>y "+y
  vmap <Leader>y "+y
  nmap <Leader>Y "+Y
@@ -230,35 +231,34 @@ set undodir=~/.vim/tmp/undo//     " undo files
  nmap <Leader>P "+P
  vmap <Leader>p "+p
  vmap <Leader>P "+P
- 
+
  map <leader>s :split<cr>
  map <leader>v :vsplit<cr>
- 
+
  nmap <leader>= mzgg=G\`z
- 
+
  map <up> 2<C-w>+
  map <down> 2<C-w>-
  map <left> 2<C-w><
  map <right> 2<C-w>>
- 
- inoremap <up> <Nop>
- inoremap <down> <Nop>
- inoremap <left> <Nop>
- inoremap <right> <Nop>
- 
+ imap <up> <ESC>2<C-w>+a
+ imap <down> <ESC>2<C-w>-a
+ imap <left> <ESC>2<C-w><a
+ imap <right> <ESC>2<C-w>>a
+
  " Easy window navigation
  map <C-h> <C-w>h
  map <C-j> <C-w>j
  map <C-k> <C-w>k
  map <C-l> <C-w>l
- 
+
  " inoremap 4j (
  " inoremap 4k )
  " inoremap 4h [
  " inoremap 4l ]
  " inoremap 4n {
  " inoremap 4m }
- 
+
  " inoremap 4j 1
  " inoremap 4k 2
  " inoremap 4l 3
@@ -268,7 +268,7 @@ set undodir=~/.vim/tmp/undo//     " undo files
  " inoremap 4o 7
  " inoremap 4n 8
  " inoremap 4m 9
- 
+
  " noremap 11 !
  " noremap 22 @
  " noremap 33 #
@@ -279,8 +279,8 @@ set undodir=~/.vim/tmp/undo//     " undo files
  " noremap 88 *
  " noremap 99 (
  " noremap 00 )
- 
- 
+
+
  map q: :q<cr> " common typo
 
 " }}}
@@ -501,7 +501,7 @@ colo solarized
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 " Resize splits when the window is resized
-" au VimResized * :wincmd =
+au VimResized * :wincmd =
 
 " let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>[1 q\<Esc>\\"
 " let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
@@ -736,18 +736,3 @@ function! s:MyHelp(arg)
     exe ":tab h ".a:arg
 endfunction
 command! -nargs=1 H call s:MyHelp(<f-args>)
-
-
-" }}}
-" Baustelle {{{
-" " The Silver Searcher
-" if executable('ag')
-"     " Use ag over grep
-"     set grepprg=ag\ --nogroup\ --nocolor
-"     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-"     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-"     " ag is fast enough that CtrlP doesn't need to cache
-"     let g:ctrlp_use_caching = 0
-" endif
-"
-" }}}
