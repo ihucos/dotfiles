@@ -1,0 +1,31 @@
+
+maps
+----
+
+Space v   -> open vertical split window
+Space s   -> open horizontal split window
+
+m         -> paragraph down
+,         -> paragraph up
+
+H         -> cursor to the left
+L         -> cursor to the right
+
+Space w   -> save
+Space q   -> quit
+
+Space f   -> search files
+Space k   -> search buffers
+Space /   -> search lines
+Space l   -> search registers
+Space j   -> search tags
+Space d   -> File Manager
+
+Space {y, Y, d, p, P}     -> use system clipboard for the equivalent stroke
+{Left, Right, Up, Down}   -> Resize split
+
+
+abbreviations
+-------------
+
+@@ -> irae.hueck.costa@gmail.com

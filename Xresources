@@ -3,7 +3,7 @@ Xft*dpi:                227
 Xft*antialias:          true
 Xft*hinting:            full
 
-# enable double buffering
+! enable double buffering
 URxvt*buffered: true
 
 ! make colors "normal" for solarized
@@ -30,14 +30,23 @@ URxvt*cursorBlink: false
 URxvt.scrollBar: false
 URxvt.letterSpace: -1
 
+! urxvt extensions
+URxvt.perl-ext-common: default,clipboard,font-size,urxvt-colors
+
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.iso14755: False
-URxvt.perl-ext-common: default,clipboard,font-size
 
 URxvt.keysym.C-Up:     perl:font-size:increase
 URxvt.keysym.C-Down:   perl:font-size:decrease
 URxvt.keysym.C-Right:  perl:font-size:reset
+! not working
+urxvt*keysym.F12: perl:urxvt-colors
+
+
+xterm*dynamicColors: true
+urxvt*dynamicColors: on
+
 
 ! Compile xft: Turn on/off double-buffering for xft (default enabled).  On some card/driver
 ! URxvt*buffered: boolean
@@ -54,7 +63,7 @@ URxvt.keysym.C-Right:  perl:font-size:reset
 ! Use the specified colour for the colour value n, where 0-7 corresponds to low-intensity (normal)
 ! URxvt*colorn: colour
 
-! 
+!
 ! URxvt*colorBD: colour
 
 ! Use the specified colour to display bold or italic characters when the foreground colour is the

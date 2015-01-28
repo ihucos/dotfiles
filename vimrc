@@ -72,6 +72,7 @@ call vundle#end()
  " set nowb
  " set noswapfile 
  " set showbreak=↪
+ set backspace=indent,eol,start "bs: allows you to backspace over the listed character types
   set sidescrolloff=15
  set sidescroll=1
  set foldmethod=marker
@@ -82,7 +83,7 @@ set undofile
  set laststatus=2
  set nowrap
  " set hidden
- " set autochdir
+ set autochdir " automatically changes direcoty to current directory
  set background=dark
  set cursorline
  set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language
@@ -93,6 +94,7 @@ set undofile
  set ignorecase    " ignore case when searching
  set incsearch     " show search matches as you type
  " set number
+ " set numberwidth=
  set scrolloff=999   " Keep x lines below and above the cursor
  set t_Co=256
  set undolevels=1000      " use many muchos levels of undo
@@ -127,11 +129,19 @@ set undofile
 set undodir=~/.vim/tmp/undo//     " undo files
  set backupdir=~/.vim/tmp/backup// " backups
  set directory=~/.vim/tmp/swap//   " swap files
+ set spell spelllang=en_us
+ set nospell
+
+ " don't select first item, follow typing in autocomplete
+ set completeopt=longest,menuone,preview
+
 " }}}
 
 " maps {{{
 
- iabbrev @@ irae.hueck.costa@gmail.com
+"TODO: abbrev for Irae Hueck Costa
+iabbrev maill irae.hueck.costa@gmail.com
+iabbrev ipyy import IPython; IPython.embed()
 
 " When typing %% expand it into the path to the current file
  cnoremap %% <C-R>=expand('%:h') . '/'<cr>
@@ -153,28 +163,48 @@ set undodir=~/.vim/tmp/undo//     " undo files
  inoremap 9 <Esc>`^
  inoremap 0 <Esc>`^
 
- map 1 <Esc>
- map 2 <Esc>
- map 3 <Esc>
- map 4 <Esc>
- map 5 <Esc>
- map 6 <Esc>
- map 7 <Esc>
- map 8 <Esc>
- map 9 <Esc>
- map 0 <Esc>
 
- inoremap ,q 1
- inoremap ,w 2
- inoremap ,e 3
- inoremap ,r 4
- inoremap ,t 5
- inoremap ,y 6
- inoremap ,u 7
- inoremap ,i 8
- inoremap ,o 9
- inoremap ,p 0
- inoremap ,, ,
+ " taken from http://vim.wikia.com/wiki/VimLock_mode_to_enter_numbers 
+ nnoremap <C-I> :call VimLock(1)<CR>i
+ function! VimLock(enable)
+   if a:enable
+     inoremap a 1
+     inoremap s 2
+     inoremap d 3
+     inoremap f 4
+     inoremap g 5
+     inoremap h 6
+     inoremap j 7
+     inoremap k 8
+     inoremap l 9
+     inoremap ; 0
+     inoremap <Esc> <Esc>:call VimLock(0)<CR>
+   else
+     iunmap a
+     iunmap s
+     iunmap d
+     iunmap f
+     iunmap g
+     iunmap h
+     iunmap j
+     iunmap k
+     iunmap l
+     iunmap ;
+     iunmap <Esc>
+   endif
+ endfunction
+
+"  inoremap ,q 1
+"  inoremap ,w 2
+"  inoremap ,e 3
+"  inoremap ,r 4
+"  inoremap ,t 5
+"  inoremap ,y 6
+"  inoremap ,u 7
+"  inoremap ,i 8
+"  inoremap ,o 9
+"  inoremap ,p 0
+"  inoremap ,, ,
 
 "  noremap ,a 0
 "  noremap ,s 1
@@ -188,18 +218,43 @@ set undodir=~/.vim/tmp/undo//     " undo files
 "  noremap ,; 9
 "  noremap ,, ,
 
- vmap > >gv
- vmap < <gv
+noremap <CR> :put_<CR>
 
  nnoremap j gj
  nnoremap k gk
  noremap gj j
  noremap gk k
 
+ " Restore case-sensitivity for jumping to tags (set ic disables it)
+ map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
+
+ " Use the repeat operator with a visual selection
+ " This is useful for performing an edit on a single line, then highlighting a
+ " visual block on a number of lines to repeat the edit
+ vnoremap <leader>. :normal .<cr>
+
+ " Repeat a macro on a visual selection of lines
+ " Same as above but with a macro; complete the command by chosing the register
+ " containing the macro.
+ vnoremap <leader>@ :normal @
+
+ " Allow undoing insert-mode ctrl-u and ctrl-w
+ inoremap <C-U> <C-G>u<C-U>
+ inoremap <C-W> <C-G>u<C-W>
+
  nnoremap m }}{w
  vnoremap m }
+
  nnoremap , {{{}}{w
  vnoremap , {
+
+
+"  " Change directory to the path of the current file
+"  map <leader>cd :cd %:p:h<cr>
+"  " Edit a new file starting in the same dir as the current file
+"  map <leader>ce :e <C-R>=expand("%:p:h") . "/" <cr>
+"  map <leader>cs :sp <C-R>=expand("%:p:h") . "/" <cr>
+"  map <leader>ct :tabnew <C-R>=expand("%:p:h") . "/" <cr>
 
  nnoremap H ^
  nnoremap L $
@@ -214,28 +269,31 @@ set undodir=~/.vim/tmp/undo//     " undo files
  noremap gV `[v`]
 
  map <leader>w :w<cr>
- map <leader>w :w<cr>
+ map <leader>q :qa<cr>
  vmap <leader>q <ESC>:qa<cr>
 
- " TODO: integrate with tpopes undo plugin
  noremap p P`[v`]=
  noremap P p`[v`]=
 
-
- nmap <Leader>y "+y
- vmap <Leader>y "+y
- nmap <Leader>Y "+Y
- vmap <Leader>Y "+Y
- vmap <Leader>d "+d
- nmap <Leader>p "+p
- nmap <Leader>P "+P
- vmap <Leader>p "+p
- vmap <Leader>P "+P
+ nmap <leader>y "+y
+ vmap <leader>y "+y
+ nmap <leader>Y "+Y
+ vmap <leader>Y "+Y
+ vmap <leader>d "+d
+ nmap <leader>p "+p
+ nmap <leader>P "+P
+ vmap <leader>p "+p
+ vmap <leader>P "+P
 
  map <leader>s :split<cr>
  map <leader>v :vsplit<cr>
 
- nmap <leader>= mzgg=G\`z
+ omap <leader>= mzgg=G\`z
+
+
+ " Resize splits evenly
+ map <leader>r :wincmd=<cr>
+
 
  map <up> 2<C-w>+
  map <down> 2<C-w>-
@@ -244,13 +302,15 @@ set undodir=~/.vim/tmp/undo//     " undo files
  imap <up> <ESC>2<C-w>+a
  imap <down> <ESC>2<C-w>-a
  imap <left> <ESC>2<C-w><a
- imap <right> <ESC>2<C-w>>a
+ imap <right> 2<C-w>>a
 
  " Easy window navigation
  map <C-h> <C-w>h
  map <C-j> <C-w>j
  map <C-k> <C-w>k
  map <C-l> <C-w>l
+
+ nmap <F1> <Esc>
 
  " inoremap 4j (
  " inoremap 4k )
@@ -369,11 +429,12 @@ let g:unite_source_grep_max_candidates = 200
 
 if executable('ag')
     " Use ag in unite grep source.
-    let g:unite_source_grep_command = 'ag'
-    let g:unite_source_grep_default_opts =
-    \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
-    \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
-    let g:unite_source_grep_recursive_opt = ''
+    let g:unite_source_rec_async_command= 'ag --nocolor --nogroup --hidden -g ""'
+    " let g:unite_source_grep_command = 'ag'
+    " let g:unite_source_grep_default_opts =
+    " \ '-i --line-numbers --nocolor --nogroup --hidden --ignore ' .
+    " \  '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+    " let g:unite_source_grep_recursive_opt = ''
 elseif executable('pt')
     " Use pt in unite grep source.
     " https://github.com/monochromegane/the_platinum_searcher
@@ -433,13 +494,13 @@ inoremap <silent> <C-h> <ESC>:TmuxNavigateLeft<cr>a
 inoremap <silent> <C-j> <ESC>:TmuxNavigateDown<cr>a
 inoremap <silent> <C-k> <ESC>:TmuxNavigateUp<cr>a
 inoremap <silent> <C-l> <ESC>:TmuxNavigateRight<cr>a
-inoremap <silent> <C-\> <ESC>:TmuxNavigatePrevious<cr>a
+" inoremap <silent> <C-\> <ESC>:TmuxNavigatePrevious<cr>a
 
 nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
-nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
+" nnoremap <silent> <C-n> :TmuxNavigatePrevious<cr>
 " }}}
 " plugin Syntastic {{{
 Plugin 'scrooloose/syntastic'
@@ -500,9 +561,6 @@ colo solarized
 " Highlight VCS conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
-" Resize splits when the window is resized
-au VimResized * :wincmd =
-
 " let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>[1 q\<Esc>\\"
 " let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
 
@@ -525,6 +583,7 @@ hi Folded ctermbg=bg cterm=NONE ctermbg=bg ctermfg=14
 hi Visual ctermfg=12 ctermbg=bg
 hi ModeMsg ctermbg=3 ctermfg=bg
 hi Todo ctermfg=3
+hi SpellBad cterm=bold,italic,undercurl
 
 hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
 hi pythonFunction ctermbg=NONE ctermfg=2
@@ -735,4 +794,39 @@ endfunction
 function! s:MyHelp(arg)
     exe ":tab h ".a:arg
 endfunction
-command! -nargs=1 H call s:MyHelp(<f-args>)
+command! -nargs=1 -complete=help H call s:MyHelp(<f-args>)
+
+
+" Use generic omnicompletion if something more specific isn't already set
+if has("autocmd") && exists("+omnifunc")
+  au Filetype *
+        \ if &omnifunc == "" | setl omnifunc=syntaxcomplete#Complete | endif
+endif
+if has("autocmd")
+  " Helps if you have to use another editor on the same file
+  au FileChangedShell * Warn "File has been changed outside of Vim."
+endif
+command -nargs=1 Warn echohl WarningMsg | echo <args> | echohl None
+
+" " Let 'tl' toggle between this and the last accessed tab
+" let g:lasttab = 1
+" nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
+" au TabLeave * let g:lasttab = tabpagenr()
+
+" " Return to last edit position when opening files (You want this!)
+" autocmd BufReadPost *
+"       \ if line("'\"") > 0 && line("'\"") <= line("$") |
+"       \ exe "normal! g`\"" |
+"       \ endif
+" " Remember info about open buffers on close
+" set viminfo^=%
+
+"
+" " Delete trailing white space on save, useful for Python and CoffeeScript ;)
+" func! DeleteTrailingWS()
+"   exe "normal mz"
+"   %s/\s\+$//ge
+"   exe "normal `z"
+" endfunc
+" autocmd BufWrite *.py :call DeleteTrailingWS()
+" autocmd BufWrite *.coffee :call DeleteTrailingWS()

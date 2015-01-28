@@ -1,4 +1,5 @@
 # TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda098a0516f41416f4 -n "annoyance description"
+# TODO command to cd to folder with .git in in root folders
 
 # alias tmux='TERM=rxvt-unicode-256color tmux'
 
@@ -22,7 +23,7 @@ export HISTTIMEFORMAT="[%DT%T] " # puts full date and time in history records.
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-PATH=$PATH:~/bin
+PATH=$HOME/.dynamic-colors/bin:$PATH:~/bin
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -70,6 +71,13 @@ fi
 # ${#PWD}
 # PS1='`printf "%$((20-${#PWD}))s"`''h >'
 
+vman() {
+  vim -c "SuperMan $*"
+
+  if [ "$?" != "0" ]; then
+    echo "No manual entry for $*"
+  fi
+}
 
 print_pre_prompt (){
   local EXIT="$?" # This needs to be first
@@ -84,6 +92,9 @@ print_pre_prompt (){
 }
 PROMPT_COMMAND=print_pre_prompt
 
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
+fi
 
 export GREP_COLOR='43;30'
 
@@ -111,7 +122,8 @@ alias lt='ls -ltr'        # sort by date
 alias s="printf '\n\n\n\n'"
 alias ai="sudo apt-get install -y"
 alias as="apt-cache search"
-alias ar="sudo apt-get remove"
+alias ar="sudo apt-get remove -y"
+alias au="sudo apt-get update"
 
 alias cd..="cd .."
 alias ..="cd .."
@@ -119,7 +131,7 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....='cd ../../../../'
 alias .4='cd ../../../../'
-alias .5='cd ../../../../..'lias .....="cd ../../../.."
+alias .5='cd ../../../../..'
 
 alias hist='history | grep $1'
 alias path='echo -e ${PATH//:/\\n}'
@@ -129,6 +141,9 @@ alias trash='mv -t ~/.local/share/Trash/files'
 alias lscolors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: Test"; done'
 
 alias lscommands='ls ${PATH//:/ }'
+
+alias dark="dynamic-colors switch solarized-dark"
+alias light="dynamic-colors switch solarized-light"
 
 # alias addtopath='if [[ ":$PATH:" != *":$1:"* ]]; then PATH=${PATH}:$1; fi'
 
@@ -143,7 +158,7 @@ matrix (){
 
 dict(){ local y="$@";curl -sA"Opera" "http://www.google.com/search?q=define:${y// /+}"|grep -Po '(?<=<li>)[^<]+'|nl|perl -MHTML::Entities -pe 'decode_entities($_)' 2>/dev/null;}
 
-mkcd () { mkdir -p "$@" && cd "$@"; }
+md () { mkdir -p "$@" && cd "$@"; }
 
 calc () { echo "$*" | bc -l; }
 
@@ -168,6 +183,9 @@ swap()
 
 # Make your directories and files access rights sane.
 resetperm() { chmod -R u=rwX,g=rX,o= "$@" ;}
+
+# make directory to my user
+# mine() {adsf}
 
 encrypt (){
   gpg -ac --no-options "$1"
@@ -232,10 +250,6 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 shopt -s cdable_vars # look at variables that might hold directory paths
 shopt -s nocaseglob         # pathname expansion will be treated as case-insensitive
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -250,10 +264,19 @@ fi
 
 source /usr/share/autojump/autojump.sh
 source ~/.acd_func.sh
+source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
 alias mybash="bash --rcfile <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/bashrc)"
 alias myvim="vim -u <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/vimrc | grep '^ [a-zA-Z]\+ ')"
+alias v=vim
+alias e=vim
+alias :e=vim
+alias vimrc="vim ~/.vimrc"
+alias bashrc="vim ~/.bashrc"
+alias tmux.conf="vim ~/.tmux.conf"
+alias tmuxconf="vim ~/.tmux.conf"
+alias tmuxrc="vim ~/.tmux.conf"
 
 myssh() {
   ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"
@@ -352,14 +375,3 @@ fi
 
 
 
-# TODO: set this u /extract
-# curl -s \
-#   --form-string "token=abc123" \
-#   --form-string "user=user123" \
-#   --form-string "message=hello world" \
-#   https://api.pushover.net/1/messages.json
-# Local customized path and environment settings, etc.
-
-if [ -f ~/.bashrc.local ]; then
-    . ~/.bashrc.local
-fi
