@@ -3,6 +3,45 @@
 
 # alias tmux='TERM=rxvt-unicode-256color tmux'
 
+
+# ================================
+# === some nice script helpers ===
+# ================================
+
+# bold=$(tput bold)
+# underline=$(tput sgr 0 1)
+# reset=$(tput sgr0)
+# purple=$(tput setaf 171)
+# red=$(tput setaf 1)
+# green=$(tput setaf 76)
+# tan=$(tput setaf 3)
+# blue=$(tput setaf 38)
+
+# e_header(){
+#   printf "\n${bold}${purple}==========  %s  ==========${reset}\n" "$@"
+# }
+# e_arrow(){
+#   printf "➜ $@\n"
+# }
+# e_success(){
+#   printf "${green}✔ %s${reset}\n" "$@"
+# }
+# e_error(){
+#   printf "${red}✖ %s${reset}\n" "$@"
+# }
+# e_warning(){
+#   printf "${tan}➜ %s${reset}\n" "$@"
+# }
+# e_underline(){
+#   printf "${underline}${bold}%s${reset}\n" "$@"
+# }
+# e_bold(){
+#   printf "${bold}%s${reset}\n" "$@"
+# }
+# e_note(){
+#   printf "${underline}${bold}${blue}Note:${reset}  ${blue}%s${reset}\n" "$@"
+# }
+
 export EDITOR='vim'
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -39,11 +78,8 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# turn off Ctrl + s XOFF (XON is Ctrl + q)
-stty ixany
-stty ixoff -ixon
-stty stop undef
-stty start undef
+# no bell
+set 'bind bell-style none'
 
 # PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
 # PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
@@ -83,6 +119,10 @@ print_pre_prompt (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
     # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
+    # if [ $(tmux display-message -pt "$TMUX_PANE" '#{pane_active}') -eq 0 ]; then
+    # code repitition
+    # xcowsay --image Downloads/Homer_Simpson.png --bubble-at=-40,-180 --at=9999,9999 "status code $EXIT"
+    # fi
     local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n"
   else
     local err=''
@@ -125,6 +165,9 @@ alias as="apt-cache search"
 alias ar="sudo apt-get remove -y"
 alias au="sudo apt-get update"
 
+alias pi="sudo pip install"
+alias pis="pip search"
+
 alias cd..="cd .."
 alias ..="cd .."
 alias ...="cd ../.."
@@ -145,6 +188,13 @@ alias lscommands='ls ${PATH//:/ }'
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
 
+# http://simpsonswiki.com/w/images/b/bd/Homer_Simpson.png
+alias homer="xcowsay --image Downloads/Homer_Simpson.png --bubble-at=-40,-180 --at=9999,9999"
+
+ack-grep(){
+  homer "use \`ag\` instead"
+}
+
 # alias addtopath='if [[ ":$PATH:" != *":$1:"* ]]; then PATH=${PATH}:$1; fi'
 
 # alias ls="sudo $(history -p '!!')"
@@ -152,6 +202,7 @@ alias light="dynamic-colors switch solarized-light"
 # TODO: utility that reads from stdin and pastes in a pastebin
 
 
+# cmatrix is much cooler!
 matrix (){
   (set -o noglob;while sleep 0.05;do for r in `grep -ao '[[:print:]]' /dev/urandom|head -$((COLUMNS/3))`;do [ $((RANDOM%6)) -le 1 ] && r=\ ;echo -ne "\e[$((RANDOM%7/-6+2));32m $r ";done;echo;done)
 }
@@ -351,27 +402,12 @@ if which grc &>/dev/null; then
     alias traceroute='.cl traceroute'
 fi
 
-# ================================
-# === some nice script helpers ===
-# ================================
-
-# bold=$(tput bold)
-# underline=$(tput sgr 0 1)
-# reset=$(tput sgr0)
-# purple=$(tput setaf 171)
-# red=$(tput setaf 1)
-# green=$(tput setaf 76)
-# tan=$(tput setaf 3)
-# blue=$(tput setaf 38)
-
-# e_header() { printf "\n${bold}${purple}==========  %s  ==========${reset}\n" "$@"}
-# e_arrow() { printf "➜ $@\n"}
-# e_success() { printf "${green}✔ %s${reset}\n" "$@"}
-# e_error() { printf "${red}✖ %s${reset}\n" "$@"}
-# e_warning() { printf "${tan}➜ %s${reset}\n" "$@"}
-# e_underline() { printf "${underline}${bold}%s${reset}\n" "$@"}
-# e_bold() { printf "${bold}%s${reset}\n" "$@"}
-# e_note() { printf "${underline}${bold}${blue}Note:${reset}  ${blue}%s${reset}\n" "$@"}
-
-
-
+# add this configuration to ~/.bashrc
+export HH_CONFIG=hicolor         # get more colors
+shopt -s histappend              # append new history items to .bash_history
+export HISTCONTROL=ignorespace   # leading space hides commands from history
+export HISTFILESIZE=10000        # increase history file size (default is 500)
+export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"   # mem/file sync
+# if this is interactive shell, then bind hh to Ctrl-r
+if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi

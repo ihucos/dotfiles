@@ -1,4 +1,4 @@
-TAB: menu-complete
+# TAB: menu-complete
 set show-all-if-ambiguous on
 
 set completion-ignore-case on

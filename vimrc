@@ -5,6 +5,7 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " }}}
+
 " plugins {{{
 " Plugin 'Lokaltog/powerline'
 Plugin 'gmarik/Vundle.vim'
@@ -37,7 +38,7 @@ Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'sheerun/vim-polyglot'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
-Plugin 'mileszs/ack.vim' 
+Plugin 'mileszs/ack.vim'
 Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'matze/vim-move'
 Plugin 'mikewest/vimroom'
@@ -60,6 +61,7 @@ Plugin 'Shougo/vimproc'
 " Plugin 'gorodinskiy/vim-coloresque' " hilight color names
 " Plugin 'mhinz/vim-startify'
 Plugin 'mjbrownie/django-template-textobjects'
+Plugin 'editorconfig/editorconfig-vim'
 
 " }}}
 " boilerplace (do not edit) {{{
@@ -73,6 +75,7 @@ call vundle#end()
  " set noswapfile 
  " set showbreak=↪
  set backspace=indent,eol,start "bs: allows you to backspace over the listed character types
+ set mouse=a
   set sidescrolloff=15
  set sidescroll=1
  set foldmethod=marker
@@ -117,8 +120,9 @@ set undofile
  set ttimeout
  set ttimeoutlen=10
  
+ set tabstop=4
  set list
- set listchars=extends:▶,precedes:◀,trail:␣
+ set listchars=extends:▶,precedes:◀,trail:␣,tab:⇥\ 
  set showbreak=┊
  set splitbelow
  set splitright
@@ -131,6 +135,9 @@ set undodir=~/.vim/tmp/undo//     " undo files
  set directory=~/.vim/tmp/swap//   " swap files
  set spell spelllang=en_us
  set nospell
+
+" see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
+set tags=.git/tags;
 
  " don't select first item, follow typing in autocomplete
  set completeopt=longest,menuone,preview
@@ -194,31 +201,9 @@ iabbrev ipyy import IPython; IPython.embed()
    endif
  endfunction
 
-"  inoremap ,q 1
-"  inoremap ,w 2
-"  inoremap ,e 3
-"  inoremap ,r 4
-"  inoremap ,t 5
-"  inoremap ,y 6
-"  inoremap ,u 7
-"  inoremap ,i 8
-"  inoremap ,o 9
-"  inoremap ,p 0
-"  inoremap ,, ,
+noremap <CR> i<ESC>k:put_<CR>`^
 
-"  noremap ,a 0
-"  noremap ,s 1
-"  noremap ,d 2
-"  noremap ,f 3
-"  noremap ,g 4
-"  noremap ,h 5
-"  noremap ,j 6
-"  noremap ,k 7
-"  noremap ,l 8
-"  noremap ,; 9
-"  noremap ,, ,
-
-noremap <CR> :put_<CR>
+nmap <Leader><Leader> V
 
  nnoremap j gj
  nnoremap k gk
@@ -242,6 +227,8 @@ noremap <CR> :put_<CR>
  inoremap <C-U> <C-G>u<C-U>
  inoremap <C-W> <C-G>u<C-W>
 
+
+ " TODO: add support for motions
  nnoremap m }}{w
  vnoremap m }
 
@@ -272,14 +259,20 @@ noremap <CR> :put_<CR>
  map <leader>q :qa<cr>
  vmap <leader>q <ESC>:qa<cr>
 
- noremap p P`[v`]=
- noremap P p`[v`]=
+ " FIXME: pasting before first charachter of line does not work
+ nnoremap p gP`[v`]=
+ nnoremap P gp`[v`]=
+ vnoremap p gP`[v`]=
+ vnoremap P gp`[v`]=
+
+ nnoremap <silent> p p`]
 
  nmap <leader>y "+y
  vmap <leader>y "+y
  nmap <leader>Y "+Y
  vmap <leader>Y "+Y
  vmap <leader>d "+d
+ vmap <leader>D "+D
  nmap <leader>p "+p
  nmap <leader>P "+P
  vmap <leader>p "+p
@@ -341,15 +334,8 @@ noremap <CR> :put_<CR>
  " noremap 00 )
 
 
- map q: :q<cr> " common typo
-
 " }}}
 
-" plugin indentline {{{
-Plugin 'Yggdroot/indentLine' " vertical indentantion lines
-let g:indentLine_char = '│'
-let g:indentLine_color_term=0
-" }}}
 " plugin switch {{{
 Plugin 'AndrewRadev/switch.vim'
 " noremap <tab> :Switch<cr> " tab == ctrl+I in vim :-(
@@ -565,7 +551,9 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 " let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>[2 q\<Esc>\\"
 
 " awesome 80-character limiter
-execute "set colorcolumn=" . join(range(81,335), ',')
+"
+
+au filetype python execute "setlocal colorcolumn=" . join(range(81,335), ',')
 hi ColorColumn ctermbg=0
 " au BufLeave * :hi ColorColumn ctermbg=bg
 " au BufEnter * :hi ColorColumn ctermbg=0
@@ -593,12 +581,13 @@ hi pythonConditional ctermbg=NONE ctermfg=4
 hi pythonException   ctermbg=NONE ctermfg=4
 hi pythonOperator    ctermbg=NONE ctermfg=4
 
-set statusline=%#StatusLineFile#%t:%l\ %#StatusLine#)
 hi StatusLineFile ctermbg=fg ctermfg=bg
 " italic is a hack, statuslineNC and statusline cant be the same hilight
 hi StatusLineNC ctermbg=14 ctermfg=bg cterm=italic 
 hi StatusLine ctermbg=14 ctermfg=bg
 hi VertSplit ctermfg=14 ctermbg=bg
+
+set statusline=%#StatusLineFile#%t:%l\ %#StatusLine#)
 
 set fillchars=stl:━
 set fillchars+=stlnc:━
@@ -750,8 +739,6 @@ if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 
-set tags=.git/tags;
-
 " Typos
 command! -bang E e<bang>
 command! -bang Q q<bang>
@@ -762,6 +749,7 @@ command! -bang Wa wa<bang>
 command! -bang WA wa<bang>
 command! -bang Wq wq<bang>
 command! -bang WQ wq<bang>
+map q: :q<cr> " common typo
 
 " taken from http://vim.wikia.com/wiki/Avoiding_the_%22Hit_ENTER_to_continue%22_prompt
 command! -nargs=1 Silent
@@ -830,3 +818,9 @@ command -nargs=1 Warn echohl WarningMsg | echo <args> | echohl None
 " endfunc
 " autocmd BufWrite *.py :call DeleteTrailingWS()
 " autocmd BufWrite *.coffee :call DeleteTrailingWS()
+
+
+" " search text object. taken from: http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/ 
+" vnoremap <silent> s //e<C-r>=&selection=='exclusive'?'+1':''<CR><CR>
+"       \:<C-u>call histdel('search',-1)<Bar>let @/=histget('search',-1)<CR>gv
+" omap s :normal vs<CR>
