@@ -256,6 +256,7 @@ nmap <Leader><Leader> V
  noremap gV `[v`]
 
  map <leader>w :w<cr>
+ vmap <leader>w :w<cr>
  map <leader>q :qa<cr>
  vmap <leader>q <ESC>:qa<cr>
 
@@ -282,10 +283,6 @@ nmap <Leader><Leader> V
  map <leader>v :vsplit<cr>
 
  omap <leader>= mzgg=G\`z
-
-
- " Resize splits evenly
- map <leader>r :wincmd=<cr>
 
 
  map <up> 2<C-w>+
