@@ -37,15 +37,19 @@ URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.iso14755: False
 
+URxvt.font-size.step: 0.5
 URxvt.keysym.C-Up:     perl:font-size:increase
 URxvt.keysym.C-Down:   perl:font-size:decrease
 URxvt.keysym.C-Right:  perl:font-size:reset
+
 ! not working
 urxvt*keysym.F12: perl:urxvt-colors
 
 
 xterm*dynamicColors: true
 urxvt*dynamicColors: on
+
+
 
 
 ! Compile xft: Turn on/off double-buffering for xft (default enabled).  On some card/driver
@@ -97,7 +101,7 @@ urxvt*dynamicColors: on
 ! URxvt*skipScroll: boolean
 
 ! Fade the text by the given percentage when focus is lost; option -fade.
-! URxvt*fading: number
+! URxvt*fading: 50
 
 ! Fade to this colour, when fading is used (see fading:). The default colour is black; option
 ! URxvt*fadeColor: colour

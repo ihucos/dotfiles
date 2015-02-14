@@ -1,4 +1,7 @@
-# TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda098a0516f41416f4 -n "annoyance description"
+
+
+# TODO: backup command that backs up a file, so whe can delete it
+# TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda008a0516f41416f4 -n "annoyance description"
 # TODO command to cd to folder with .git in in root folders
 
 # alias tmux='TERM=rxvt-unicode-256color tmux'
@@ -58,6 +61,8 @@ export HISTSIZE=1000
 export HISTFILESIZE=2000
 export HISTTIMEFORMAT="[%DT%T] " # puts full date and time in history records.
 
+export LESS=" -R "
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -84,19 +89,15 @@ set 'bind bell-style none'
 # PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
 # PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
 
-_jobs(){
-  jobs | awk '{ print $3}' | xargs | sed s/autojump//g | sed s/\ $//g | sed s/\ /\|/g
-
-}
-export PS1='  \[\e[38;5;10m\][$(_jobs)]\[\e[0m\] '
+export PS1=' \[\e[38;5;10m\]\[\e[0m\] '
 
 if [ "$HOSTNAME" = macbook ] && [ "$USER" = resu ] ; then
-  PS1=$PS1'\[\e[38;5;10m\]\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
+  PS1=$PS1'\[\e[38;5;10m\]\w\[\e[0m\] \[\e[1;37m\]▶ \[\e[0m\]'
 else
   # FIXME: not working
   if [ "$USER" = root ] ; then
     # prompt='#'
-    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]▶ \[\e[0m\]'
+    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[38;05;1m\]▶ \[\e[0m\]'
   else
     # prompt='▶'
     PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
@@ -106,31 +107,6 @@ fi
 
 # ${#PWD}
 # PS1='`printf "%$((20-${#PWD}))s"`''h >'
-
-vman() {
-  vim -c "SuperMan $*"
-
-  if [ "$?" != "0" ]; then
-    echo "No manual entry for $*"
-  fi
-}
-
-print_pre_prompt (){
-  local EXIT="$?" # This needs to be first
-  if [ $EXIT != 0 ]; then
-    # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
-    # if [ $(tmux display-message -pt "$TMUX_PANE" '#{pane_active}') -eq 0 ]; then
-    # code repitition
-    # xcowsay --image Downloads/Homer_Simpson.png --bubble-at=-40,-180 --at=9999,9999 "status code $EXIT"
-    # fi
-    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n"
-  else
-    local err=''
-  fi
-  echo -en $err
-  history -a # write command history at every prompt.
-}
-PROMPT_COMMAND=print_pre_prompt
 
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
@@ -165,8 +141,10 @@ alias as="apt-cache search"
 alias ar="sudo apt-get remove -y"
 alias au="sudo apt-get update"
 
-alias pi="sudo pip install"
-alias pis="pip search"
+alias pipi="sudo pip install"
+alias pips="pip search"
+alias pipu="sudo pip uninstall"
+alias pipr="sudo pip uninstall"
 
 alias cd..="cd .."
 alias ..="cd .."
@@ -188,16 +166,35 @@ alias lscommands='ls ${PATH//:/ }'
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
 
-# http://simpsonswiki.com/w/images/b/bd/Homer_Simpson.png
-alias homer="xcowsay --image Downloads/Homer_Simpson.png --bubble-at=-40,-180 --at=9999,9999"
+homer(){
+  # http://simpsonswiki.com/w/images/b/bd/Homer_Simpson.png and flipped with `convert -flop Homer_Simpson.png Homer_Simpson_Flipped.png`
+  (xcowsay --image ~/Pictures/Homer_Simpson_Flipped.png --bubble-at=-40,-180 --at=0,9999 "$@" & )
+}
+
+flash(){
+  # if xbacklight is installed
+  if hash xbacklight 2>/dev/null; then
+    local current=$(xbacklight -get)
+    xbacklight -set $(calc $current*0.3) -time 50
+    xbacklight -set $current -time 200
+  fi
+}
 
 ack-grep(){
   homer "use \`ag\` instead"
+  env ack-grep $@
 }
 
-# alias addtopath='if [[ ":$PATH:" != *":$1:"* ]]; then PATH=${PATH}:$1; fi'
-
-# alias ls="sudo $(history -p '!!')"
+man() {
+  env LESS_TERMCAP_mb=$'\E[01;31m' \
+    LESS_TERMCAP_md=$'\E[01;38;5;74m' \
+    LESS_TERMCAP_me=$'\E[0m' \
+    LESS_TERMCAP_se=$'\E[0m' \
+    LESS_TERMCAP_so=$'\E[38;5;246m' \
+    LESS_TERMCAP_ue=$'\E[0m' \
+    LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+    man "$@"
+}
 
 # TODO: utility that reads from stdin and pastes in a pastebin
 
@@ -313,9 +310,16 @@ if ! shopt -oq posix; then
 fi
 
 
-source /usr/share/autojump/autojump.sh
-source ~/.acd_func.sh
-source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
+if [ -f "/usr/share/autojump/autojump.sh" ]; then
+  source /usr/share/autojump/autojump.sh
+fi
+if [ -f "~/.acd_func.sh" ]; then
+  source ~/.acd_func.sh
+fi
+if [ -f "$HOME/.dynamic-colors/completions/dynamic-colors.zsh" ]; then
+  source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
+fi
+
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
 alias mybash="bash --rcfile <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/bashrc)"
@@ -402,12 +406,29 @@ if which grc &>/dev/null; then
     alias traceroute='.cl traceroute'
 fi
 
-# add this configuration to ~/.bashrc
 export HH_CONFIG=hicolor         # get more colors
 shopt -s histappend              # append new history items to .bash_history
 export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
-export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"   # mem/file sync
-# if this is interactive shell, then bind hh to Ctrl-r
+
+# if this is interactive shell, then bind `hh` to Ctrl-r
 if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi
+
+print_pre_prompt (){
+  local EXIT="$?" # This needs to be first
+  if [ $EXIT != 0 ]; then
+    # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
+    if [ $EXIT != 130 ]; then
+      (flash &)
+    fi
+    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n"
+  else
+    local err=''
+  fi
+  echo -en $err
+  history -a # write command history at every prompt.
+  history -n
+}
+PROMPT_COMMAND=print_pre_prompt
+
