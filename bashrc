@@ -176,6 +176,7 @@ man() {
 # TODO: utility that reads from stdin and pastes in a pastebin
 
 
+
 # cmatrix is much cooler!
 matrix (){
   (set -o noglob;while sleep 0.05;do for r in `grep -ao '[[:print:]]' /dev/urandom|head -$((COLUMNS/3))`;do [ $((RANDOM%6)) -le 1 ] && r=\ ;echo -ne "\e[$((RANDOM%7/-6+2));32m $r ";done;echo;done)
@@ -389,9 +390,6 @@ export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
-# if this is interactive shell, then bind `hh` to Ctrl-r
-if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi
-
 print_pre_prompt (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
@@ -404,8 +402,11 @@ print_pre_prompt (){
     local err=''
   fi
   echo -en $err
-  history -a # write command history at every prompt.
-  history -n
+  # history -a # write command history at every prompt.
+  # history -n
+  history -a; history -c; history -r
 }
 PROMPT_COMMAND=print_pre_prompt
 
+# disables "freezing" the terminal with C-s
+stty -ixon
