@@ -4,3 +4,5 @@ notes to install in new system:
 
 make this:
 http://stackoverflow.com/questions/13385690/how-to-use-git-with-gnome-keyring-integration
+
+on vim :VimProcInstall

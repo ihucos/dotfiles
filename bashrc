@@ -7,43 +7,12 @@
 # alias tmux='TERM=rxvt-unicode-256color tmux'
 
 
-# ================================
-# === some nice script helpers ===
-# ================================
+### EXPERIMENTAL
 
-# bold=$(tput bold)
-# underline=$(tput sgr 0 1)
-# reset=$(tput sgr0)
-# purple=$(tput setaf 171)
-# red=$(tput setaf 1)
-# green=$(tput setaf 76)
-# tan=$(tput setaf 3)
-# blue=$(tput setaf 38)
+export PYTHONDONTWRITEBYTECODE="1"
 
-# e_header(){
-#   printf "\n${bold}${purple}==========  %s  ==========${reset}\n" "$@"
-# }
-# e_arrow(){
-#   printf "➜ $@\n"
-# }
-# e_success(){
-#   printf "${green}✔ %s${reset}\n" "$@"
-# }
-# e_error(){
-#   printf "${red}✖ %s${reset}\n" "$@"
-# }
-# e_warning(){
-#   printf "${tan}➜ %s${reset}\n" "$@"
-# }
-# e_underline(){
-#   printf "${underline}${bold}%s${reset}\n" "$@"
-# }
-# e_bold(){
-#   printf "${bold}%s${reset}\n" "$@"
-# }
-# e_note(){
-#   printf "${underline}${bold}${blue}Note:${reset}  ${blue}%s${reset}\n" "$@"
-# }
+
+###
 
 export EDITOR='vim'
 
@@ -62,6 +31,8 @@ export HISTFILESIZE=2000
 export HISTTIMEFORMAT="[%DT%T] " # puts full date and time in history records.
 
 export LESS=" -R "
+
+export PYTHONSTARTUP="$HOME/.pythonrc"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -92,7 +63,7 @@ set 'bind bell-style none'
 export PS1=' \[\e[38;5;10m\]\[\e[0m\] '
 
 if [ "$HOSTNAME" = macbook ] && [ "$USER" = resu ] ; then
-  PS1=$PS1'\[\e[38;5;10m\]\w\[\e[0m\] \[\e[1;37m\]▶ \[\e[0m\]'
+  PS1=$PS1' \[\e[38;5;10m\]\w\[\e[0m\]  \[\e[1;37m\]▶\[\e[0m\] '
 else
   # FIXME: not working
   if [ "$USER" = root ] ; then
@@ -126,6 +97,12 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
+
+alias lsalias='compgen -a | xargs'
+
+alias :q=exit
+
+alias g=git
 
 alias ls='ls --group-directories-first --sort=extension --color=auto'
 alias ll='ls -alF'
@@ -419,10 +396,10 @@ print_pre_prompt (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
     # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
-    if [ $EXIT != 130 ]; then
+    if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
       (flash &)
     fi
-    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n"
+    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n\n"
   else
     local err=''
   fi

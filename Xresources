@@ -374,3 +374,7 @@ urxvt*dynamicColors: on
 *color13: S_violet
 *color14: S_base1
 *color15: S_base3
+
+
+# modified by me
+*underlineColor: S_orange
