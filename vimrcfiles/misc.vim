@@ -57,3 +57,25 @@ function! Figlet(text)
 endfunction
 command! -nargs=1 Figlet call Figlet(<f-args>)
 
+function! ASCIScrollbar()
+let percent = line('.')*100/line('$')
+python << EOF
+blocks1 = list((['█', '▉', '▊', '▋', '▌', '▍', '▎', '▏']))
+# blocks2 = list(reversed(['█', '▇', '▆', '▅', '▄', '▃', '▂', '▁']))
+blocks3 = []
+for b in blocks1:
+  blocks3.append('███' + b)
+for b in blocks1:
+  blocks3.append('██' + b + '╲')
+for b in blocks1:
+  blocks3.append('█' + b + '╱╲')
+for b in blocks1:
+  blocks3.append(b + '╲╱╲')
+
+x = int(vim.eval('percent'))
+x = int(round( (x/100.)*(len(blocks3)-1) ))
+vim.command('let retval = "' + blocks3[x] + '"')
+EOF
+return retval
+endfunction
+

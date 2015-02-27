@@ -41,7 +41,7 @@ set sidescrolloff=15
 set spelllang=en_us
 set splitbelow
 set splitright
-set statusline=%#StatusLineFile#\ %t:%l\ %#StatusLine#
+set statusline=%#StatusLineFile#%{ASCIScrollbar()}▌%t:%l\ %#StatusLine#
 set t_Co=256
 set t_vb=
 set tabstop=4

@@ -192,6 +192,7 @@ function! MultiPurposeUnite()
 endfunction
 noremap <leader>u :call MultiPurposeUnite()<cr>
 noremap <leader>/ :call MyUnite('line', 'line', '-start-insert')<cr>
+noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 
 " noremap <leader>j :call MyUnite('tag', 'tag', '-start-insert')<cr>
 " noremap <leader>k :call MyUnite('buffer:-', 'buffer', '')<cr>
@@ -207,7 +208,7 @@ noremap <leader>/ :call MyUnite('line', 'line', '-start-insert')<cr>
 " map <leader>j :Unite -buffer-name=tag -start-insert -no-split -wrap tag -wipe<cr>
 " " Custom mappings for the unite buffer
 
-map <leader>d :VimFilerCreate<cr>T
+map <leader>f :VimFilerCreate<cr>T
 autocmd FileType vimfiler map <buffer> <ESC> :bd<CR>
 
 nnoremap <Leader>t :Tagbar<cr>
@@ -245,9 +246,9 @@ endfunction
 
 " exit this sort of buffers with ESC
 autocmd FileType unite call UniteTmuxNavigteOverwrite()
-autocmd FileType unite map <buffer> <ESC> <plug>(unite_exit)<CR>
-autocmd FileType help map <buffer> <ESC> :b#<bar>bd#<CR>
-autocmd FileType vimfiler map <buffer> <ESC> :b#<bar>bd#<CR>
+" autocmd FileType unite map <buffer> <ESC> <plug>(unite_exit)
+autocmd FileType help map <buffer> q :b#<bar>bd#<CR>
+autocmd FileType vimfiler map <buffer> q :b#<bar>bd#<CR>
 
 
 "  _   _                 _                                 _____ ____   ____

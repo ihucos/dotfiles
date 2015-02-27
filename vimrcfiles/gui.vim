@@ -37,16 +37,20 @@ hi pythonOperator    ctermbg=NONE ctermfg=4
 
 hi uniteCandidateInputKeyword ctermfg=3
 hi uniteCandidateSourceName ctermfg=4
+hi uniteInputLine ctermfg=fg
 hi uniteSource__Buffer ctermfg=4
 hi uniteSource__Buffer_Info ctermfg=10
 hi uniteSource__Buffer_Modified ctermfg=10
 hi uniteSource__Buffer_Prefix ctermfg=10
 hi uniteSource__Buffer_Time ctermfg=10
+hi uniteSource__GrepFile ctermbg=bg ctermfg=4
+hi uniteSource__GrepLineNR ctermbg=bg ctermfg=10 cterm=bold,italic
 hi uniteSource__Tag_File ctermbg=NONE ctermfg=4
 
-hi StatusLineFile ctermbg=fg ctermfg=bg
-" italic is a hack, statuslineNC and statusline cant be the same hilight
-hi StatusLineNC ctermbg=14 ctermfg=bg cterm=italic
+hi StatusLineFile ctermbg=10 ctermfg=bg
+" bold is a hack, statuslineNC and statusline cant be the same hilight
+" not sure, why StatusLineNC needs the oposite than StatusLine, but it works
+hi StatusLineNC ctermbg=bg ctermfg=14 cterm=bold
 hi StatusLine ctermbg=14 ctermfg=bg
 hi VertSplit ctermfg=14 ctermbg=bg
 
