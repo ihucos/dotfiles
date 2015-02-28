@@ -47,6 +47,12 @@ hi uniteSource__GrepFile ctermbg=bg ctermfg=4
 hi uniteSource__GrepLineNR ctermbg=bg ctermfg=10 cterm=bold,italic
 hi uniteSource__Tag_File ctermbg=NONE ctermfg=4
 
+hi vimfilerClosedFile ctermfg=4
+hi vimfilerNonMark ctermfg=11
+hi vimfilerDirectory ctermfg=4
+hi vimfilerColumn__TypeDirectory ctermfg=4
+hi vimfilerColumn__TimeToday ctermfg=fg
+
 hi StatusLineFile ctermbg=10 ctermfg=bg
 hi StatusLineFileReversed ctermbg=bg ctermfg=10
 hi Invisible ctermbg=bg ctermfg=bg
@@ -80,3 +86,41 @@ au BufEnter * call PlaceDummySign()
 
 au WinEnter * set cursorline
 au WinLeave * set nocursorline
+
+
+" ######################
+" ### the statusline ###
+" ######################
+
+function! ASCIIScrollbar()
+let percent = line('.')*100/line('$')
+python << EOF
+blocks1 = list(reversed(['█', '▉', '▊', '▋', '▌', '▍', '▎', '▏']))
+# blocks2 = list(reversed(['█', '▇', '▆', '▅', '▄', '▃', '▂', '▁']))
+blocks3 = []
+for b in blocks1:
+  blocks3.append(b + '───')
+for b in blocks1:
+  blocks3.append('█' + b + '──')
+for b in blocks1:
+  blocks3.append('██' + b + '─')
+for b in blocks1:
+  blocks3.append('███' + b + '')
+x = int(vim.eval('percent'))
+x = int(round( (x/100.)*(len(blocks3)-1) ))
+vim.command('let retval = "' + blocks3[x] + '"')
+EOF
+return retval
+endfunction
+
+function! StatusLinePadding(status, magic_adjust)
+  let status = StatusLineStatus()
+  return repeat("─", winwidth(0)-(strlen(status) + a:magic_adjust))
+endfunction
+
+function! StatusLineStatus()
+  let stat = expand('%:t') . ':' . line(".")
+  return stat
+endfunction
+
+set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLine#%{ASCIIScrollbar()}

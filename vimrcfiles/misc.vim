@@ -43,9 +43,16 @@ function! Homer(text)
 endfunction
 command! -nargs=1 Homer call Homer(<f-args>)
 
+function! <SID>SynStack()
+  if !exists("*synstack")
+    echo 'Syntax hilighting seems not to be supported, check source code of this message'
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+command! -nargs=0 Syntax call <SID>SynStack()
+
 " config to save files with +x when a shebang is found on line
 " au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent !chmod u+x <afile>
-
 
 function! Figlet(text)
   execute ":read !figlet " . a:text
@@ -57,25 +64,4 @@ function! Figlet(text)
 endfunction
 command! -nargs=1 Figlet call Figlet(<f-args>)
 
-function! ASCIIScrollbar()
-let percent = line('.')*100/line('$')
-python << EOF
-blocks1 = list(reversed(['█', '▉', '▊', '▋', '▌', '▍', '▎', '▏', '─']))
-# blocks2 = list(reversed(['█', '▇', '▆', '▅', '▄', '▃', '▂', '▁']))
-blocks3 = []
-for b in blocks1:
-  blocks3.append(b + '───')
-for b in blocks1:
-  blocks3.append('█' + b + '──')
-for b in blocks1:
-  blocks3.append('██' + b + '─')
-for b in blocks1:
-  blocks3.append('███' + b + '')
-
-x = int(vim.eval('percent'))
-x = int(round( (x/100.)*(len(blocks3)-1) ))
-vim.command('let retval = "' + blocks3[x] + '"')
-EOF
-return retval
-endfunction
-
+autocmd VimEnter * if argc() == 0 | call MultiPurposeUnite() | endif

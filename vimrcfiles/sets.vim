@@ -21,7 +21,7 @@ set incsearch " show search matches as you type
 set laststatus=2
 set lazyredraw
 set list
-set listchars=extends:▶,precedes:◀,trail:␣,tab:⇥\ 
+set listchars=extends:│,precedes:◀,trail:␣,tab:⇥\ 
 set mouse=a
 set nobackup
 set noerrorbells " No annoying sound on errors
@@ -41,22 +41,6 @@ set sidescrolloff=5
 set spelllang=en_us
 set splitbelow
 set splitright
-
-
-function! StatusLinePadding(status)
-  let magic=6
-  let status = StatusLineStatus()
-  return repeat("─", winwidth(0)-(strlen(status) + magic))
-endfunction
-
-function! StatusLineStatus()
-  let stat = expand('%:t') . ':' . line(".")
-  return stat
-endfunction
-
-set statusline=%{StatusLinePadding(StatusLineStatus())}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLine#%{ASCIIScrollbar()}
-
-" set statusline=%<──%#StatusLineFile#%{ASCIScrollbar()}▌%t:%l\ %#StatusLine#──
 set t_Co=256
 set t_vb=
 set tabstop=4

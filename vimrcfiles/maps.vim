@@ -53,14 +53,14 @@ inoremap <C-U> <C-G>u<C-U>
 inoremap <C-W> <C-G>u<C-W>
 
 " resize windows
-map <up> 2<C-w>+
-map <down> 2<C-w>-
-map <left> 2<C-w><
-map <right> 2<C-w>>
-imap <up> <ESC>2<C-w>+a
-imap <down> <ESC>2<C-w>-a
-imap <left> <ESC>2<C-w><a
-imap <right> 2<C-w>>a
+noremap <up> 2<C-w>+
+noremap <down> 2<C-w>-
+noremap <left> 2<C-w><
+noremap <right> 2<C-w>>
+inoremap <up> <ESC>2<C-w>+a
+inoremap <down> <ESC>2<C-w>-a
+inoremap <left> <ESC>2<C-w><a
+inoremap <right> 2<C-w>>a
 
 "     _                _
 "    | | ___  __ _  __| | ___ _ __   _ __ ___   __ _ _ __  ___
@@ -211,7 +211,6 @@ noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 " " Custom mappings for the unite buffer
 
 map <leader>f :VimFilerCreate<cr>T
-autocmd FileType vimfiler map <buffer> <ESC> :bd<CR>
 
 nnoremap <Leader>t :Tagbar<cr>
 

@@ -193,6 +193,9 @@ password() {
   [ "$l" == "" ] && l=8
   tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
 }
+alias genpassword=password
+alias mkpassword=password
+alias getpassword=password
 
 swap()
 { # Swap 2 filenames around, if they exist (from Uzi's bashrc).
@@ -408,5 +411,5 @@ print_pre_prompt (){
 }
 PROMPT_COMMAND=print_pre_prompt
 
-# disables "freezing" the terminal with C-s
-stty -ixon
+# # disables "freezing" the terminal with C-s
+# stty -ixon
