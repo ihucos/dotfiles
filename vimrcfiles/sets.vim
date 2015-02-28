@@ -37,11 +37,26 @@ set nowrap
 set scrolloff=999 " Keep x lines below and above the cursor
 set showbreak=┊
 set sidescroll=1
-set sidescrolloff=15
+set sidescrolloff=5
 set spelllang=en_us
 set splitbelow
 set splitright
-set statusline=%#StatusLineFile#%{ASCIScrollbar()}▌%t:%l\ %#StatusLine#
+
+
+function! StatusLinePadding(status)
+  let magic=6
+  let status = StatusLineStatus()
+  return repeat("─", winwidth(0)-(strlen(status) + magic))
+endfunction
+
+function! StatusLineStatus()
+  let stat = expand('%:t') . ':' . line(".")
+  return stat
+endfunction
+
+set statusline=%{StatusLinePadding(StatusLineStatus())}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLine#%{ASCIIScrollbar()}
+
+" set statusline=%<──%#StatusLineFile#%{ASCIScrollbar()}▌%t:%l\ %#StatusLine#──
 set t_Co=256
 set t_vb=
 set tabstop=4
@@ -56,7 +71,7 @@ set undolevels=1000 " use many muchos levels of undo
 
 set fillchars=fold:\ 
 set fillchars+=fold:\⋅
-set fillchars+=stlnc:─
+set fillchars+=stlnc:┴
 set fillchars+=vert:│
-set fillchars+=stl:─
+set fillchars+=stl:┴
 

@@ -69,6 +69,8 @@ imap <right> 2<C-w>>a
 "    | |\___|\__,_|\__,_|\___|_|    |_| |_| |_|\__,_| .__/|___/
 "    |_|
 
+" Reload .vimrc
+map <leader>r :source ~/.vimrc<cr>
 
 " Unfuck my screen
 nnoremap U :syntax sync fromstart<cr>:redraw!<cr>
@@ -188,7 +190,7 @@ function! MyUnite(source, buffer_name, extra)
 
 endfunction
 function! MultiPurposeUnite()
-    call MyUnite('buffer:- tag file_rec/async', 'multipurpose', '-start-insert -short-source-names')
+    call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
 endfunction
 noremap <leader>u :call MultiPurposeUnite()<cr>
 noremap <leader>/ :call MyUnite('line', 'line', '-start-insert')<cr>
@@ -213,26 +215,26 @@ autocmd FileType vimfiler map <buffer> <ESC> :bd<CR>
 
 nnoremap <Leader>t :Tagbar<cr>
 
-nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <C-h> zH:TmuxNavigateLeft<cr>zH
+nnoremap <silent> <C-j> zH:TmuxNavigateDown<cr>
+nnoremap <silent> <C-k> zH:TmuxNavigateUp<cr>
+nnoremap <silent> <C-l> zH:TmuxNavigateRight<cr>
 
-inoremap <silent> <C-h> <ESC>l:TmuxNavigateLeft<cr>
-inoremap <silent> <C-j> <ESC>l:TmuxNavigateDown<cr>
-inoremap <silent> <C-k> <ESC>l:TmuxNavigateUp<cr>
-inoremap <silent> <C-l> <ESC>l:TmuxNavigateRight<cr>
+inoremap <silent> <C-h> <ESC>lzH:TmuxNavigateLeft<cr>
+inoremap <silent> <C-j> <ESC>lzH:TmuxNavigateDown<cr>
+inoremap <silent> <C-k> <ESC>lzH:TmuxNavigateUp<cr>
+inoremap <silent> <C-l> <ESC>lzH:TmuxNavigateRight<cr>
 
-vnoremap <silent> <C-h> <ESC>:TmuxNavigateLeft<cr>gv
-vnoremap <silent> <C-j> <ESC>:TmuxNavigateDown<cr>gv
-vnoremap <silent> <C-k> <ESC>:TmuxNavigateUp<cr>gv
-vnoremap <silent> <C-l> <ESC>:TmuxNavigateRight<cr>gv
+vnoremap <silent> <C-h> <ESC>zH:TmuxNavigateLeft<cr>gv
+vnoremap <silent> <C-j> <ESC>zH:TmuxNavigateDown<cr>gv
+vnoremap <silent> <C-k> <ESC>zH:TmuxNavigateUp<cr>gv
+vnoremap <silent> <C-l> <ESC>zH:TmuxNavigateRight<cr>gv
 
 " see why we need <C-c>: http://superuser.com/questions/739971/how-to-properly-remap-del-to-esc-in-vim)
-cnoremap <silent> <C-h> <C-c>:TmuxNavigateLeft<cr>
-cnoremap <silent> <C-j> <C-c>:TmuxNavigateDown<cr>
-cnoremap <silent> <C-k> <C-c>:TmuxNavigateUp<cr>
-cnoremap <silent> <C-l> <C-c>:TmuxNavigateRight<cr>
+cnoremap <silent> <C-h> <C-c>zH:TmuxNavigateLeft<cr>
+cnoremap <silent> <C-j> <C-c>zH:TmuxNavigateDown<cr>
+cnoremap <silent> <C-k> <C-c>zH:TmuxNavigateUp<cr>
+cnoremap <silent> <C-l> <C-c>zH:TmuxNavigateRight<cr>
 
 " unmap mapping from vim-rooter
 au VimEnter * unmap <leader>cd

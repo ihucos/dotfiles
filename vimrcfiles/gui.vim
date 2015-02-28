@@ -48,6 +48,8 @@ hi uniteSource__GrepLineNR ctermbg=bg ctermfg=10 cterm=bold,italic
 hi uniteSource__Tag_File ctermbg=NONE ctermfg=4
 
 hi StatusLineFile ctermbg=10 ctermfg=bg
+hi StatusLineFileReversed ctermbg=bg ctermfg=10
+hi Invisible ctermbg=bg ctermfg=bg
 " bold is a hack, statuslineNC and statusline cant be the same hilight
 " not sure, why StatusLineNC needs the oposite than StatusLine, but it works
 hi StatusLineNC ctermbg=bg ctermfg=14 cterm=bold

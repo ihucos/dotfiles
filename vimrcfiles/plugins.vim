@@ -88,6 +88,7 @@ let g:unite_source_grep_max_candidates = 200
 if executable('ag')
     let g:unite_source_rec_async_command= 'ag --nocolor --nogroup --hidden -g ""'
 endif
+au WinLeave plugin-unite echo <plug>(unite_exit)
 
 
 Plugin 'rhysd/clever-f.vim'
