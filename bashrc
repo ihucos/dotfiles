@@ -308,11 +308,11 @@ alias myvim="vim -u <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles
 alias v=vim
 alias e=vim
 alias :e=vim
-alias vimrc="vim ~/.vimrc"
-alias bashrc="vim ~/.bashrc"
-alias tmux.conf="vim ~/.tmux.conf"
-alias tmuxconf="vim ~/.tmux.conf"
-alias tmuxrc="vim ~/.tmux.conf"
+alias vimrc="vim ~/Dotfiles/vimrc"
+alias bashrc="vim ~/Dotfiles/bashrc"
+alias tmux.conf="vim ~/Dotfiles/tmux.conf"
+alias tmuxconf="vim ~/Dotfiles/tmux.conf"
+alias tmuxrc="vim ~/Dotfiles/tmux.conf"
 
 myssh() {
   ssh $@ -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)"

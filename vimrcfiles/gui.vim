@@ -12,12 +12,33 @@ hi ErrorMsg ctermfg=bg ctermbg=9
 " awesome 80-character limiter
 au filetype python execute "setlocal colorcolumn=" . join(range(81,335), ',')
 
+
+" solarized colors
+" syntax match Red "Red" containedin=vimHiGroup,vimHiKeyList
+hi Base02  ctermfg=0 ctermbg=NONE cterm=NONE
+hi Red     ctermfg=1 ctermbg=NONE cterm=NONE
+hi Green   ctermfg=2 ctermbg=NONE cterm=NONE
+hi Yellow  ctermfg=3 ctermbg=NONE cterm=NONE
+hi Blue    ctermfg=4 ctermbg=NONE cterm=NONE
+hi Magenta ctermfg=5 ctermbg=NONE cterm=NONE
+hi Cyan    ctermfg=6 ctermbg=NONE cterm=NONE
+hi Base2   ctermfg=7 ctermbg=NONE cterm=NONE
+hi Orange  ctermfg=9 ctermbg=NONE cterm=NONE
+hi Base01  ctermfg=10 ctermbg=NONE cterm=NONE
+hi Base00  ctermfg=11 ctermbg=NONE cterm=NONE
+hi Violet  ctermfg=13 ctermbg=NONE cterm=NONE
+hi Base1   ctermfg=14 ctermbg=NONE cterm=NONE
+hi Base3   ctermfg=15 ctermbg=NONE cterm=NONE
+
+hi Small cterm=bold,italic ctermfg=NONE ctermbg=NONE
+
+
+
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
 hi LineNr cterm=italic,bold
 hi MatchParen cterm=bold ctermbg=NONE ctermfg=5
 hi Comment cterm=italic
-hi PythonString cterm=bold,italic ctermfg=NONE ctermbg=NONE
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=8 ctermfg=NONE
 hi NonText ctermbg=bg
@@ -27,15 +48,39 @@ hi ModeMsg ctermbg=3 ctermfg=bg
 hi Todo ctermfg=3
 hi SpellBad cterm=bold,italic,undercurl
 
-hi pythonImport ctermbg=NONE ctermfg=3 cterm=NONE
-hi pythonFunction ctermbg=NONE ctermfg=2
-hi pythonStatement   ctermbg=NONE ctermfg=4
-hi pythonRepeat      ctermbg=NONE ctermfg=4
-hi pythonConditional ctermbg=NONE ctermfg=4
-hi pythonException   ctermbg=NONE ctermfg=4
-hi pythonOperator    ctermbg=NONE ctermfg=4
+" hi PythonImport ctermbg=NONE ctermfg=3 cterm=NONE
+" hi link pythonClassParameters pythonClass
 
-hi uniteCandidateInputKeyword ctermfg=3
+hi link PythonFloat Violet
+hi link PythonNumber Violet
+hi link PythonBuiltinObj Violet
+hi link pythonOctNumber Violet
+hi link pythonBinNumber Violet
+
+hi link PythonExtraOperator Base00
+hi link pythonDot Base00
+
+hi link PythonClass Green
+hi link PythonException Blue
+hi link PythonFunction Yellow
+hi link PythonInclude Magenta
+hi link PythonRepeat Blue
+hi link PythonSelf Base00
+hi link PythonStatement Blue
+hi link PythonString Small
+hi link pythonBuiltinFunc Normal
+hi link pythonBuiltinType Blue
+hi link pythonConditional Blue
+hi link pythonEscape PythonString
+hi link pythonExClass Orange
+hi link pythonExtraPseudoOperator Blue
+hi link pythonOperator Blue
+hi link pythonStrFormat Normal
+hi link pythonStrFormatting Normal
+hi link pythonStrTemplate PythonString
+hi pythonTodo ctermfg=15 ctermbg=bg
+
+hi uniteCandidateInputKeyword ctermbg=3 ctermfg=bg
 hi uniteCandidateSourceName ctermfg=4
 hi uniteInputLine ctermfg=fg
 hi uniteSource__Buffer ctermfg=4
@@ -56,6 +101,7 @@ hi vimfilerColumn__TimeToday ctermfg=fg
 hi StatusLineFile ctermbg=10 ctermfg=bg
 hi StatusLineFileReversed ctermbg=bg ctermfg=10
 hi Invisible ctermbg=bg ctermfg=bg
+hi StatusLineASCIIScrollbar ctermfg=10
 " bold is a hack, statuslineNC and statusline cant be the same hilight
 " not sure, why StatusLineNC needs the oposite than StatusLine, but it works
 hi StatusLineNC ctermbg=bg ctermfg=14 cterm=bold
@@ -95,7 +141,7 @@ au WinLeave * set nocursorline
 function! ASCIIScrollbar()
 let percent = line('.')*100/line('$')
 python << EOF
-blocks1 = list(reversed(['█', '▉', '▊', '▋', '▌', '▍', '▎', '▏']))
+blocks1 = list(reversed(['█', '▉', '▊', '▋', '▌', '▍', '▎', '▏', '─']))
 # blocks2 = list(reversed(['█', '▇', '▆', '▅', '▄', '▃', '▂', '▁']))
 blocks3 = []
 for b in blocks1:
@@ -106,7 +152,7 @@ for b in blocks1:
   blocks3.append('██' + b + '─')
 for b in blocks1:
   blocks3.append('███' + b + '')
-x = int(vim.eval('percent'))
+x = 100 - int(vim.eval('percent'))
 x = int(round( (x/100.)*(len(blocks3)-1) ))
 vim.command('let retval = "' + blocks3[x] + '"')
 EOF
@@ -123,4 +169,4 @@ function! StatusLineStatus()
   return stat
 endfunction
 
-set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLine#%{ASCIIScrollbar()}
+set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLineASCIIScrollbar#%{ASCIIScrollbar()}%#StatusLine#

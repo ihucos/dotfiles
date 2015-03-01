@@ -15,7 +15,6 @@
 " Plugin 'lilydjwg/colorizer'
 " Plugin 'lokaltog/vim-easymotion'
 " Plugin 'mhinz/vim-startify'
-" Plugin 'python-rope/ropevim'
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
@@ -27,10 +26,8 @@ Plugin 'buztard/vim-nomad'
 Plugin 'chrisbra/csv.vim'
 Plugin 'chriskempson/base16-vim'
 Plugin 'editorconfig/editorconfig-vim'
-Plugin 'ervandew/supertab'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'gmarik/Vundle.vim'
-Plugin 'hdima/python-syntax'
 Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'jpo/vim-railscasts-theme'
 Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
@@ -43,7 +40,6 @@ Plugin 'mikewest/vimroom'
 Plugin 'mileszs/ack.vim'
 Plugin 'mjbrownie/django-template-textobjects'
 Plugin 'morhetz/gruvbox' " a color scheme
-Plugin 'sheerun/vim-polyglot'
 Plugin 'sickill/vim-monokai'
 Plugin 'sjl/gundo.vim'
 Plugin 'terryma/vim-multiple-cursors' " TODO: learn or remove from this list
@@ -60,6 +56,8 @@ Plugin 'vim-scripts/ZoomWin'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'wellle/targets.vim'
 Plugin 'xolox/vim-misc'
+
+
 
 "             _ _   _                        __
 "   __      _(_) |_| |__     ___ ___  _ __  / _|
@@ -98,10 +96,12 @@ hi BetterF ctermfg=5 ctermbg=0
 
 
 Plugin 'davidhalter/jedi-vim'
-let g:jedi#auto_initialization = 0
-let g:jedi#auto_vim_configuration = 0
+let g:jedi#auto_vim_configuration = 1
 let g:jedi#popup_on_dot = 0
+let g:jedi#use_tabs_not_buffers = 0
 
+Plugin 'ervandew/supertab'
+let g:SuperTabDefaultCompletionType = "context"
 
 Plugin 'scrooloose/syntastic'
 autocmd BufEnter * :SyntasticCheck
@@ -183,3 +183,31 @@ let g:switch_custom_definitions =
             \ ['div', 'span', 'p'],
             \ ['hate', 'love'],
             \ ]
+
+
+Plugin 'klen/python-mode'
+let g:pymode_rope = 0
+" let g:pymode_rope_lookup_project = 0
+let g:pymode_trim_whitespaces = 0
+let g:pymode_options = 0
+let g:pymode_options_colorcolumn = 0
+let g:pymode_lint = 0
+let g:pymode_virtualenv = 0
+
+let g:pymode_indent = 1
+let g:pymode_folding = 1
+let g:pymode_motion = 1
+let g:pymode_syntax = 1
+
+let g:pymode_doc = 1
+let g:pymode_doc_bind = '<leader>K'
+
+let g:pymode_run = 1
+let g:pymode_run_bind = '<leader>r'
+
+let g:pymode_breakpoint = 1
+let g:pymode_breakpoint_bind = '<leader>b'
+
+
+Plugin 'sheerun/vim-polyglot' " this just needs to be under python-mode
+

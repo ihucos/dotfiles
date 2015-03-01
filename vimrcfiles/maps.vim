@@ -5,6 +5,10 @@ let mapleader = "\<Space>"
 noremap <C-c> 5jzz
 noremap <C-x> 5kzz
 
+" maybe make this flexible with ctags. ctags jump to next definition
+map J ]M
+map K [M
+
 " ===============================
 
 " nice extra stuff
@@ -24,8 +28,6 @@ nnoremap j gj
 nnoremap k gk
 noremap gj j
 noremap gk k
-noremap J 5j
-noremap K 5k
 
 
 " FIXME: pasting before first charachter of line does not work
@@ -210,7 +212,7 @@ noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 " map <leader>j :Unite -buffer-name=tag -start-insert -no-split -wrap tag -wipe<cr>
 " " Custom mappings for the unite buffer
 
-map <leader>f :VimFilerCreate<cr>T
+map <leader>f :VimFilerCreate<cr>
 
 nnoremap <Leader>t :Tagbar<cr>
 

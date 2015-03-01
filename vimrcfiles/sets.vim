@@ -21,7 +21,7 @@ set incsearch " show search matches as you type
 set laststatus=2
 set lazyredraw
 set list
-set listchars=extends:│,precedes:◀,trail:␣,tab:⇥\ 
+set listchars=trail:␣,tab:⇥\ 
 set mouse=a
 set nobackup
 set noerrorbells " No annoying sound on errors
