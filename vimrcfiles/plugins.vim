@@ -211,3 +211,5 @@ let g:pymode_breakpoint_bind = '<leader>b'
 
 Plugin 'sheerun/vim-polyglot' " this just needs to be under python-mode
 
+Plugin 'fisadev/vim-isort'
+let g:vim_isort_map = ''

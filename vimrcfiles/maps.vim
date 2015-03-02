@@ -71,6 +71,9 @@ inoremap <right> 2<C-w>>a
 "    | |\___|\__,_|\__,_|\___|_|    |_| |_| |_|\__,_| .__/|___/
 "    |_|
 
+vnoremap <leader>a :<C-u>call Pep8FixVisual()<cr>
+nnoremap <leader>a :<C-u>call Pep8FixLine()<cr>
+
 " Reload .vimrc
 map <leader>r :source ~/.vimrc<cr>
 
@@ -87,7 +90,7 @@ map <leader>c cc<ESC>
 map <leader>w :w<cr>
 vmap <leader>w :w<cr>
 map <leader>q :qa<cr>
-vmap <leader>q <ESC>:qa<cr>
+vmap <leader>q :<C-u>qa<cr>
 
 " 'normal' copy paste with
 nmap <leader>y "+y

@@ -1,3 +1,10 @@
+
+
+" TODO: py print jedi_vim.get_script().definition()[0].description
+" TODO: jump to next ctags definition
+
+
+
 " taken from http://vim.wikia.com/wiki/Avoiding_the_%22Hit_ENTER_to_continue%22_prompt
 command! -nargs=1 Silent
 \ | execute ':silent !'.<q-args>
@@ -75,3 +82,33 @@ function! MultiPurposeUnite()
   call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
 endfunction
 
+command! -nargs=0 Diff :w !grc diff % -
+
+au FileType python setlocal formatprg=autopep8\ -a\ -
+
+function! ReadCmdInp(cmd)
+  let mycol = col('.')
+  let line = line('$') - line('.')
+  execute ':%!' . a:cmd
+  call cursor(line('$')-line, mycol)
+endfunction
+
+" can be make much faster with python ("autopep8.fix_code")
+function! Pep8Fix(start_line, end_line)
+  call ReadCmdInp("autopep8 -aa -p 500 --range " .a:start_line." ".a:end_line. " -")
+endfunction
+function! Pep8FixLine()
+  call Pep8Fix(line('.'), line('.'))
+endfunction
+function! Pep8FixVisual()
+  call Pep8Fix(line("'<"), line("'>"))
+endfunction
+
+function! PyImportAdd(module)
+  call ReadCmdInp('isort -a "'.a:module.'" -')
+endfunction
+command! -nargs=1 PyImportAdd silent call PyImportAdd(<f-args>)
+function! PyImportRemove(module)
+  call ReadCmdInp('isort -r "'.a:module.'" -')
+endfunction
+command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
