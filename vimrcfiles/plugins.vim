@@ -18,6 +18,7 @@
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
+Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
 Plugin 'airblade/vim-rooter'
 Plugin 'altercation/vim-colors-solarized'
@@ -58,7 +59,6 @@ Plugin 'wellle/targets.vim'
 Plugin 'xolox/vim-misc'
 
 
-
 "             _ _   _                        __
 "   __      _(_) |_| |__     ___ ___  _ __  / _|
 "   \ \ /\ / / | __| '_ \   / __/ _ \| '_ \| |_
@@ -96,9 +96,16 @@ hi BetterF ctermfg=5 ctermbg=0
 
 
 Plugin 'davidhalter/jedi-vim'
-let g:jedi#auto_vim_configuration = 1
-let g:jedi#popup_on_dot = 0
+let g:jedi#auto_vim_configuration = 1 " dont add preview to completeopt
+" let g:jedi#show_call_signatures = 2
+let g:jedi#popup_on_dot = 1
 let g:jedi#use_tabs_not_buffers = 0
+let g:jedi#documentation_command = '<localleader>K'
+let g:jedi#goto_assignments_command = '<localleader>g'
+let g:jedi#goto_definitions_command = '<localleader>d'
+let g:jedi#rename_command = '<localleader>r'
+let g:jedi#usages_command = '<localleader>n'
+
 
 Plugin 'ervandew/supertab'
 let g:SuperTabDefaultCompletionType = "context"
@@ -112,10 +119,6 @@ let g:syntastic_error_symbol = '●'
 let g:syntastic_warning_symbol = '●'
 let g:syntastic_style_warning_symbol = '◌'
 let g:syntastic_style_error_symbol = '◌'
-au VimEnter * hi SyntasticErrorSign ctermfg=1 ctermbg=bg
-au VimEnter * hi SyntasticWarningSign ctermfg=9 ctermbg=bg
-au VimEnter * hi SyntasticStyleErrorSign ctermfg=12 ctermbg=bg
-au VimEnter * hi SyntasticStyleWarningSign ctermfg=12 ctermbg=bg
 
 
 Plugin 'Shougo/vimfiler.vim'
@@ -139,6 +142,7 @@ function! TagbarStatusFunc(current, sort, fname, flags, ...) abort
     return '%#StatusLineFile# [tagbar] ' . a:fname . ' %#StatusLine#'
 endfunction
 let g:tagbar_status_func = 'TagbarStatusFunc'
+let g:tagbar_sort = 0
 
 
 Plugin 'AndrewRadev/switch.vim'
@@ -193,6 +197,7 @@ let g:pymode_options = 0
 let g:pymode_options_colorcolumn = 0
 let g:pymode_lint = 0
 let g:pymode_virtualenv = 0
+let g:pymode_run = 0
 
 let g:pymode_indent = 1
 let g:pymode_folding = 1
@@ -201,9 +206,6 @@ let g:pymode_syntax = 1
 
 let g:pymode_doc = 1
 let g:pymode_doc_bind = '<leader>K'
-
-let g:pymode_run = 1
-let g:pymode_run_bind = '<leader>r'
 
 let g:pymode_breakpoint = 1
 let g:pymode_breakpoint_bind = '<leader>b'

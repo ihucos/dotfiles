@@ -300,6 +300,9 @@ fi
 if [ -f "$HOME/.dynamic-colors/completions/dynamic-colors.zsh" ]; then
   source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
 fi
+if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
+  source /usr/local/bin/virtualenvwrapper_lazy.sh
+fi
 
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
@@ -407,7 +410,7 @@ print_pre_prompt (){
   echo -en $err
   # history -a # write command history at every prompt.
   # history -n
-  history -a; history -c; history -r
+  # history -a; history -c; history -r
 }
 PROMPT_COMMAND=print_pre_prompt
 

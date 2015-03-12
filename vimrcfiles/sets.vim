@@ -6,7 +6,7 @@ set background=dark
 set backspace=indent,eol,start " bs: allows you to backspace over the listed character types
 set backup " enable backups
 set backupdir=~/.vim/tmp/backup//" backups
-set completeopt=longest,menuone,preview " don't select first item, follow typing in autocomplete
+set completeopt=longest,menuone " don't select first item, follow typing in autocomplete
 set cursorline
 set directory=~/.vim/tmp/swap// " swap files
 set encoding=utf8 " Set utf8 as standard encoding and en_US as the standard language

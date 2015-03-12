@@ -93,7 +93,7 @@ function! ReadCmdInp(cmd)
   call cursor(line('$')-line, mycol)
 endfunction
 
-" can be make much faster with python ("autopep8.fix_code")
+" can be made much faster with python ("autopep8.fix_code")
 function! Pep8Fix(start_line, end_line)
   call ReadCmdInp("autopep8 -aa -p 500 --range " .a:start_line." ".a:end_line. " -")
 endfunction

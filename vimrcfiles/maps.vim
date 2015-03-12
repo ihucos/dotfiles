@@ -1,4 +1,5 @@
 let mapleader = "\<Space>"
+let maplocalleader = "\\"
 
 " === EXPERIMENTAL STUFF HERE ===
 
@@ -15,6 +16,8 @@ map K [M
 noremap <CR> mzo<ESC>`z
 noremap <BS> mzO<ESC>`z
 nnoremap Y y$
+" select text just pasted
+nnoremap gV `[v`]
 
 " Restore case-sensitivity for jumping to tags (set ic disables it)
 map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
@@ -23,18 +26,16 @@ map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
 vnoremap <leader>. :normal .<cr>
 vnoremap <leader>@ :normal @
 
-nnoremap <silent> p p`]
 nnoremap j gj
 nnoremap k gk
 noremap gj j
 noremap gk k
 
 
-" FIXME: pasting before first charachter of line does not work
-nnoremap p gP`[v`]=
-nnoremap P gp`[v`]=
-vnoremap p gP`[v`]=
-vnoremap P gp`[v`]=
+nnoremap p ]P`]
+nnoremap P ]p`]
+vnoremap p ]P`]
+vnoremap P ]p`]
 
 " go a paragraph up or down
 " TODO: add support for motions
@@ -78,7 +79,7 @@ nnoremap <leader>a :<C-u>call Pep8FixLine()<cr>
 map <leader>r :source ~/.vimrc<cr>
 
 " Unfuck my screen
-nnoremap U :syntax sync fromstart<cr>:redraw!<cr>
+nnoremap <leader>U :syntax sync fromstart<cr>:redraw!<cr>
 
 " map remapped standart mapping with leader
 nnoremap <leader>m m
@@ -200,6 +201,7 @@ endfunction
 noremap <leader>u :call MultiPurposeUnite()<cr>
 noremap <leader>/ :call MyUnite('line', 'line', '-start-insert')<cr>
 noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
+noremap <leader>o :call MyUnite('outline', 'outline', '')<cr>
 
 " noremap <leader>j :call MyUnite('tag', 'tag', '-start-insert')<cr>
 " noremap <leader>k :call MyUnite('buffer:-', 'buffer', '')<cr>
@@ -322,5 +324,3 @@ noremap <leader>6 6
 noremap <leader>7 7
 noremap <leader>8 8
 noremap <leader>9 9
-
-

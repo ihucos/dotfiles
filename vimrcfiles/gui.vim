@@ -10,8 +10,9 @@ match TrailingWhitespace '\s\+$'
 hi ErrorMsg ctermfg=bg ctermbg=9
 "
 " awesome 80-character limiter
-au filetype python execute "setlocal colorcolumn=" . join(range(81,335), ',')
+au FileType python execute "setlocal colorcolumn=" . join(range(80,335), ',')
 
+au FileType python setlocal completeopt-=preview
 
 " solarized colors
 " syntax match Red "Red" containedin=vimHiGroup,vimHiKeyList
@@ -31,8 +32,7 @@ hi Base1   ctermfg=14 ctermbg=NONE cterm=NONE
 hi Base3   ctermfg=15 ctermbg=NONE cterm=NONE
 
 hi Small cterm=bold,italic ctermfg=NONE ctermbg=NONE
-
-
+hi SmallGrey ctermbg=bg ctermfg=10 cterm=bold,italic
 
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
@@ -78,8 +78,14 @@ hi link pythonOperator Blue
 hi link pythonStrFormat Normal
 hi link pythonStrFormatting Normal
 hi link pythonStrTemplate PythonString
+hi link pythonDocTest2 PythonString
+hi link pythonDocstring PythonString
 hi pythonTodo ctermfg=15 ctermbg=bg
 
+hi link uniteSource__GrepLineNR SmallGrey
+" hi link uniteSource__Outline Invisible
+hi link uniteSource__Outline_function PythonFunction
+hi link uniteSource__Outline_type PythonClass
 hi uniteCandidateInputKeyword ctermbg=3 ctermfg=bg
 hi uniteCandidateSourceName ctermfg=4
 hi uniteInputLine ctermfg=fg
@@ -89,7 +95,6 @@ hi uniteSource__Buffer_Modified ctermfg=10
 hi uniteSource__Buffer_Prefix ctermfg=10
 hi uniteSource__Buffer_Time ctermfg=10
 hi uniteSource__GrepFile ctermbg=bg ctermfg=4
-hi uniteSource__GrepLineNR ctermbg=bg ctermfg=10 cterm=bold,italic
 hi uniteSource__Tag_File ctermbg=NONE ctermfg=4
 
 hi vimfilerClosedFile ctermfg=4
@@ -108,13 +113,20 @@ hi StatusLineNC ctermbg=bg ctermfg=14 cterm=bold
 hi StatusLine ctermbg=14 ctermfg=bg
 hi VertSplit ctermfg=14 ctermbg=bg
 
+hi link helpCommand Blue
+hi link qfLineNr SmallGrey
+hi link qfSeparator Invisible
 
 function! Update()
-  hi LineNr ctermfg=0 ctermbg=0
   hi SignColumn ctermbg=bg
   hi clear CursorLine
   hi CursorLine ctermbg=0
   hi SyntasticError ctermbg=0 cterm=underline
+  hi SyntasticErrorSign ctermfg=1 ctermbg=bg
+  hi SyntasticWarningSign ctermfg=9 ctermbg=bg
+  hi SyntasticStyleErrorSign ctermfg=12 ctermbg=bg
+  hi SyntasticStyleWarningSign ctermfg=12 ctermbg=bg
+
 endfunction
 
 call Update()
