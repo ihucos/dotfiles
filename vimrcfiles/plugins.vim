@@ -18,6 +18,8 @@
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
+Plugin 'kana/vim-niceblock'
+Plugin 'osyo-manga/unite-filetype'
 Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
 Plugin 'airblade/vim-rooter'
@@ -42,7 +44,6 @@ Plugin 'mileszs/ack.vim'
 Plugin 'mjbrownie/django-template-textobjects'
 Plugin 'morhetz/gruvbox' " a color scheme
 Plugin 'sickill/vim-monokai'
-Plugin 'sjl/gundo.vim'
 Plugin 'terryma/vim-multiple-cursors' " TODO: learn or remove from this list
 Plugin 'tommcdo/vim-exchange'
 Plugin 'tomtom/tcomment_vim'
@@ -88,6 +89,15 @@ if executable('ag')
 endif
 au WinLeave plugin-unite echo <plug>(unite_exit)
 
+let g:unite_source_menu_menus = {}
+
+let g:unite_source_menu_menus.utils = {
+\ 'description' : 'Help utilities',
+\}
+
+let g:unite_source_menu_menus.utils.command_candidates = [
+    \[':VCoolor - Shows color picker to change CSS color under cursor', 'VCoolor'],
+\]
 
 Plugin 'rhysd/clever-f.vim'
 let g:clever_f_mark_cursor = 0
@@ -96,7 +106,7 @@ hi BetterF ctermfg=5 ctermbg=0
 
 
 Plugin 'davidhalter/jedi-vim'
-let g:jedi#auto_vim_configuration = 1 " dont add preview to completeopt
+let g:jedi#auto_vim_configuration = 1
 " let g:jedi#show_call_signatures = 2
 let g:jedi#popup_on_dot = 1
 let g:jedi#use_tabs_not_buffers = 0
@@ -106,7 +116,15 @@ let g:jedi#goto_definitions_command = '<localleader>d'
 let g:jedi#rename_command = '<localleader>r'
 let g:jedi#usages_command = '<localleader>n'
 
+autocmd FileType python setlocal omnifunc=jedi#completions
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:neocomplete#force_omni_input_patterns = {}
+let g:neocomplete#force_omni_input_patterns.python =
+\ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
 
+
+" alternative pattern: '\h\w*\|[^. \t]\.\w*'
 Plugin 'ervandew/supertab'
 let g:SuperTabDefaultCompletionType = "context"
 
@@ -198,6 +216,7 @@ let g:pymode_options_colorcolumn = 0
 let g:pymode_lint = 0
 let g:pymode_virtualenv = 0
 let g:pymode_run = 0
+let g:pymode_syntax_indent_errors = 0
 
 let g:pymode_indent = 1
 let g:pymode_folding = 1
@@ -211,7 +230,28 @@ let g:pymode_breakpoint = 1
 let g:pymode_breakpoint_bind = '<leader>b'
 
 
-Plugin 'sheerun/vim-polyglot' " this just needs to be under python-mode
+" this just needs to be under python-mode
+Plugin 'sheerun/vim-polyglot'
 
 Plugin 'fisadev/vim-isort'
 let g:vim_isort_map = ''
+
+
+Plugin 'KabbAmine/vCoolor.vim'
+let g:vcoolor_map = '<nop>'
+let g:vcool_ins_rgb_map = '<nop>'
+let g:vcool_ins_hsl_map = '<nop>'
+let g:vcool_ins_rgba_map = '<nop>'
+
+
+Plugin 'mbbill/undotree'
+let g:undotree_WindowLayout = 2
+let g:undotree_SplitWidth = 35
+let g:undotree_DiffAutoOpen = 1
+" let g:undotree_HighlightChangedText = 0
+
+Plugin 'benmills/vimux'
+let g:VimuxPromptString = "$ "
+
+Plugin 'Shougo/neocomplete.vim' " TODO: configure
+let g:neocomplete#enable_at_startup = 1

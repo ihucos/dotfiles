@@ -1,23 +1,49 @@
 let mapleader = "\<Space>"
+ " allow holding down the leader key like a modfier key
+map <leader><leader> <leader>
 let maplocalleader = "\\"
 
+
+
+
 " === EXPERIMENTAL STUFF HERE ===
-
-noremap <C-c> 5jzz
-noremap <C-x> 5kzz
-
 " maybe make this flexible with ctags. ctags jump to next definition
-map J ]M
-map K [M
+" map J ]M
+" map K [M
+
+noremap ; :
+
+noremap J 5j
+noremap K 5k
+
+noremap <C-j> 5jzz
+noremap <C-k> 5kzz
+noremap <C-l> zb
+noremap <C-h> zt
+
+" TODO: do something nice with C-c
+" map <C-c> ]M
+" map <C-x> [M
+
+" Clear highlight.
+nnoremap <ESC><ESC> :nohlsearch<CR>:match<CR>
+
+
 
 " ===============================
 
 " nice extra stuff
-noremap <CR> mzo<ESC>`z
-noremap <BS> mzO<ESC>`z
+" noremap <CR> mzo<ESC>`z
+" noremap <BS> mzO<ESC>`z
+noremap <silent> <CR> :Flash<cr>
+noremap <silent> <BS> :Flash<cr>
 nnoremap Y y$
+
 " select text just pasted
 nnoremap gV `[v`]
+"
+" Disable Ex-mode.
+nnoremap Q q
 
 " Restore case-sensitivity for jumping to tags (set ic disables it)
 map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
@@ -86,7 +112,8 @@ nnoremap <leader>m m
 nnoremap <leader>J J
 nnoremap <leader>K K
 
-map <leader>c cc<ESC>
+map <leader>x cc<ESC>
+map <leader>c <leader>mzgcip`z<ESC>
 
 map <leader>w :w<cr>
 vmap <leader>w :w<cr>
@@ -152,6 +179,8 @@ command! -bang WA wa<bang>
 command! -bang Wq wq<bang>
 command! -bang WQ wq<bang>
 command! -bang WQ wq<bang>
+cnoreabbrev wQ wq
+cnoreabbrev Wq wq
 nmap <F1> <Esc>
 
 "           _             _
@@ -199,9 +228,20 @@ function! MultiPurposeUnite()
     call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
 endfunction
 noremap <leader>u :call MultiPurposeUnite()<cr>
-noremap <leader>/ :call MyUnite('line', 'line', '-start-insert')<cr>
+noremap <leader>/ :call MyUnite('line:wrap', 'line', '-start-insert')<cr>
 noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 noremap <leader>o :call MyUnite('outline', 'outline', '')<cr>
+noremap <leader>sf :call MyUnite('filetype filetype/new', 'filetype', '-start-insert')<cr>
+noremap <leader>sr :call MyUnite('register history/yank', 'register', '-start-insert')<cr>
+noremap <leader>su :call MyUnite('menu:utils', 'menu-utils', '')<cr>
+
+noremap <leader>su :UndotreeToggle<cr>
+
+noremap <silent> <leader>vc :VimuxPromptCommand<cr>
+noremap <silent> <leader>vv :VimuxRunLastCommand<cr>
+noremap <silent> <leader>vx :VimuxCloseRunner<cr>
+noremap <silent> <leader>vi :VimuxInspect<cr>
+noremap <silent> <Leader>vz :call VimuxZoomRunner()<CR>
 
 " noremap <leader>j :call MyUnite('tag', 'tag', '-start-insert')<cr>
 " noremap <leader>k :call MyUnite('buffer:-', 'buffer', '')<cr>
@@ -221,39 +261,40 @@ map <leader>f :VimFilerCreate<cr>
 
 nnoremap <Leader>t :Tagbar<cr>
 
-nnoremap <silent> <C-h> zH:TmuxNavigateLeft<cr>zH
-nnoremap <silent> <C-j> zH:TmuxNavigateDown<cr>
-nnoremap <silent> <C-k> zH:TmuxNavigateUp<cr>
-nnoremap <silent> <C-l> zH:TmuxNavigateRight<cr>
+" FIMXE: use other than C-x as prefix
+nnoremap <silent> <C-x><C-h> zH:TmuxNavigateLeft<cr>zH
+nnoremap <silent> <C-x><C-j> zH:TmuxNavigateDown<cr>
+nnoremap <silent> <C-x><C-k> zH:TmuxNavigateUp<cr>
+nnoremap <silent> <C-x><C-l> zH:TmuxNavigateRight<cr>
 
-inoremap <silent> <C-h> <ESC>lzH:TmuxNavigateLeft<cr>
-inoremap <silent> <C-j> <ESC>lzH:TmuxNavigateDown<cr>
-inoremap <silent> <C-k> <ESC>lzH:TmuxNavigateUp<cr>
-inoremap <silent> <C-l> <ESC>lzH:TmuxNavigateRight<cr>
+inoremap <silent> <C-x><C-h> <ESC>lzH:TmuxNavigateLeft<cr>
+inoremap <silent> <C-x><C-j> <ESC>lzH:TmuxNavigateDown<cr>
+inoremap <silent> <C-x><C-k> <ESC>lzH:TmuxNavigateUp<cr>
+inoremap <silent> <C-x><C-l> <ESC>lzH:TmuxNavigateRight<cr>
 
-vnoremap <silent> <C-h> <ESC>zH:TmuxNavigateLeft<cr>gv
-vnoremap <silent> <C-j> <ESC>zH:TmuxNavigateDown<cr>gv
-vnoremap <silent> <C-k> <ESC>zH:TmuxNavigateUp<cr>gv
-vnoremap <silent> <C-l> <ESC>zH:TmuxNavigateRight<cr>gv
+vnoremap <silent> <C-x><C-h> <ESC>zH:TmuxNavigateLeft<cr>gv
+vnoremap <silent> <C-x><C-j> <ESC>zH:TmuxNavigateDown<cr>gv
+vnoremap <silent> <C-x><C-k> <ESC>zH:TmuxNavigateUp<cr>gv
+vnoremap <silent> <C-x><C-l> <ESC>zH:TmuxNavigateRight<cr>gv
 
 " see why we need <C-c>: http://superuser.com/questions/739971/how-to-properly-remap-del-to-esc-in-vim)
-cnoremap <silent> <C-h> <C-c>zH:TmuxNavigateLeft<cr>
-cnoremap <silent> <C-j> <C-c>zH:TmuxNavigateDown<cr>
-cnoremap <silent> <C-k> <C-c>zH:TmuxNavigateUp<cr>
-cnoremap <silent> <C-l> <C-c>zH:TmuxNavigateRight<cr>
+cnoremap <silent> <C-x><C-h> <C-c>zH:TmuxNavigateLeft<cr>
+cnoremap <silent> <C-x><C-j> <C-c>zH:TmuxNavigateDown<cr>
+cnoremap <silent> <C-x><C-k> <C-c>zH:TmuxNavigateUp<cr>
+cnoremap <silent> <C-x><C-l> <C-c>zH:TmuxNavigateRight<cr>
 
 " unmap mapping from vim-rooter
 au VimEnter * unmap <leader>cd
 
-function! UniteTmuxNavigteOverwrite()
-  inoremap <silent> <C-h> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateLeft<cr>
-  inoremap <silent> <C-j> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateDown<cr>
-  inoremap <silent> <C-k> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateUp<cr>
-  inoremap <silent> <C-l> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateRight<cr>
-endfunction
-
-" exit this sort of buffers with ESC
-autocmd FileType unite call UniteTmuxNavigteOverwrite()
+" function! UniteTmuxNavigteOverwrite()
+"   inoremap <silent> <C-h> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateLeft<cr>
+"   inoremap <silent> <C-j> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateDown<cr>
+"   inoremap <silent> <C-k> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateUp<cr>
+"   inoremap <silent> <C-l> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateRight<cr>
+" endfunction
+"
+" " exit this sort of buffers with ESC
+" autocmd FileType unite call UniteTmuxNavigteOverwrite()
 " autocmd FileType unite map <buffer> <ESC> <plug>(unite_exit)
 autocmd FileType help map <buffer> q :b#<bar>bd#<CR>
 autocmd FileType vimfiler map <buffer> q :b#<bar>bd#<CR>
@@ -314,13 +355,52 @@ inoremap <C-c>8 8
 inoremap <C-c>9 9
 imap <C-c><C-c> <C-c> " makes holding down C-c for a longer than one keypress possible
 
-noremap <leader>0 0
-noremap <leader>1 1
-noremap <leader>2 2
-noremap <leader>3 3
-noremap <leader>4 4
-noremap <leader>5 5
-noremap <leader>6 6
-noremap <leader>7 7
-noremap <leader>8 8
-noremap <leader>9 9
+noremap <C-c>0 0
+noremap <C-c>1 1
+noremap <C-c>2 2
+noremap <C-c>3 3
+noremap <C-c>4 4
+noremap <C-c>5 5
+noremap <C-c>6 6
+noremap <C-c>7 7
+noremap <C-c>8 8
+noremap <C-c>9 9
+
+
+"easier to type a>, i], etc... "
+" <angle>
+onoremap aa a>
+xnoremap aa a>
+onoremap ia i>
+xnoremap ia i>
+" [rectangle]
+onoremap ar a]
+xnoremap ar a]
+onoremap ir i]
+xnoremap ir i]
+" 'quote'
+onoremap aq a'
+xnoremap aq a'
+onoremap iq i'
+xnoremap iq i'
+" double quote
+onoremap ad a"
+xnoremap ad a"
+onoremap id i"
+xnoremap id i"
+
+
+
+"  ____       _           _              _           _
+" / ___|  ___| | ___  ___| |_  __      _(_)_ __   __| | _____      _____
+" \___ \ / _ \ |/ _ \/ __| __| \ \ /\ / / | '_ \ / _` |/ _ \ \ /\ / / __|
+"  ___) |  __/ |  __/ (__| |_   \ V  V /| | | | | (_| | (_) \ V  V /\__ \
+" |____/ \___|_|\___|\___|\__|   \_/\_/ |_|_| |_|\__,_|\___/ \_/\_/ |___/
+"
+
+noremap <leader>4 1<C-w>w
+noremap <leader>5 2<C-w>w
+noremap <leader>6 3<C-w>w
+noremap <leader>7 4<C-w>w
+noremap <leader>8 5<C-w>w
+noremap <leader>9 6<C-w>w

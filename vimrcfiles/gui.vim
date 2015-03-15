@@ -8,11 +8,12 @@ hi TrailingWhitespace cterm=bold ctermfg=15
 match TrailingWhitespace '\s\+$'
 
 hi ErrorMsg ctermfg=bg ctermbg=9
-"
+
 " awesome 80-character limiter
 au FileType python execute "setlocal colorcolumn=" . join(range(80,335), ',')
-
 au FileType python setlocal completeopt-=preview
+au FileType undotree setlocal statusline=
+au FileType diff setlocal statusline=
 
 " solarized colors
 " syntax match Red "Red" containedin=vimHiGroup,vimHiKeyList
@@ -33,11 +34,14 @@ hi Base3   ctermfg=15 ctermbg=NONE cterm=NONE
 
 hi Small cterm=bold,italic ctermfg=NONE ctermbg=NONE
 hi SmallGrey ctermbg=bg ctermfg=10 cterm=bold,italic
+hi Grey ctermbg=bg ctermfg=10 cterm=NONE
+hi SmallBlue ctermfg=4 ctermbg=NONE cterm=bold,italic
+hi link White Base3
 
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
 hi LineNr cterm=italic,bold
-hi MatchParen cterm=bold ctermbg=NONE ctermfg=5
+hi MatchParen ctermbg=3 ctermfg=bg
 hi Comment cterm=italic
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=8 ctermfg=NONE
@@ -81,12 +85,13 @@ hi link pythonStrTemplate PythonString
 hi link pythonDocTest2 PythonString
 hi link pythonDocstring PythonString
 hi pythonTodo ctermfg=15 ctermbg=bg
+hi link pythonRun Grey
 
 hi link uniteSource__GrepLineNR SmallGrey
 " hi link uniteSource__Outline Invisible
 hi link uniteSource__Outline_function PythonFunction
 hi link uniteSource__Outline_type PythonClass
-hi uniteCandidateInputKeyword ctermbg=3 ctermfg=bg
+hi uniteCandidateInputKeyword ctermbg=bg ctermfg=3
 hi uniteCandidateSourceName ctermfg=4
 hi uniteInputLine ctermfg=fg
 hi uniteSource__Buffer ctermfg=4
@@ -102,6 +107,17 @@ hi vimfilerNonMark ctermfg=11
 hi vimfilerDirectory ctermfg=4
 hi vimfilerColumn__TypeDirectory ctermfg=4
 hi vimfilerColumn__TimeToday ctermfg=fg
+
+hi link UndotreeTimeStamp Normal
+hi link UndotreeSavedSmall Blue
+hi link UndotreeSavedBig Yellow
+hi link UndotreeNext Normal
+hi link UndotreeCurrent Normal
+hi link UndotreeHEad Normal
+hi link UndotreeNodeCurrent Yellow
+hi link UndotreeCurrent Yellow
+
+hi link diffRemoved Orange
 
 hi StatusLineFile ctermbg=10 ctermfg=bg
 hi StatusLineFileReversed ctermbg=bg ctermfg=10
@@ -182,3 +198,42 @@ function! StatusLineStatus()
 endfunction
 
 set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLineASCIIScrollbar#%{ASCIIScrollbar()}%#StatusLine#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+" remove the keywords. we'll re-add them below
+" syntax clear pythonOperator
+" syntax clear pythonStatement
+
+
+
+" " include the space after “not” – if present – so that “not a” becomes “¬a”.
+" " also, don't hide “not” behind ‘¬’ if it is after “is ”.
+" syntax match pyNiceOperator "<=" conceal cchar=≤
+" syntax match pyNiceOperator ">=" conceal cchar=≥
+" syntax match pyNiceOperator "=\@<!===\@!" conceal cchar=≡
+" syntax match pyNiceOperator "!=" conceal cchar=≢
+" syntax keyword pyNiceStatement def nextgroup=pythonFunction skipwhite
+
+
+" syn keyword MyPythonSelf self cls conceal cchar=. nextgroup=pythonDot
+
+" hi link pyNiceOperator Operator
+" hi link pyNiceStatement Statement
+" hi link pyNiceKeyword Keyword
+" hi link pyNiceBuiltin Builtin
+" hi! link Conceal pythonDot
+" setlocal conceallevel=1
+" "
+" hi link MyPythonSelf Normal

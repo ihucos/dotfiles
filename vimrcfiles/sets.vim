@@ -18,7 +18,7 @@ set hidden
 set history=1000 " remember more commands and search history
 set ignorecase " ignore case when searching
 set incsearch " show search matches as you type
-set laststatus=2
+" set laststatus=2
 set lazyredraw
 set list
 set listchars=trail:␣,tab:⇥\ 
@@ -34,7 +34,8 @@ set notimeout
 set novisualbell
 set nowb
 set nowrap
-set scrolloff=999 " Keep x lines below and above the cursor
+" set scrolloff=999 " Keep x lines below and above the cursor
+set scrolloff=5 " Keep x lines below and above the cursor
 set showbreak=┊
 set sidescroll=1
 set sidescrolloff=5
@@ -58,4 +59,3 @@ set fillchars+=fold:\⋅
 set fillchars+=stlnc:┴
 set fillchars+=vert:│
 set fillchars+=stl:┴
-

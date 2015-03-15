@@ -50,7 +50,8 @@ xterm*dynamicColors: true
 urxvt*dynamicColors: on
 
 
-
+! Sets the hotkey that starts the incremental scrollback buffer search (default: "M-s").
+URxvt*searchable-scrollback: M-P
 
 ! Compile xft: Turn on/off double-buffering for xft (default enabled).  On some card/driver
 ! URxvt*buffered: boolean
@@ -299,8 +300,6 @@ urxvt*dynamicColors: on
 ! Selection auto-transform patterns, see the urxvtperl(3) manpage for details.
 ! URxvt*selection-autotransform.idx: perl-transform
 
-! Sets the hotkey that starts the incremental scrollback buffer search (default: "M-s").
-! URxvt*searchable-scrollback: keysym
 
 ! Specifies the program to be started with a URL argument. Used by the "selection-popup" and "matcher"
 ! URxvt*url-launcher: string

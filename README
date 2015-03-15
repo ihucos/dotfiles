@@ -5,4 +5,6 @@ notes to install in new system:
 make this:
 http://stackoverflow.com/questions/13385690/how-to-use-git-with-gnome-keyring-integration
 
-on vim :VimProcInstall
+in vim :VimProcInstall
+
+Install with amke: http://www.gnu.org/software/global/download.html
