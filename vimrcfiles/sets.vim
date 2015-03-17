@@ -21,7 +21,7 @@ set incsearch " show search matches as you type
 " set laststatus=2
 set lazyredraw
 set list
-set listchars=trail:␣,tab:⇥\ 
+set listchars=precedes:⣿,trail:␣,tab:⇥\ 
 set mouse=a
 set nobackup
 set noerrorbells " No annoying sound on errors
@@ -35,7 +35,7 @@ set novisualbell
 set nowb
 set nowrap
 " set scrolloff=999 " Keep x lines below and above the cursor
-set scrolloff=5 " Keep x lines below and above the cursor
+set scrolloff=0 " Keep x lines below and above the cursor
 set showbreak=┊
 set sidescroll=1
 set sidescrolloff=5

@@ -2,7 +2,7 @@ colo solarized
 
 " Highlight VCS conflict markers
 hi VCSConflict ctermfg=bg ctermbg=9
-match VCSConflict '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
+match VCSConflict '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$' " seems to get overwritte by PythonExtraOperator
 
 hi TrailingWhitespace cterm=bold ctermfg=15
 match TrailingWhitespace '\s\+$'

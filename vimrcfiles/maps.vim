@@ -18,8 +18,10 @@ noremap K 5k
 
 noremap <C-j> 5jzz
 noremap <C-k> 5kzz
-noremap <C-l> zb
-noremap <C-h> zt
+noremap <C-h> 5<C-y>
+noremap <C-l> 5<C-e>
+inoremap <C-h> <esc>5<C-y>a
+inoremap <C-l> <esc>5<C-e>a
 
 " TODO: do something nice with C-c
 " map <C-c> ]M
@@ -28,7 +30,7 @@ noremap <C-h> zt
 " Clear highlight.
 nnoremap <ESC><ESC> :nohlsearch<CR>:match<CR>
 
-
+nnoremap Q @q
 
 " ===============================
 
@@ -41,9 +43,6 @@ nnoremap Y y$
 
 " select text just pasted
 nnoremap gV `[v`]
-"
-" Disable Ex-mode.
-nnoremap Q q
 
 " Restore case-sensitivity for jumping to tags (set ic disables it)
 map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
@@ -58,10 +57,10 @@ noremap gj j
 noremap gk k
 
 
-nnoremap p ]P`]
-nnoremap P ]p`]
-vnoremap p ]P`]
-vnoremap P ]p`]
+nnoremap p ]P`]l
+nnoremap P ]p`]l
+vnoremap p "_x]P`]l
+vnoremap P "_x]p`]l
 
 " go a paragraph up or down
 " TODO: add support for motions

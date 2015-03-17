@@ -18,6 +18,8 @@
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
+Plugin 'glts/vim-cottidie'
+Plugin 'Shougo/vimshell.vim'
 Plugin 'kana/vim-niceblock'
 Plugin 'osyo-manga/unite-filetype'
 Plugin 'Shougo/unite-outline'
@@ -254,4 +256,33 @@ Plugin 'benmills/vimux'
 let g:VimuxPromptString = "$ "
 
 Plugin 'Shougo/neocomplete.vim' " TODO: configure
+Plugin 'Shougo/neosnippet'
+Plugin 'Shougo/neosnippet-snippets'
+
 let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#max_list = 5 " seems not to work :-/
+
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
+
+" FIXME: make switching with tab work
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+  set conceallevel=2 concealcursor=i
+endif
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags

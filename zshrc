@@ -6,12 +6,15 @@
 
 # alias tmux='TERM=rxvt-unicode-256color tmux'
 
+autoload -U colors promptinit
+colors
+compinit
+
+# colored completion - use LS_COLORS
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 ### EXPERIMENTAL
-
 export PYTHONDONTWRITEBYTECODE="1"
-
-
 ###
 
 export EDITOR='vim'
@@ -20,10 +23,7 @@ export EDITOR='vim'
 # See bash(1) for more options
 export HISTCONTROL=ignoreboth
 
-shopt -s cmdhist # Combine multiline commands into one in history
-shopt -s autocd # no need to type cd anymore
 export HISTIGNORE="&:ls:[bf]g:exit:cd:history:reset:clear"
-shopt -s histappend # append to the history file, don't overwrite it
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 export HISTSIZE=1000
@@ -34,66 +34,33 @@ export LESS=" -R "
 
 export PYTHONSTARTUP="$HOME/.pythonrc"
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
 PATH=$HOME/.dynamic-colors/bin:$PATH:~/bin
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
-
-# no bell
-set 'bind bell-style none'
-
-# PS1='\[\e[132m\]  [ ${debian_chroot:+($debian_chroot)}\u \h \w ]\[\e[0m\]_____________________\n  $ '
-# PS1='%'"$COLUMNS"'s' | sed 's/ /_/g'
-
-export PS1=' \[\e[38;5;10m\]\[\e[0m\] '
-
-if [ "$HOSTNAME" = macbook ] && [ "$USER" = resu ] ; then
-  PS1=$PS1' \[\e[38;5;10m\]\w\[\e[0m\]  \[\e[1;37m\]▶\[\e[0m\] '
+if [ "$HOST" = macbook ] && [ "$USER" = resu ] ; then
+    _ps_before_dir=''
 else
-  # FIXME: not working
-  if [ "$USER" = root ] ; then
-    # prompt='#'
-    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[38;05;1m\]▶ \[\e[0m\]'
-  else
-    # prompt='▶'
-    PS1=$PS1'\[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]$ \[\e[0m\]'
-  fi
-  # PS1='  \[\e[38;5;10m\]${debian_chroot:+($debian_chroot)}\u@\h:\w\[\e[0m\] \[\e[1;37m\]'$prompt' \[\e[0m\]'
+    _ps_before_dir=$'\e[38;5;13m%n @ %M\e[0m'
 fi
 
-# ${#PWD}
-# PS1='`printf "%$((20-${#PWD}))s"`''h >'
+PS1='  '$_ps_before_dir$'\e[38;5;10m %/  \e[0;37m▶\e[0m '
 
-if [ -f ~/.bash_aliases ]; then
-  . ~/.bash_aliases
-fi
 
 export GREP_COLOR='43;30'
 
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+	alias ls='ls --color=auto'
+	#alias dir='dir --color=auto'
+	#alias vdir='vdir --color=auto'
 
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+	alias grep='grep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	alias egrep='egrep --color=auto'
 fi
 
 # some more ls aliases
@@ -151,9 +118,9 @@ homer(){
 flash(){
   # if xbacklight is installed
   if hash xbacklight 2>/dev/null; then
-    local current=$(xbacklight -get)
-    xbacklight -set $(calc $current*0.3) -time 50
-    xbacklight -set $current -time 200
+	local current=$(xbacklight -get)
+	xbacklight -set $(calc $current\*0.3) -time 50
+	xbacklight -set $current -time 200
   fi
 }
 
@@ -164,13 +131,13 @@ ack-grep(){
 
 man() {
   env LESS_TERMCAP_mb=$'\E[01;31m' \
-    LESS_TERMCAP_md=$'\E[38;5;4m' \
-    LESS_TERMCAP_me=$'\E[0m' \
-    LESS_TERMCAP_se=$'\E[0m' \
-    LESS_TERMCAP_so=$'\E[1;30;43m' \
-    LESS_TERMCAP_ue=$'\E[0m' \
-    LESS_TERMCAP_us=$'\E[38;5;6m' \
-    man "$@"
+	LESS_TERMCAP_md=$'\E[38;5;4m' \
+	LESS_TERMCAP_me=$'\E[0m' \
+	LESS_TERMCAP_se=$'\E[0m' \
+	LESS_TERMCAP_so=$'\E[1;30;43m' \
+	LESS_TERMCAP_ue=$'\E[0m' \
+	LESS_TERMCAP_us=$'\E[38;5;6m' \
+	man "$@"
 }
 
 # TODO: utility that reads from stdin and pastes in a pastebin
@@ -199,15 +166,15 @@ alias getpassword=password
 
 swap()
 { # Swap 2 filenames around, if they exist (from Uzi's bashrc).
-    local TMPFILE=tmp.$$
+	local TMPFILE=tmp.$$
 
-    [ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
-    [ ! -e $1 ] && echo "swap: $1 does not exist" && return 1
-    [ ! -e $2 ] && echo "swap: $2 does not exist" && return 1
+	[ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
+	[ ! -e $1 ] && echo "swap: $1 does not exist" && return 1
+	[ ! -e $2 ] && echo "swap: $2 does not exist" && return 1
 
-    mv "$1" $TMPFILE
-    mv "$2" "$1"
-    mv $TMPFILE "$2"
+	mv "$1" $TMPFILE
+	mv "$2" "$1"
+	mv $TMPFILE "$2"
 }
 
 # Make your directories and files access rights sane.
@@ -226,33 +193,33 @@ decrypt (){
 
 extract() {
  if [ -z "$1" ]; then
-    # display usage if no parameters given
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+	# display usage if no parameters given
+	echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
  else
-    if [ -f $1 ] ; then
-        # NAME=${1%.*}
-        # mkdir $NAME && cd $NAME
-        case $1 in
-          *.tar.bz2)   tar xvjf ../$1    ;;
-          *.tar.gz)    tar xvzf ../$1    ;;
-          *.tar.xz)    tar xvJf ../$1    ;;
-          *.lzma)      unlzma ../$1      ;;
-          *.bz2)       bunzip2 ../$1     ;;
-          *.rar)       unrar x -ad ../$1 ;;
-          *.gz)        gunzip ../$1      ;;
-          *.tar)       tar xvf ../$1     ;;
-          *.tbz2)      tar xvjf ../$1    ;;
-          *.tgz)       tar xvzf ../$1    ;;
-          *.zip)       unzip ../$1       ;;
-          *.Z)         uncompress ../$1  ;;
-          *.7z)        7z x ../$1        ;;
-          *.xz)        unxz ../$1        ;;
-          *.exe)       cabextract ../$1  ;;
-          *)           echo "extract: '$1' - unknown archive method" ;;
-        esac
-    else
-        echo "$1 - file does not exist"
-    fi
+	if [ -f $1 ] ; then
+		# NAME=${1%.*}
+		# mkdir $NAME && cd $NAME
+		case $1 in
+		  *.tar.bz2)   tar xvjf ../$1    ;;
+		  *.tar.gz)    tar xvzf ../$1    ;;
+		  *.tar.xz)    tar xvJf ../$1    ;;
+		  *.lzma)      unlzma ../$1      ;;
+		  *.bz2)       bunzip2 ../$1     ;;
+		  *.rar)       unrar x -ad ../$1 ;;
+		  *.gz)        gunzip ../$1      ;;
+		  *.tar)       tar xvf ../$1     ;;
+		  *.tbz2)      tar xvjf ../$1    ;;
+		  *.tgz)       tar xvzf ../$1    ;;
+		  *.zip)       unzip ../$1       ;;
+		  *.Z)         uncompress ../$1  ;;
+		  *.7z)        7z x ../$1        ;;
+		  *.xz)        unxz ../$1        ;;
+		  *.exe)       cabextract ../$1  ;;
+		  *)           echo "extract: '$1' - unknown archive method" ;;
+		esac
+	else
+		echo "$1 - file does not exist"
+	fi
 fi
 }
 
@@ -264,10 +231,10 @@ fi
 
 psgrep() {
   if [ ! -z $1 ] ; then
-    echo "Grepping for processes matching $1..."
-    ps aux | grep -v grep | grep $1 
+	echo "Grepping for processes matching $1..."
+	ps aux | grep -v grep | grep $1 
   else
-    echo "!! Need name to grep for"
+	echo "!! Need name to grep for"
   fi
 }
 
@@ -275,33 +242,30 @@ psgrep() {
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-### autocomplete stuff ###
-shopt -s cdable_vars # look at variables that might hold directory paths
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
+# # enable programmable completion features (you don't need to enable
+# # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# # sources /etc/bash.bashrc).
+# if ! shopt -oq posix; then
+#   if [ -f /usr/share/bash-completion/bash_completion ]; then
+# 	. /usr/share/bash-completion/bash_completion
+#   elif [ -f /etc/bash_completion ]; then
+# 	. /etc/bash_completion
+#   fi
+# fi
 
 
-if [ -f "/usr/share/autojump/autojump.sh" ]; then
-  source /usr/share/autojump/autojump.sh
-fi
-if [ -f "~/.acd_func.sh" ]; then
-  source ~/.acd_func.sh
-fi
-if [ -f "$HOME/.dynamic-colors/completions/dynamic-colors.zsh" ]; then
-  source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
-fi
-if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
-  source /usr/local/bin/virtualenvwrapper_lazy.sh
-fi
+# if [ -f "/usr/share/autojump/autojump.sh" ]; then
+#   source /usr/share/autojump/autojump.sh
+# fi
+# if [ -f "~/.acd_func.sh" ]; then
+#   source ~/.acd_func.sh
+# fi
+# if [ -f "$HOME/.dynamic-colors/completions/dynamic-colors.zsh" ]; then
+#   source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
+# fi
+# if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
+#   source /usr/local/bin/virtualenvwrapper_lazy.sh
+# fi
 
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
@@ -332,7 +296,7 @@ sshh() {
   # nohup _sshh_background > /dev/null 2>&1 &
   _sshh_background $tmp $@ &
   ssh -o "ControlMaster=yes" -o "ControlPath=$tmp/%r@%h:%p" $@
-    # -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)" $@
+	# -t "bash --rcfile <(echo $'"$(cat ~/.bashrc | xxd -ps)"' | xxd -ps -r)" $@
 
 
 
@@ -361,7 +325,7 @@ getdots() {
   rm -f /tmp/dotfiles-master -r
   unzip /tmp/iraes_dotfiles.zip -d /tmp
   for f in /tmp/dotfiles-master/*; do
-    mv $f $(dirname $f)/.$(basename $f)
+	mv $f $(dirname $f)/.$(basename $f)
   done;
   rm -f $DOTFILES -r
   mv /tmp/dotfiles-master/ $DOTFILES
@@ -375,22 +339,21 @@ getdots() {
 
 # Colorize these commands if possible
 if which grc &>/dev/null; then
-    alias .cl='grc -es --colour=auto'
-    alias configure='.cl ./configure'
-    alias diff='.cl diff'
-    alias make='.cl make'
-    alias gcc='.cl gcc'
-    alias g++='.cl g++'
-    #alias as='.cl as'
-    #alias gas='.cl gas'
-    alias ld='.cl ld'
-    alias netstat='.cl netstat'
-    alias ping='.cl ping -c 10'
-    alias traceroute='.cl traceroute'
+	alias .cl='grc -es --colour=auto'
+	alias configure='.cl ./configure'
+	alias diff='.cl diff'
+	alias make='.cl make'
+	alias gcc='.cl gcc'
+	alias g++='.cl g++'
+	#alias as='.cl as'
+	#alias gas='.cl gas'
+	alias ld='.cl ld'
+	alias netstat='.cl netstat'
+	alias ping='.cl ping -c 10'
+	alias traceroute='.cl traceroute'
 fi
 
 export HH_CONFIG=hicolor         # get more colors
-shopt -s histappend              # append new history items to .bash_history
 export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
@@ -398,13 +361,13 @@ export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 print_pre_prompt (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
-    # local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
-    if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
-      (flash &)
-    fi
-    local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n\n"
+	# local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
+	if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
+	  (flash &)
+	fi
+	local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n\n"
   else
-    local err=''
+	local err=''
   fi
   echo -en $err
   # history -a # write command history at every prompt.
