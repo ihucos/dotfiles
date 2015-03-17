@@ -44,10 +44,10 @@ hi LineNr cterm=italic,bold
 hi MatchParen ctermbg=3 ctermfg=bg
 hi Comment cterm=italic
 hi NonText ctermbg=0 ctermbg=0
-hi SpecialKey ctermbg=8 ctermfg=NONE
+hi SpecialKey ctermbg=NONE ctermfg=10
 hi NonText ctermbg=bg
 hi Folded ctermbg=bg cterm=NONE ctermbg=bg ctermfg=14
-hi Visual ctermfg=12 ctermbg=bg
+hi Visual ctermfg=12 ctermbg=NONE
 hi ModeMsg ctermbg=3 ctermfg=bg
 hi Todo ctermfg=3
 hi SpellBad cterm=bold,italic,undercurl
@@ -236,4 +236,4 @@ set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%
 " hi! link Conceal pythonDot
 " setlocal conceallevel=1
 " "
-" hi link MyPythonSelf Normal
+" hi link MyPythonSelf Normalshes the status line of the focused window whenever you change window.

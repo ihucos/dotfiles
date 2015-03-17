@@ -1,5 +1,3 @@
-
-
 # TODO: backup command that backs up a file, so whe can delete it
 # TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda008a0516f41416f4 -n "annoyance description"
 # TODO command to cd to folder with .git in in root folders
@@ -10,8 +8,66 @@ autoload -U colors promptinit
 colors
 compinit
 
+bindkey -e
+
 # colored completion - use LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu select
+zstyle ':completion:::::' completer _complete _approximate
+zstyle ':completion:*:approximate:*' max-errors 1 # limit to 1 errors
+zstyle ':completion:*' format 'Completing %d'
+
+## Use cache
+# Some functions, like _apt and _dpkg, are very slow. You can use a cache in
+# order to proxy the list of results (like the list of available debian
+# packages)
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# Ignore <C-d> logout
+setopt ignore_eof
+setopt hist_ignore_dups
+# Ignore add history if space
+setopt hist_ignore_space
+setopt auto_cd
+alias -s py=vim
+alias py='python'
+
+source /home/resu/.my_zsh_plugins/zsh-syntax-highlighting.zsh
+
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern root)
+# TODO: conf with awesome: https://github.com/zsh-users/zsh-syntax-highlighting/
+ZSH_HIGHLIGHT_PATTERNS+=('rm ' 'underline')
+
+normal='fg=14'
+ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=15
+ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=15
+ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=15
+ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=15
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=magenta,bold' # better color
+ZSH_HIGHLIGHT_STYLES[command]=$normal
+ZSH_HIGHLIGHT_STYLES[hashed-command]=$normal
+ZSH_HIGHLIGHT_STYLES[precommand]=$normal
+ZSH_HIGHLIGHT_STYLES[builtin]=$normal
+ZSH_HIGHLIGHT_STYLES[alias]=$normal
+ZSH_HIGHLIGHT_STYLES[path]='fg=4'
+ZSH_HIGHLIGHT_STYLES[path_approx]=$normal
+ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=6'
+ZSH_HIGHLIGHT_STYLES[root]='fg=9'
+# try this:
+
+# let's complete known hosts and hosts from ssh's known_hosts file
+basehost="irae.me"
+hosts=($((
+( [ -r .ssh/known_hosts ] && awk '{print $1}' .ssh/known_hosts | tr , '\n');\
+echo $basehost; ) | sort -u) )
+zstyle ':completion:*' hosts $hosts
+
+command_not_found_handler(){
+  read REPLY\?$'\e[38;5;9m$ sudo apt-get install '$@$'  # C-c for no or Enter\e[0m'
+  sudo apt-get install $@
+}
+
 
 ### EXPERIMENTAL
 export PYTHONDONTWRITEBYTECODE="1"
@@ -23,7 +79,7 @@ export EDITOR='vim'
 # See bash(1) for more options
 export HISTCONTROL=ignoreboth
 
-export HISTIGNORE="&:ls:[bf]g:exit:cd:history:reset:clear"
+export HISTIGNORE="&:ls:[bf]g:exit:reset:clear:cd:cd ..:cd..:history"
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 export HISTSIZE=1000
@@ -44,10 +100,10 @@ export LC_ALL=en_US.UTF-8
 if [ "$HOST" = macbook ] && [ "$USER" = resu ] ; then
     _ps_before_dir=''
 else
-    _ps_before_dir=$'\e[38;5;13m%n @ %M\e[0m'
+    _ps_before_dir=$'%{\e[38;5;13m%}%n @ %M%{\e[0m%}'
 fi
 
-PS1='  '$_ps_before_dir$'\e[38;5;10m %/  \e[0;37m▶\e[0m '
+PS1='  '$_ps_before_dir$'%{\e[38;5;10m%} %~  %{\e[0;37m%}▶%{\e[0m%} '
 
 
 export GREP_COLOR='43;30'
@@ -70,6 +126,9 @@ alias lsalias='compgen -a | xargs'
 alias :q=exit
 
 alias g=git
+
+# copy with progressbar
+alias cpv="rsync -poghb --backup-dir=/tmp/rsync -e /dev/null --progress --"
 
 alias ls='ls --group-directories-first --sort=extension --color=auto'
 alias ll='ls -alF'
@@ -358,23 +417,32 @@ export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
-print_pre_prompt (){
+precmd (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
 	# local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
 	if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
 	  (flash &)
 	fi
-	local err="\033[3mExit status \033[0m"'\E[;31m'"\033[1m$EXIT\033[0m\n\n"
+	echo $'\e[3mExit status\e[0m \e[38;5;1m'$EXIT$'\e[0m\n'
   else
 	local err=''
   fi
-  echo -en $err
-  # history -a # write command history at every prompt.
-  # history -n
-  # history -a; history -c; history -r
 }
-PROMPT_COMMAND=print_pre_prompt
 
-# # disables "freezing" the terminal with C-s
-# stty -ixon
+magic-enter () {
+  if [[ -z $BUFFER ]]
+  then
+    flash
+  else
+    zle accept-line
+  fi
+}
+zle -N magic-enter
+# bind it to enter
+bindkey "^M" magic-enter
+
+# use my $EDITOR to change line
+autoload -U   edit-command-line
+zle -N        edit-command-line
+bindkey '\ee' edit-command-line

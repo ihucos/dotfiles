@@ -18,7 +18,7 @@ set hidden
 set history=1000 " remember more commands and search history
 set ignorecase " ignore case when searching
 set incsearch " show search matches as you type
-" set laststatus=2
+set laststatus=2
 set lazyredraw
 set list
 set listchars=precedes:⣿,trail:␣,tab:⇥\ 
