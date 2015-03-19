@@ -1,0 +1,3 @@
+C-W q make possible in insert mode? useful when opening unite search by mistake | id:6f152892d3df544510b85e6ab14081f058001995
+C-j in cmode leaves command mode | id:cc487585b2ffba19f4467308493be1b95f9084f3
+if programm needs more than 30 seconds tu run show how long it neded, zsh | id:f1f7452bd2b495c5f407340b6ab6bd8c717b5e71
