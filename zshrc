@@ -15,7 +15,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zstyle ':completion:::::' completer _complete _approximate
 zstyle ':completion:*:approximate:*' max-errors 1 # limit to 1 errors
-zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' format $'\e[3m%d:\e[0m'
 
 ## Use cache
 # Some functions, like _apt and _dpkg, are very slow. You can use a cache in
@@ -79,10 +79,10 @@ ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}%{clean%G%}"
 # echo $basehost; ) | sort -u) )
 # zstyle ':completion:*' hosts $hosts
 
-command_not_found_handler(){
-  read REPLY\?$'\e[38;5;9m$ sudo apt-get install '$@$'  # C-c for no or Enter\e[0m'
-  sudo apt-get install $@
-}
+# command_not_found_handler(){
+#   read REPLY\?$'\e[38;5;9m$ sudo apt-get install '$@$'  # C-c for no or Enter\e[0m'
+#   sudo apt-get install $@
+# }
 
 
 ### EXPERIMENTAL
@@ -361,6 +361,7 @@ alias e=vim
 alias :e=vim
 alias vimrc="vim ~/Dotfiles/vimrc"
 alias bashrc="vim ~/Dotfiles/bashrc"
+alias zshrc="vim ~/Dotfiles/zshrc"
 alias tmux.conf="vim ~/Dotfiles/tmux.conf"
 alias tmuxconf="vim ~/Dotfiles/tmux.conf"
 alias tmuxrc="vim ~/Dotfiles/tmux.conf"
@@ -445,7 +446,35 @@ export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
 setopt interactivecomments
 
+_DIRAT=0
+_DIRLIST=(/bla/a /bla/b /bla/c)
+prev-dir() {
+  _DIRAT=$((_DIRAT - 1))
+  bla
+}
+next-dir() {
+  _DIRAT=$((_DIRAT + 1))
+  bla
+}
+bla(){
+  local dirlen=${#_DIRLIST}
+  local index=$(($_DIRAT % $dirlen))
+  # abs($index)
+  local index=$(echo "sqrt($index*$index)" | bc)
+  local dir=$_DIRLIST[$index]
+  echo $dir
+}
+zle -N prev-dir
+zle -N next-dir
+bindkey '^J' prev-dir
+bindkey '^K' next-dir
+
 precmd (){
+  if [[ "$_DIRLIST[-1]" = "$PWD" ]]; then
+  else
+    _DIRLIST+=($PWD)
+  fi
+
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
 	# local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
@@ -460,12 +489,23 @@ precmd (){
 
 PS1=$'%{\e[38;5;15m%}$%{\e[0m%} '
 my-magic-enter () {
-  if [[ -z $BUFFER ]]
-  then
+  if [[ -z $BUFFER ]]; then
     zle reset-prompt
+  elif [[ "$BUFFER" == cd\ * ]] || [ "$BUFFER" = "cd" ]; then
+    POSTDISPLAY=''
+    BUFFER+=" 2> /dev/null"
+    eval ${BUFFER}
+    if [ $? != 0 ]; then
+      zle kill-word
+      zle kill-word
+      flash
+    else
+      zle kill-whole-line
+    fi
   else
     zle accept-line
   fi
+  zle-line-init
 }
 zle -N my-magic-enter
 # bind it to enter
@@ -526,3 +566,19 @@ bindkey '\ee' edit-command-line
 
 # make prompt always appear on bottom
 printf '\n'%.0s {1..$LINES}
+
+
+foreground-vi() {
+    zle reset-prompt
+    fg %vi
+  }
+zle -N foreground-vi
+bindkey '^Z' foreground-vi
+
+tmux-paste() {
+  tmux set-buffer -- "$(xclip -o -selection clipboard)"
+  tmux paste-buffer
+}
+zle -N tmux-paste
+bindkey '^V' tmux-paste
+

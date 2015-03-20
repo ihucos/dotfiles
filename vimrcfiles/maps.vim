@@ -131,6 +131,13 @@ nmap <leader>P "+P
 vmap <leader>p "+p
 vmap <leader>P "+P
 
+inoremap <C-v> "+P
+noremap <C-v> "+P
+vnoremap <C-v> "+P
+vnoremap <C-c> "+y
+noremap <leader>v <C-v>
+vnoremap <leader>v <C-v>
+
 noremap <silent> <leader>j :split<cr>:call MultiPurposeUnite()<cr>
 noremap <silent> <leader>k :split<cr><C-w>k:call MultiPurposeUnite()<cr>
 noremap <silent> <leader>h :vsplit<cr><C-w>h:call MultiPurposeUnite()<cr>
@@ -236,11 +243,11 @@ noremap <leader>su :call MyUnite('menu:utils', 'menu-utils', '')<cr>
 
 noremap <leader>su :UndotreeToggle<cr>
 
-noremap <silent> <leader>vc :VimuxPromptCommand<cr>
-noremap <silent> <leader>vv :VimuxRunLastCommand<cr>
-noremap <silent> <leader>vx :VimuxCloseRunner<cr>
-noremap <silent> <leader>vi :VimuxInspect<cr>
-noremap <silent> <Leader>vz :call VimuxZoomRunner()<CR>
+noremap <silent> <leader>nc :VimuxPromptCommand<cr>
+noremap <silent> <leader>nv :VimuxRunLastCommand<cr>
+noremap <silent> <leader>nx :VimuxCloseRunner<cr>
+noremap <silent> <leader>ni :VimuxInspect<cr>
+noremap <silent> <Leader>nz :call VimuxZoomRunner()<CR>
 
 " noremap <leader>j :call MyUnite('tag', 'tag', '-start-insert')<cr>
 " noremap <leader>k :call MyUnite('buffer:-', 'buffer', '')<cr>
@@ -316,54 +323,27 @@ map 7 <ESC>
 map 8 <ESC>
 map 9 <ESC>
 
-" we have to use <C-c> instead of <ESC> as a workaround
-" (see http://superuser.com/questions/739971/how-to-properly-remap-del-to-esc-in-vim)
-cnoremap 0 <C-c>
-cnoremap 1 <C-c>
-cnoremap 2 <C-c>
-cnoremap 3 <C-c>
-cnoremap 4 <C-c>
-cnoremap 5 <C-c>
-cnoremap 6 <C-c>
-cnoremap 7 <C-c>
-cnoremap 8 <C-c>
-cnoremap 9 <C-c>
+inoremap <C-x>0 0
+inoremap <C-x>1 1
+inoremap <C-x>2 2
+inoremap <C-x>3 3
+inoremap <C-x>4 4
+inoremap <C-x>5 5
+inoremap <C-x>6 6
+inoremap <C-x>7 7
+inoremap <C-x>8 8
+inoremap <C-x>9 9
 
-cnoremap <C-c>0 0
-cnoremap <C-c>1 1
-cnoremap <C-c>2 2
-cnoremap <C-c>3 3
-cnoremap <C-c>4 4
-cnoremap <C-c>5 5
-cnoremap <C-c>6 6
-cnoremap <C-c>7 7
-cnoremap <C-c>8 8
-cnoremap <C-c>9 9
-cmap <C-c><C-c> <C-c> " makes holding down C-c for a longer than one keypress possible
-
-
-inoremap <C-c>0 0
-inoremap <C-c>1 1
-inoremap <C-c>2 2
-inoremap <C-c>3 3
-inoremap <C-c>4 4
-inoremap <C-c>5 5
-inoremap <C-c>6 6
-inoremap <C-c>7 7
-inoremap <C-c>8 8
-inoremap <C-c>9 9
-imap <C-c><C-c> <C-c> " makes holding down C-c for a longer than one keypress possible
-
-noremap <C-c>0 0
-noremap <C-c>1 1
-noremap <C-c>2 2
-noremap <C-c>3 3
-noremap <C-c>4 4
-noremap <C-c>5 5
-noremap <C-c>6 6
-noremap <C-c>7 7
-noremap <C-c>8 8
-noremap <C-c>9 9
+" noremap <C-c>0 0
+" noremap <C-c>1 1
+" noremap <C-c>2 2
+" noremap <C-c>3 3
+" noremap <C-c>4 4
+" noremap <C-c>5 5
+" noremap <C-c>6 6
+" noremap <C-c>7 7
+" noremap <C-c>8 8
+" noremap <C-c>9 9
 
 
 "easier to type a>, i], etc... "
@@ -388,7 +368,7 @@ xnoremap ad a"
 onoremap id i"
 xnoremap id i"
 
-
+79
 
 "  ____       _           _              _           _
 " / ___|  ___| | ___  ___| |_  __      _(_)_ __   __| | _____      _____
