@@ -8,3 +8,5 @@ http://stackoverflow.com/questions/13385690/how-to-use-git-with-gnome-keyring-in
 in vim :VimProcInstall
 
 Install with amke: http://www.gnu.org/software/global/download.html
+
+install git-extras for extra git commands: apt-get install git-extras

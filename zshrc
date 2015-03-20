@@ -24,8 +24,6 @@ zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
 
-# Ignore <C-d> logout
-setopt ignore_eof
 setopt hist_ignore_dups
 # Ignore add history if space
 setopt hist_ignore_space
@@ -35,33 +33,51 @@ alias py='python'
 
 source /home/resu/.my_zsh_plugins/zsh-syntax-highlighting.zsh
 
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern root)
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(pattern brackets root)
 # TODO: conf with awesome: https://github.com/zsh-users/zsh-syntax-highlighting/
 ZSH_HIGHLIGHT_PATTERNS+=('rm ' 'underline')
+ZSH_HIGHLIGHT_PATTERNS+=('\# in *' 'fg=10')
 
 normal='fg=14'
-ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=15
-ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=15
-ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=15
-ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=15
-ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=magenta,bold' # better color
-ZSH_HIGHLIGHT_STYLES[command]=$normal
-ZSH_HIGHLIGHT_STYLES[hashed-command]=$normal
-ZSH_HIGHLIGHT_STYLES[precommand]=$normal
-ZSH_HIGHLIGHT_STYLES[builtin]=$normal
-ZSH_HIGHLIGHT_STYLES[alias]=$normal
-ZSH_HIGHLIGHT_STYLES[path]='fg=4'
-ZSH_HIGHLIGHT_STYLES[path_approx]=$normal
-ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=6'
+# ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=15
+# ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=15
+# ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=15
+# ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=15
+# ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=magenta,bold' # better color
+# ZSH_HIGHLIGHT_STYLES[command]=$normal
+# ZSH_HIGHLIGHT_STYLES[hashed-command]=$normal
+# ZSH_HIGHLIGHT_STYLES[precommand]=$normal
+# ZSH_HIGHLIGHT_STYLES[builtin]=$normal
+# ZSH_HIGHLIGHT_STYLES[alias]=$normal
+# ZSH_HIGHLIGHT_STYLES[path]='fg=4'
+# ZSH_HIGHLIGHT_STYLES[path_approx]=$normal
+# ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=6'
 ZSH_HIGHLIGHT_STYLES[root]='fg=9'
-# try this:
 
-# let's complete known hosts and hosts from ssh's known_hosts file
-basehost="irae.me"
-hosts=($((
-( [ -r .ssh/known_hosts ] && awk '{print $1}' .ssh/known_hosts | tr , '\n');\
-echo $basehost; ) | sort -u) )
-zstyle ':completion:*' hosts $hosts
+source ~/.my_zsh_plugins/zsh-git-prompt/zshrc.sh
+ZSH_THEME_GIT_PROMPT_PREFIX="\n   │ git: "
+ZSH_THEME_GIT_PROMPT_SUFFIX=""
+ZSH_THEME_GIT_PROMPT_SEPARATOR=""
+ZSH_THEME_GIT_PROMPT_BRANCH="*"
+ZSH_THEME_GIT_PROMPT_STAGED=" %{\e[$fg[yellow]%}%{staged:%G%}"
+ZSH_THEME_GIT_PROMPT_CONFLICTS=" %{$fg[red]%}%{conflict:%G%}"
+ZSH_THEME_GIT_PROMPT_CHANGED=" %{\e[$fg[yellow]%}%{changed:%G%}"
+ZSH_THEME_GIT_PROMPT_BEHIND=" %{behind:%G%}"
+ZSH_THEME_GIT_PROMPT_AHEAD=" %{ahead:%G%}"
+ZSH_THEME_GIT_PROMPT_UNTRACKED=" %{untracked%G%}"
+ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg_bold[green]%}%{clean%G%}"
+
+# FIXME: uncomment
+# redraw prompt every 3 seconds
+# _prompt_and_resched() { sched +2 _prompt_and_resched; zle && zle reset-prompt }
+# _prompt_and_resched
+
+# # let's complete known hosts and hosts from ssh's known_hosts file
+# basehost="irae.me"
+# hosts=($((
+# ( [ -r .ssh/known_hosts ] && awk '{print $1}' .ssh/known_hosts | tr , '\n');\
+# echo $basehost; ) | sort -u) )
+# zstyle ':completion:*' hosts $hosts
 
 command_not_found_handler(){
   read REPLY\?$'\e[38;5;9m$ sudo apt-get install '$@$'  # C-c for no or Enter\e[0m'
@@ -75,7 +91,7 @@ export PYTHONDONTWRITEBYTECODE="1"
 
 export EDITOR='vim'
 
-# don't put duplicate lines or lines starting with space in the history.
+# dont put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 export HISTCONTROL=ignoreboth
 
@@ -97,13 +113,22 @@ export LC_ALL=en_US.UTF-8
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-if [ "$HOST" = macbook ] && [ "$USER" = resu ] ; then
-    _ps_before_dir=''
-else
-    _ps_before_dir=$'%{\e[38;5;13m%}%n @ %M%{\e[0m%}'
-fi
+get_prompt(){
+  if [ "$HOST" = macbook ] && [ "$USER" = resu ] ; then
+      _ps_before_dir=''
+  else
+      _ps_before_dir=$'%{\e[38;5;13m%}%n @ %M%{\e[0m%}'
+  fi
 
-PS1='  '$_ps_before_dir$'%{\e[38;5;10m%} %~  %{\e[0;37m%}▶%{\e[0m%} '
+  retval='   ┌───────\n'
+  retval=$retval'  '$_ps_before_dir$' │ pwd: %~ '
+  retval=$retval'$(git_super_status)'
+  retval=$retval'\n   └───────'
+  retval=$retval$'\n%{\e[0;37m%} $%{\e[0m%} '
+
+  echo $retval
+}
+# PS1=$(get_prompt)
 
 
 export GREP_COLOR='43;30'
@@ -126,6 +151,7 @@ alias lsalias='compgen -a | xargs'
 alias :q=exit
 
 alias g=git
+alias ge='git exec'
 
 # copy with progressbar
 alias cpv="rsync -poghb --backup-dir=/tmp/rsync -e /dev/null --progress --"
@@ -417,6 +443,8 @@ export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
+setopt interactivecomments
+
 precmd (){
   local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
@@ -424,25 +452,77 @@ precmd (){
 	if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
 	  (flash &)
 	fi
-	echo $'\e[3mExit status\e[0m \e[38;5;1m'$EXIT$'\e[0m\n'
+	echo $'\e[3mExit status\e[0m \e[38;5;1m'$EXIT$'\e[0m'
   else
 	local err=''
   fi
 }
 
-magic-enter () {
+PS1=$'%{\e[38;5;15m%}$%{\e[0m%} '
+my-magic-enter () {
   if [[ -z $BUFFER ]]
   then
-    flash
+    zle reset-prompt
   else
     zle accept-line
   fi
 }
-zle -N magic-enter
+zle -N my-magic-enter
 # bind it to enter
-bindkey "^M" magic-enter
+bindkey "^M" my-magic-enter
+bindkey "^j" my-magic-enter
+
+zle-line-init(){
+  POSTDISPLAY=$'\n'
+  POSTDISPLAY+=$'╭──────\n│ '
+  POSTDISPLAY+=$(pwd | sed -e "s,^$HOME,~,")
+  update_current_git_vars
+
+  if [ -z "$GIT_BRANCH" ]; then
+  else
+    POSTDISPLAY+=$'\n│ \*'$GIT_BRANCH
+    if [ "$GIT_BEHIND" -ne "0" ]; then
+      POSTDISPLAY+=" behind:$GIT_BEHIND"
+    fi
+    if [ "$GIT_AHEAD" -ne "0" ]; then
+      POSTDISPLAY+=" ahead:$GIT_AHEAD"
+    fi
+    POSTDISPLAY+=' ' # the seperator
+    if [ "$GIT_STAGED" -ne "0" ]; then
+      POSTDISPLAY+=" staged:$GIT_STAGED"
+    fi
+    if [ "$GIT_CONFLICTS" -ne "0" ]; then
+      POSTDISPLAY+=" conflicts:$GIT_CONFLICTS"
+    fi
+    if [ "$GIT_CHANGED" -ne "0" ]; then
+      POSTDISPLAY+=" changed:$GIT_CHANGED"
+    fi
+    if [ "$GIT_UNTRACKED" -ne "0" ]; then
+      POSTDISPLAY+=" untracked"
+    fi
+    if [ "$GIT_CHANGED" -eq "0" ] && [ "$GIT_CONFLICTS" -eq "0" ] && [ "$GIT_STAGED" -eq "0" ] && [ "$GIT_UNTRACKED" -eq "0" ]; then
+      POSTDISPLAY+=" clean"
+    fi
+  fi
+
+  POSTDISPLAY+=$'\n└──────'
+}
+
+zle-line-finish(){
+  POSTDISPLAY="    ("$(pwd | sed -e "s,^$HOME,~,")')'
+}
+
 
 # use my $EDITOR to change line
 autoload -U   edit-command-line
 zle -N        edit-command-line
 bindkey '\ee' edit-command-line
+
+
+# # TODO: do something nice with this:
+# _prompt_and_resched() { sched +1 _prompt_and_resched; zle && zle reset-prompt }
+# _prompt_and_resched
+# PS1="%D{%H:%M:%S} $PS1"
+
+# make prompt always appear on bottom
+printf '\n'%.0s {1..$LINES}

@@ -112,5 +112,3 @@ function! PyImportRemove(module)
   call ReadCmdInp('isort -r "'.a:module.'" -')
 endfunction
 command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
-
-autocmd VimEnter * nested CottidieTip
