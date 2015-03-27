@@ -587,16 +587,36 @@ bindkey '^V' tmux-paste
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
-space(){
-  if [[ -z $BUFFER ]]; then
-    # BUFFER="vim -c 'call feedkeys(\" \")'"
-    BUFFER="vim -c ':call MultiPurposeUnite()'"
-    zle accept-line
-  else
-    zle magic-space
+# space(){
+#   if [[ -z $BUFFER ]]; then
+#     # BUFFER="vim -c 'call feedkeys(\" \")'"
+#     BUFFER="vim -c ':call MultiPurposeUnite()'"
+#     zle accept-line
+#   else
+#     zle magic-space
+#   fi
+# }
+
+set-buffer-if(){
+  if [[ "$BUFFER" == "$1" ]]; then
+    BUFFER=$2
+    CURSOR=$3
   fi
 }
 
-zle -N space
-bindkey ' ' space
+my-magic-u(){
+  zle self-insert
+  if [[ "$BUFFER" == " u" ]]; then
+    BUFFER="vim -c 'call feedkeys(\" u\")'"
+    zle accept-line
+  fi
+}
+zle -N my-magic-u
+bindkey 'u' my-magic-u
 
+my-magic-c(){
+  zle self-insert
+  set-buffer-if " gc" 'git commit -m ""' 15
+}
+zle -N my-magic-c
+bindkey 'c' my-magic-c
