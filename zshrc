@@ -151,7 +151,8 @@ alias lsalias='compgen -a | xargs'
 alias :q=exit
 
 alias g=git
-alias ge='git exec'
+alias r='git exec'
+alias manage.py='git exec python manage.py'
 
 # copy with progressbar
 alias cpv="rsync -poghb --backup-dir=/tmp/rsync -e /dev/null --progress --"
@@ -240,6 +241,7 @@ md () { mkdir -p "$@" && cd "$@"; }
 
 calc () { echo "$*" | bc -l; }
 
+# FIXME: does not work on zsh
 password() {
   local l=$1
   [ "$l" == "" ] && l=8
@@ -314,14 +316,14 @@ fi
 .tar.bz2 () { tar cvjf "${1%%/}.tar.bz2" "${1%%/}/"; }
 .zip     () { zip -r   "${1%%/}.zip"    "$1" ; }
 
-psgrep() {
-  if [ ! -z $1 ] ; then
-	echo "Grepping for processes matching $1..."
-	ps aux | grep -v grep | grep $1 
-  else
-	echo "!! Need name to grep for"
-  fi
-}
+# psgrep() {
+#   if [ ! -z $1 ] ; then
+# 	echo "Grepping for processes matching $1..."
+# 	ps aux | grep -v grep | grep $1 
+#   else
+# 	echo "!! Need name to grep for"
+#   fi
+# }
 
 # Add an "alert" alias for long running commands.  Use like this:
 #   sleep 10; alert
@@ -470,15 +472,16 @@ bindkey '^J' prev-dir
 bindkey '^K' next-dir
 
 precmd (){
+  local EXIT="$?" # This needs to be first
+
   if [[ "$_DIRLIST[-1]" = "$PWD" ]]; then
   else
     _DIRLIST+=($PWD)
   fi
 
-  local EXIT="$?" # This needs to be first
   if [ $EXIT != 0 ]; then
 	# local err="\[\e[41m\]"$EXIT"\[\e[0m\]"
-	if [ $EXIT != 130 ]; then # TODO: also not 148 (ctrl-z)
+	if [ $EXIT != 130 ]; then # TODO: also not 20 (ctrl-z)
 	  (flash &)
 	fi
 	echo $'\e[3mExit status\e[0m \e[38;5;1m'$EXIT$'\e[0m'
@@ -492,7 +495,6 @@ my-magic-enter () {
   if [[ -z $BUFFER ]]; then
     zle reset-prompt
   elif [[ "$BUFFER" == cd\ * ]] || [ "$BUFFER" = "cd" ]; then
-    POSTDISPLAY=''
     BUFFER+=" 2> /dev/null"
     eval ${BUFFER}
     if [ $? != 0 ]; then
@@ -512,15 +514,19 @@ zle -N my-magic-enter
 bindkey "^M" my-magic-enter
 bindkey "^j" my-magic-enter
 
+zle-line-finish(){
+  POSTDISPLAY="    ("$(pwd | sed -e "s,^$HOME,~,")')'
+}
+
 zle-line-init(){
   POSTDISPLAY=$'\n'
-  POSTDISPLAY+=$'╭──────\n│ '
+  POSTDISPLAY+=$'    ╭──────\n    │ '
   POSTDISPLAY+=$(pwd | sed -e "s,^$HOME,~,")
   update_current_git_vars
 
   if [ -z "$GIT_BRANCH" ]; then
   else
-    POSTDISPLAY+=$'\n│ \*'$GIT_BRANCH
+    POSTDISPLAY+=$'\n    │ \*'$GIT_BRANCH
     if [ "$GIT_BEHIND" -ne "0" ]; then
       POSTDISPLAY+=" behind:$GIT_BEHIND"
     fi
@@ -545,13 +551,8 @@ zle-line-init(){
     fi
   fi
 
-  POSTDISPLAY+=$'\n└──────'
+  POSTDISPLAY+=$'\n    └──────'
 }
-
-zle-line-finish(){
-  POSTDISPLAY="    ("$(pwd | sed -e "s,^$HOME,~,")')'
-}
-
 
 # use my $EDITOR to change line
 autoload -U   edit-command-line
@@ -569,8 +570,8 @@ printf '\n'%.0s {1..$LINES}
 
 
 foreground-vi() {
-    zle reset-prompt
-    fg %vi
+    BUFFER="fg %vi"
+    zle accept-line
   }
 zle -N foreground-vi
 bindkey '^Z' foreground-vi
@@ -581,4 +582,21 @@ tmux-paste() {
 }
 zle -N tmux-paste
 bindkey '^V' tmux-paste
+
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+space(){
+  if [[ -z $BUFFER ]]; then
+    # BUFFER="vim -c 'call feedkeys(\" \")'"
+    BUFFER="vim -c ':call MultiPurposeUnite()'"
+    zle accept-line
+  else
+    zle magic-space
+  fi
+}
+
+zle -N space
+bindkey ' ' space
 

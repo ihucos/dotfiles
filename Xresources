@@ -26,6 +26,8 @@ URxvt*cursorColor: #d33682
 URxvt*cursorColor2:#002b36
 URxvt*cursorBlink: false
 
+URxvt*pointerBlank: true
+URxvt*pointerBlankDelay: 2
 
 URxvt.scrollBar: false
 URxvt.letterSpace: -1

@@ -25,7 +25,7 @@ inoremap <C-l> <esc>5<C-e>a
 
 " TODO: do something nice with C-c
 " map <C-c> ]M
-" map <C-x> [M
+" map hC-x> [M
 
 " Clear highlight.
 nnoremap <ESC><ESC> :nohlsearch<CR>:match<CR>
@@ -131,10 +131,14 @@ nmap <leader>P "+P
 vmap <leader>p "+p
 vmap <leader>P "+P
 
-inoremap <C-v> "+P
+inoremap <C-v> <ESC>"+pa
 noremap <C-v> "+P
 vnoremap <C-v> "+P
+cnoremap <C-v> <C-r>+
 vnoremap <C-c> "+y
+vnoremap <C-x> "+d
+inoremap <C-p> <C-r>"
+cnoremap <C-p> <C-r>"
 noremap <leader>v <C-v>
 vnoremap <leader>v <C-v>
 
@@ -235,11 +239,12 @@ function! MultiPurposeUnite()
 endfunction
 noremap <leader>u :call MultiPurposeUnite()<cr>
 noremap <leader>/ :call MyUnite('line:wrap', 'line', '-start-insert')<cr>
+" TODO: use git grep if in git repo
 noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 noremap <leader>o :call MyUnite('outline', 'outline', '')<cr>
 noremap <leader>sf :call MyUnite('filetype filetype/new', 'filetype', '-start-insert')<cr>
 noremap <leader>sr :call MyUnite('register history/yank', 'register', '-start-insert')<cr>
-noremap <leader>su :call MyUnite('menu:utils', 'menu-utils', '')<cr>
+noremap <leader>ss :call MyUnite('menu:utils', 'menu-utils', '')<cr>
 
 noremap <leader>su :UndotreeToggle<cr>
 
