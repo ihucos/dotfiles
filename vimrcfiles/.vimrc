@@ -11,8 +11,8 @@ call vundle#begin()
 " }}}
 " boilerplace (do not edit) {{{
 call vundle#end()
- filetype plugin indent on
- syntax on
+filetype plugin indent on
+syntax on
 " }}}
  " set {{{
  " set nobackup

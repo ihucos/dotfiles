@@ -28,7 +28,6 @@ setopt hist_ignore_dups
 # Ignore add history if space
 setopt hist_ignore_space
 setopt auto_cd
-alias -s py=vim
 alias py='python'
 
 source /home/resu/.my_zsh_plugins/zsh-syntax-highlighting.zsh
@@ -106,30 +105,13 @@ export LESS=" -R "
 
 export PYTHONSTARTUP="$HOME/.pythonrc"
 
+# TODO: add /usr/bin/local/bin
 PATH=$HOME/.dynamic-colors/bin:$PATH:~/bin
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-get_prompt(){
-  if [ "$HOST" = macbook ] && [ "$USER" = resu ] ; then
-      _ps_before_dir=''
-  else
-      _ps_before_dir=$'%{\e[38;5;13m%}%n @ %M%{\e[0m%}'
-  fi
-
-  retval='   ┌───────\n'
-  retval=$retval'  '$_ps_before_dir$' │ pwd: %~ '
-  retval=$retval'$(git_super_status)'
-  retval=$retval'\n   └───────'
-  retval=$retval$'\n%{\e[0;37m%} $%{\e[0m%} '
-
-  echo $retval
-}
-# PS1=$(get_prompt)
-
 
 export GREP_COLOR='43;30'
 
@@ -195,6 +177,19 @@ alias lscommands='ls ${PATH//:/ }'
 
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
+
+
+# p(){
+#   if [ -z "$1" ]; then
+#     cd ~/projects/$(cat ~/.p_last_project)
+#     exit $?
+#   else
+#     cd ~/projects/$1
+#     # if [ $? != 0 ]; then
+#     #   echo $1 > ~/.p_last_project
+#     # fi
+#   fi
+# }
 
 homer(){
   # http://simpsonswiki.com/w/images/b/bd/Homer_Simpson.png and flipped with `convert -flop Homer_Simpson.png Homer_Simpson_Flipped.png`
@@ -504,6 +499,13 @@ my-magic-enter () {
     else
       zle kill-whole-line
     fi
+  # elif [ "$BUFFER" = "p" ] || [[ "$BUFFER" == p\ * ]]; then
+  #   eval ${BUFFER}
+  #   if [ $? != 0 ]; then
+  #     flash
+  #   else
+  #     zle kill-whole-line
+  #   fi
   else
     zle accept-line
   fi
@@ -601,7 +603,9 @@ set-buffer-if(){
   if [[ "$BUFFER" == "$1" ]]; then
     BUFFER=$2
     CURSOR=$3
+    return 0
   fi
+  return 1
 }
 
 my-magic-u(){
@@ -620,3 +624,34 @@ my-magic-c(){
 }
 zle -N my-magic-c
 bindkey 'c' my-magic-c
+
+# set-git-gui(){
+#   PREV_PD=$POSTDISPLAY
+#   POSTDISPLAY=$'\n────\n'`git status -s`$'\n'$POSTDISPLAY
+#   POSTDISPLAY=$PREV_PD
+# }
+
+my-magic-a(){
+  zle self-insert
+  set-buffer-if " ga" "git add " 8
+}
+zle -N my-magic-a
+bindkey 'a' my-magic-a
+
+my-magic-s(){
+  zle self-insert
+  if set-buffer-if " gs" "git status -s" 0; then
+    zle accept-line
+  fi
+}
+
+zle -N my-magic-s
+bindkey 's' my-magic-s
+my-magic-s(){
+  zle self-insert
+  if set-buffer-if " gs" "git status -s" 0; then
+    zle accept-line
+  fi
+}
+zle -N my-magic-s
+bindkey 's' my-magic-s

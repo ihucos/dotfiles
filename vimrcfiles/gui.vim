@@ -41,7 +41,7 @@ hi link White Base3
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
 hi LineNr cterm=italic,bold
-hi MatchParen ctermbg=3 ctermfg=bg
+hi MatchParen ctermbg=bg ctermfg=5
 hi Comment cterm=italic
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=NONE ctermfg=10
@@ -54,6 +54,9 @@ hi SpellBad cterm=bold,italic,undercurl
 
 " hi PythonImport ctermbg=NONE ctermfg=3 cterm=NONE
 " hi link pythonClassParameters pythonClass
+
+hi link String Small
+" hi link Type Blue
 
 hi link PythonFloat Violet
 hi link PythonNumber Violet

@@ -11,28 +11,36 @@ let maplocalleader = "\\"
 " map J ]M
 " map K [M
 
-noremap ; :
-
-noremap J 5j
-noremap K 5k
-
-noremap <C-j> 5jzz
-noremap <C-k> 5kzz
-noremap <C-h> 5<C-y>
-noremap <C-l> 5<C-e>
-inoremap <C-h> <esc>5<C-y>a
-inoremap <C-l> <esc>5<C-e>a
+vnoremap p "_dP
 
 " TODO: do something nice with C-c
 " map <C-c> ]M
 " map hC-x> [M
 
 " Clear highlight.
-nnoremap <ESC><ESC> :nohlsearch<CR>:match<CR>
+noremap / :setlocal hlsearch<cr>  \| /
+map <ESC><ESC> :nohlsearch<CR>
 
 nnoremap Q @q
 
 " ===============================
+noremap J 5j
+noremap K 5k
+noremap <C-j> 5jzz
+noremap <C-k> 5kzz
+inoremap <C-j> <ESC>5jzz
+inoremap <C-k> <ESC>5kzz
+noremap <C-h> 5<C-y>
+noremap <C-l> 5<C-e>
+inoremap <C-h> <esc>5<C-y>a
+inoremap <C-l> <esc>5<C-e>a
+onoremap <C-j> 5j
+onoremap <C-k> 5k
+onoremap <C-h> 5k
+onoremap <C-l> 5j
+
+
+noremap ; :
 
 " nice extra stuff
 " noremap <CR> mzo<ESC>`z
@@ -41,9 +49,8 @@ noremap <silent> <CR> :Flash<cr>
 noremap <silent> <BS> :Flash<cr>
 nnoremap Y y$
 
-" select text just pasted
+" select text just paste" select text just pasted
 nnoremap gV `[v`]
-
 " Restore case-sensitivity for jumping to tags (set ic disables it)
 map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
 
@@ -68,6 +75,8 @@ nnoremap m }}{w
 vnoremap m }
 nnoremap , {{{}}{w
 vnoremap , {
+onoremap m }
+onoremap , {
 
 nnoremap H ^
 nnoremap L $
@@ -163,7 +172,8 @@ iabbrev ipyy import IPython; IPython.embed()
 iabbrev iraee Irae Hueck Costa
 
 " expand %% to path of the current file when writing an vim command
-cnoremap %% <C-R>=expand('%:h') . '/'<cr>
+cnoremap %% <C-R>=expand('%:p:h') . '/'<cr>
+cnoremap %. <C-R>=getcwd()<cr>
 
 " any number exits insert mode
 inoremap 1 <Esc>`^;
@@ -176,6 +186,40 @@ inoremap 7 <Esc>`^
 inoremap 8 <Esc>`^
 inoremap 9 <Esc>`^
 inoremap 0 <Esc>`^
+
+inoremap <F1> 1
+inoremap <F2> 2
+inoremap <F3> 3
+inoremap <F4> 4
+inoremap <F5> 5
+inoremap <F6> 6
+inoremap <F7> 7
+inoremap <F8> 8
+inoremap <F9> 9
+inoremap <F10> 10
+
+cnoremap <F1> 1
+cnoremap <F2> 2
+cnoremap <F3> 3
+cnoremap <F4> 4
+cnoremap <F5> 5
+cnoremap <F6> 6
+cnoremap <F7> 7
+cnoremap <F8> 8
+cnoremap <F9> 9
+cnoremap <F10> 10
+
+
+noremap <F1> r1l
+noremap <F2> r2l
+noremap <F3> r3l
+noremap <F4> r4l
+noremap <F5> r5l
+noremap <F6> r6l
+noremap <F7> r7l
+noremap <F8> r8l
+noremap <F9> r9l
+noremap <F10> r0l
 
 " Typos
 command! -bang E e<bang>
@@ -205,16 +249,6 @@ nmap <F1> <Esc>
 function! UnmapEssentialsFromBuffer()
   silent! unmap <buffer> <leader>
 
-  silent! unmap <buffer> <C-j>
-  silent! unmap <buffer> <C-k>
-  silent! unmap <buffer> <C-h>
-  silent! unmap <buffer> <C-l>
-
-  silent! iunmap <buffer> <C-j>
-  silent! iunmap <buffer> <C-k>
-  silent! iunmap <buffer> <C-h>
-  silent! iunmap <buffer> <C-l>
-
   silent! unmap <buffer> <up>
   silent! unmap <buffer> <down>
   silent! unmap <buffer> <left>
@@ -225,9 +259,24 @@ function! UnmapEssentialsFromBuffer()
   silent! iunmap <buffer> <left>
   silent! iunmap <buffer> <right>
 
+  silent! unmap <buffer> <C-p>
+  silent! iunmap <buffer> <C-p>
+  silent! unmap <buffer> <C-v>
+  silent! iunmap <buffer> <C-v>
+  silent! vunmap <buffer> <C-v>
+
+  silent! unmap <buffer> <C-k>
+  silent! unmap <buffer> <C-j>
+  silent! iunmap <buffer> <C-k>
+  silent! iunmap <buffer> <C-j>
+
+  silent! unmap <buffer> K
+  silent! unmap <buffer> J
+
 endfunction
 autocmd FileType vimfiler call UnmapEssentialsFromBuffer()
 autocmd FileType unite call UnmapEssentialsFromBuffer()
+autocmd FileType unite setlocal scrolloff=999
 
 
 function! MyUnite(source, buffer_name, extra)
@@ -273,7 +322,7 @@ map <leader>f :VimFilerCreate<cr>
 nnoremap <Leader>t :Tagbar<cr>
 
 " FIMXE: use other than C-x as prefix
-nnoremap <silent> <C-x><C-h> zH:TmuxNavigateLeft<cr>zH
+nnoremap <silent> <C-x><C-h> zH:TmuxNavigateLeft<cr>
 nnoremap <silent> <C-x><C-j> zH:TmuxNavigateDown<cr>
 nnoremap <silent> <C-x><C-k> zH:TmuxNavigateUp<cr>
 nnoremap <silent> <C-x><C-l> zH:TmuxNavigateRight<cr>
@@ -339,18 +388,6 @@ inoremap <C-x>7 7
 inoremap <C-x>8 8
 inoremap <C-x>9 9
 
-" noremap <C-c>0 0
-" noremap <C-c>1 1
-" noremap <C-c>2 2
-" noremap <C-c>3 3
-" noremap <C-c>4 4
-" noremap <C-c>5 5
-" noremap <C-c>6 6
-" noremap <C-c>7 7
-" noremap <C-c>8 8
-" noremap <C-c>9 9
-
-
 "easier to type a>, i], etc... "
 " <angle>
 onoremap aa a>
@@ -372,8 +409,6 @@ onoremap ad a"
 xnoremap ad a"
 onoremap id i"
 xnoremap id i"
-
-79
 
 "  ____       _           _              _           _
 " / ___|  ___| | ___  ___| |_  __      _(_)_ __   __| | _____      _____

@@ -18,12 +18,9 @@
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
-Plugin 'glts/vim-cottidie'
-Plugin 'Shougo/vimshell.vim'
-Plugin 'kana/vim-niceblock'
-Plugin 'osyo-manga/unite-filetype'
 Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
+Plugin 'Shougo/vimshell.vim'
 Plugin 'airblade/vim-rooter'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'baskerville/bubblegum' " color scheme, I like it
@@ -32,10 +29,12 @@ Plugin 'chrisbra/csv.vim'
 Plugin 'chriskempson/base16-vim'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'flazz/vim-colorschemes'
+Plugin 'glts/vim-cottidie'
 Plugin 'gmarik/Vundle.vim'
 Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'jpo/vim-railscasts-theme'
 Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
+Plugin 'kana/vim-niceblock'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
@@ -45,10 +44,11 @@ Plugin 'mikewest/vimroom'
 Plugin 'mileszs/ack.vim'
 Plugin 'mjbrownie/django-template-textobjects'
 Plugin 'morhetz/gruvbox' " a color scheme
+Plugin 'osyo-manga/unite-filetype'
 Plugin 'sickill/vim-monokai'
 Plugin 'terryma/vim-multiple-cursors' " TODO: learn or remove from this list
 Plugin 'tommcdo/vim-exchange'
-Plugin 'tomtom/tcomment_vim'
+Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'

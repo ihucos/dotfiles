@@ -210,8 +210,8 @@ swap()
     mv $TMPFILE "$2"
 }
 
-# Make your directories and files access rights sane.
-resetperm() { chmod -R u=rwX,g=rX,o= "$@" ;}
+# # Make your directories and files access rights sane.
+# resetperm() { chmod -R u=rwX,g=rX,o= "$@" ;}
 
 # make directory to my user
 # mine() {adsf}
