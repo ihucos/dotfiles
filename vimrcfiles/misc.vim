@@ -43,7 +43,7 @@ command! -nargs=1 Warn echohl WarningMsg | echo <args> | echohl None
 function! Flash()
   call vimproc#system('bash -lc "flash"')
 endfunction
-command! -nargs=0 Flash call Flash(<f-args>)
+command! -nargs=0 Flash call Flash()
 
 function! Homer(text)
   call vimproc#system_bg('bash -lc "homer \"' . a:text . '\""')
@@ -112,3 +112,33 @@ function! PyImportRemove(module)
   call ReadCmdInp('isort -r "'.a:module.'" -')
 endfunction
 command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
+
+function! GitGrep(arg)
+  let l:a = substitute(a:arg, ' ', '\\ ', 'g')
+  call MyUnite('grep/git:.', 'grep_git', '-input=' . l:a)
+endfunction
+command! -nargs=1 GitGrep call GitGrep(<f-args>)
+
+
+function! HasGitRepo()
+  let result = system('cd ' . expand('%:p:h') . '; git rev-parse --show-toplevel')
+  if result == 'fatal: Not a git repository (or any of the parent directories): .git'
+    return 0
+  else
+    return 1
+  endif
+endfunction
+
+
+function! RemoveFancyCharacters()
+  let typo = {}
+  let typo["“"] = '"'
+  let typo["”"] = '"'
+  let typo["‘"] = "'"
+  let typo["’"] = "'"
+  let typo["–"] = '--'
+  let typo["—"] = '---'
+  let typo["…"] = '...'
+  :exe ":%s/".join(keys(typo), '\|').'/\=typo[submatch(0)]/ge'
+endfunction
+command! RemoveFancyCharacters :call RemoveFancyCharacters()
