@@ -128,17 +128,17 @@ vmap <leader>w :w<cr>
 map <leader>q :qa<cr>
 vmap <leader>q :<C-u>qa<cr>
 
-" 'normal' copy paste with
-nmap <leader>y "+y
-vmap <leader>y "+y
-nmap <leader>Y "+Y
-vmap <leader>Y "+Y
-vmap <leader>d "+d
-vmap <leader>D "+D
-nmap <leader>p "+p
-nmap <leader>P "+P
-vmap <leader>p "+p
-vmap <leader>P "+P
+" " 'normal' copy paste with
+" nmap <leader>y "+y
+" vmap <leader>y "+y
+" nmap <leader>Y "+Y
+" vmap <leader>Y "+Y
+" vmap <leader>d "+d
+" vmap <leader>D "+D
+" nmap <leader>p "+p
+" nmap <leader>P "+P
+" vmap <leader>p "+p
+" vmap <leader>P "+P
 
 inoremap <C-v> <ESC>"+pa
 noremap <C-v> "+P
@@ -196,7 +196,7 @@ inoremap <F6> 6
 inoremap <F7> 7
 inoremap <F8> 8
 inoremap <F9> 9
-inoremap <F10> 10
+inoremap <F10> 0
 
 cnoremap <F1> 1
 cnoremap <F2> 2
@@ -207,7 +207,7 @@ cnoremap <F6> 6
 cnoremap <F7> 7
 cnoremap <F8> 8
 cnoremap <F9> 9
-cnoremap <F10> 10
+cnoremap <F10> 0
 
 
 noremap <F1> r1l
@@ -276,8 +276,7 @@ function! UnmapEssentialsFromBuffer()
 endfunction
 autocmd FileType vimfiler call UnmapEssentialsFromBuffer()
 autocmd FileType unite call UnmapEssentialsFromBuffer()
-autocmd FileType unite setlocal scrolloff=999
-
+" autocmd FileType unite setlocal scrolloff=999
 
 function! MyUnite(source, buffer_name, extra)
   execute 'Unite ' . a:source . ' -buffer-name=' . a:buffer_name . ' -no-split -winheight=' . winheight(0) . ' ' . a:extra
@@ -286,16 +285,16 @@ endfunction
 function! MultiPurposeUnite()
     call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
 endfunction
-noremap <leader>u :call MultiPurposeUnite()<cr>
+noremap 8 :call MultiPurposeUnite()<cr>
+noremap 4 :call MultiPurposeUnite()<cr>
 noremap <leader>/ :call MyUnite('line:wrap', 'line', '-start-insert')<cr>
 " TODO: use git grep if in git repo
-noremap <leader>g :call MyUnite('grep:.', 'grep', '')<cr>
 noremap <leader>o :call MyUnite('outline', 'outline', '')<cr>
-noremap <leader>sf :call MyUnite('filetype filetype/new', 'filetype', '-start-insert')<cr>
-noremap <leader>sr :call MyUnite('register history/yank', 'register', '-start-insert')<cr>
-noremap <leader>ss :call MyUnite('menu:utils', 'menu-utils', '')<cr>
+noremap <leader>t :call MyUnite('filetype filetype/new', 'filetype', '-start-insert')<cr>
+noremap <leader>y :call MyUnite('register history/yank', 'register', '')<cr>
+noremap <leader>s :call MyUnite('menu:utils', 'menu-utils', '')<cr>
 
-noremap <leader>su :UndotreeToggle<cr>
+noremap <leader>u :UndotreeToggle<cr>
 
 noremap <silent> <leader>nc :VimuxPromptCommand<cr>
 noremap <silent> <leader>nv :VimuxRunLastCommand<cr>
@@ -319,7 +318,7 @@ noremap <silent> <Leader>nz :call VimuxZoomRunner()<CR>
 
 map <leader>f :VimFilerCreate<cr>
 
-nnoremap <Leader>t :Tagbar<cr>
+nnoremap <Leader>b :Tagbar<cr>
 
 " FIMXE: use other than C-x as prefix
 nnoremap <silent> <C-x><C-h> zH:TmuxNavigateLeft<cr>
@@ -367,15 +366,15 @@ autocmd FileType vimfiler map <buffer> q :b#<bar>bd#<CR>
 " |_| \_|\__,_|_| |_| |_|_.__/ \___|_|  |___/  \__,_|___/ |_____|____/ \____|
 "
 
-map 1 <ESC>
-map 2 <ESC>
-map 3 <ESC>
-map 4 <ESC>
-map 5 <ESC>
-map 6 <ESC>
-map 7 <ESC>
-map 8 <ESC>
-map 9 <ESC>
+" map 1 <ESC>
+" map 2 <ESC>
+" map 3 <ESC>
+" map 4 <ESC>
+" map 5 <ESC>
+" map 6 <ESC>
+" map 7 <ESC>
+" map 8 <ESC>
+" map 9 <ESC>
 
 inoremap <C-x>0 0
 inoremap <C-x>1 1

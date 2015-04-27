@@ -4,11 +4,11 @@
 
 # alias tmux='TERM=rxvt-unicode-256color tmux'
 
-autoload -U colors promptinit
-colors
-compinit
+# autoload -U colors promptinit
+# colors
+# compinit
 
-bindkey -e
+# bindkey -e
 
 # colored completion - use LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
@@ -608,19 +608,24 @@ set-buffer-if(){
   return 1
 }
 
-my-magic-u(){
+my-magic-g(){
   zle self-insert
-  if [[ "$BUFFER" == " u" ]]; then
-    BUFFER="vim -c 'call feedkeys(\" u\")'"
+  if [[ "$BUFFER" == "8" ]]; then
+    BUFFER="vim -c 'call feedkeys(\"8\")'"
+    zle accept-line
+  fi
+  if [[ "$BUFFER" == "4" ]]; then
+    BUFFER="vim -c 'call feedkeys(\"4\")'"
     zle accept-line
   fi
 }
-zle -N my-magic-u
-bindkey 'u' my-magic-u
+zle -N my-magic-g
+bindkey '8' my-magic-g
+bindkey '4' my-magic-g
 
 my-magic-c(){
   zle self-insert
-  set-buffer-if " gc" 'git commit -m ""' 15
+  set-buffer-if " gc" 'git commit -am ""' 16
 }
 zle -N my-magic-c
 bindkey 'c' my-magic-c

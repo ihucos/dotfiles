@@ -18,6 +18,8 @@
 " Plugin 'xolox/vim-easytags'
 
 " vip:sort
+" Plugin 'tpope/vim-projectionist' " is nice but does not work
+" Plugin 'rstacruz/sparkup' " figure out how to make it work
 Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
 Plugin 'Shougo/vimshell.vim'
@@ -60,7 +62,7 @@ Plugin 'vim-scripts/ZoomWin'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'wellle/targets.vim'
 Plugin 'xolox/vim-misc'
-
+Plugin 'lambdalisue/unite-grep-vcs'
 
 "             _ _   _                        __
 "   __      _(_) |_| |__     ___ ___  _ __  / _|

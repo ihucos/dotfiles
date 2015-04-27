@@ -2,6 +2,7 @@
 " set noshowmode " enable later and show status in status bar
 " set number
 " set numberwidth=
+set synmaxcol=2048
 set background=dark
 set backspace=indent,eol,start " bs: allows you to backspace over the listed character types
 set backup " enable backups
