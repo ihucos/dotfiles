@@ -17,9 +17,9 @@
 " Plugin 'mhinz/vim-startify'
 " Plugin 'xolox/vim-easytags'
 
-" vip:sort
-" Plugin 'tpope/vim-projectionist' " is nice but does not work
 " Plugin 'rstacruz/sparkup' " figure out how to make it work
+" Plugin 'tpope/vim-projectionist' " is nice but does not work
+" vip:sort
 Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
 Plugin 'Shougo/vimshell.vim'
@@ -40,6 +40,7 @@ Plugin 'kana/vim-niceblock'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
+Plugin 'lambdalisue/unite-grep-vcs'
 Plugin 'matze/vim-move'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mikewest/vimroom'
@@ -62,7 +63,6 @@ Plugin 'vim-scripts/ZoomWin'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'wellle/targets.vim'
 Plugin 'xolox/vim-misc'
-Plugin 'lambdalisue/unite-grep-vcs'
 
 "             _ _   _                        __
 "   __      _(_) |_| |__     ___ ___  _ __  / _|
@@ -288,3 +288,9 @@ autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+
+Plugin 'wesQ3/vim-windowswap'
+let g:windowswap_map_keys = 0 "prevent default bindings
+nnoremap <silent> <C-W>s :call WindowSwap#EasyWindowSwap()<CR>
+vnoremap <silent> <C-W>s :call WindowSwap#EasyWindowSwap()<CR>

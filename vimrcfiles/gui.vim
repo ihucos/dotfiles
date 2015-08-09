@@ -89,6 +89,8 @@ hi link pythonDocTest2 PythonString
 hi link pythonDocstring PythonString
 hi pythonTodo ctermfg=15 ctermbg=bg
 hi link pythonRun Grey
+hi link PythonDecorator Magenta
+hi link PythonDottedName Magenta
 
 hi link uniteSource__GrepLineNR SmallGrey
 " hi link uniteSource__Outline Invisible

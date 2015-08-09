@@ -8,6 +8,10 @@
 # colors
 # compinit
 
+
+# for Nico's stuff # FIXME: remove from git
+source $HOME/projects/isios/vplan/vplan-env.sh
+
 # bindkey -e
 
 # colored completion - use LS_COLORS
@@ -28,7 +32,9 @@ setopt hist_ignore_dups
 # Ignore add history if space
 setopt hist_ignore_space
 setopt auto_cd
-alias py='python'
+setopt interactivecomments
+setopt NO_BEEP
+
 
 source /home/resu/.my_zsh_plugins/zsh-syntax-highlighting.zsh
 
@@ -106,7 +112,7 @@ export LESS=" -R "
 export PYTHONSTARTUP="$HOME/.pythonrc"
 
 # TODO: add /usr/bin/local/bin
-PATH=$HOME/.dynamic-colors/bin:$PATH:~/bin
+PATH=$HOME/.dynamic-colors/bin:$PATH:~/.bin:~/bin
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -126,13 +132,21 @@ if [ -x /usr/bin/dircolors ]; then
 	alias egrep='egrep --color=auto'
 fi
 
-# some more ls aliases
+p() { cd ~/projects/$1; }
+_p() { _files -W ~/projects -/; }
+compdef _p p
 
+# FIXME: really nice but seems not to work
+# make sudo pass my aliasses
+alias sudo='sudo '
+
+# FIXME: no compgen for zsh?
 alias lsalias='compgen -a | xargs'
 
 alias :q=exit
 
 alias g=git
+alias t=timetrap
 alias r='git exec'
 alias manage.py='git exec python manage.py'
 
@@ -177,6 +191,11 @@ alias lscommands='ls ${PATH//:/ }'
 
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
+
+
+win() {
+  tmux if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
+}
 
 
 # p(){
@@ -441,8 +460,6 @@ export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
-setopt interactivecomments
-
 _DIRAT=0
 _DIRLIST=(/bla/a /bla/b /bla/c)
 prev-dir() {
@@ -571,12 +588,17 @@ bindkey '\ee' edit-command-line
 printf '\n'%.0s {1..$LINES}
 
 
-foreground-vi() {
-    BUFFER="fg %vi"
+fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER="fg"
     zle accept-line
-  }
-zle -N foreground-vi
-bindkey '^Z' foreground-vi
+  else
+    # zle push-input
+    # zle clear-screen
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
 
 tmux-paste() {
   tmux set-buffer -- "$(xclip -o -selection clipboard)"

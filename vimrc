@@ -1,7 +1,7 @@
 " ~/.vimrcfiles/plugins.vim  plugins
 " ~/.vimrcfiles/misc.vim     misc
 " ~/.vimrcfiles/sets.vim     sets
-" ~/.vimrcfiles/maps.vim     maps
+" ~/.vimrcfiles/mappings.vim mappings
 " ~/.vimrcfiles/gui.vim      gui
 
 set nocompatible
@@ -18,7 +18,7 @@ filetype plugin indent on
 
 source ~/.vimrcfiles/misc.vim
 source ~/.vimrcfiles/sets.vim
-source ~/.vimrcfiles/maps.vim
+source ~/.vimrcfiles/mappings.vim
 source ~/.vimrcfiles/gui.vim
 
 " Use local vimrc if available

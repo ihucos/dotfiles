@@ -17,3 +17,6 @@ st=status -s
 [merge]
 	tool = vimdiff
 	conflictstyle=merge
+[filter "idexpansion"]
+	clean = /home/resu/bin/clean_id.py
+	smudge = /home/resu/bin/smudge_id.py
