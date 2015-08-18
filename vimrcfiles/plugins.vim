@@ -294,3 +294,7 @@ Plugin 'wesQ3/vim-windowswap'
 let g:windowswap_map_keys = 0 "prevent default bindings
 nnoremap <silent> <C-W>s :call WindowSwap#EasyWindowSwap()<CR>
 vnoremap <silent> <C-W>s :call WindowSwap#EasyWindowSwap()<CR>
+
+
+Plugin 'jaxbot/browserlink.vim'
+let g:bl_pagefiletypes = ['javascript', "coffee", "html", "html5", "tt2html", "2html", "htmlcheetah", "htmldjango", "htmlm4", "htmlos", "phtml", "xhtml", "scss"]
