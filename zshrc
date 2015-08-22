@@ -459,6 +459,7 @@ export HH_CONFIG=hicolor         # get more colors
 export HISTCONTROL=ignorespace   # leading space hides commands from history
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+export HISTFILE=~/.zsh_history
 
 _DIRAT=0
 _DIRLIST=(/bla/a /bla/b /bla/c)
@@ -682,3 +683,26 @@ my-magic-s(){
 }
 zle -N my-magic-s
 bindkey 's' my-magic-s
+
+# zle -N my-stuff
+# bindkey '^y' my-stuff
+# my-stuff(){
+#   tmux command-prompt -p 'save history to filename:' -I '/tmp/tmux.history' 'capture-pane -S -32768 ; save-buffer %1 ; delete-buffer'
+#   vim /tmp/tmux.history
+# }
+
+
+
+
+project-search-inline-string(){
+  git exec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
+}
+project-search-all(){
+  git exec ag  . | grep --color -E '[^:]*:' | fzf --tac
+  # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
+}
+
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# [ -f /home/resu/.fzf/shell/completion.zsh ] && source /home/resu/.fzf/shell/completion.zsh

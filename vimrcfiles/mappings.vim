@@ -81,7 +81,7 @@ onoremap , {
 nnoremap H ^
 nnoremap L $
 vnoremap H ^
-vnoremap L $
+vnoremap L $h
 onoremap H ^
 onoremap L $
 

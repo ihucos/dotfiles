@@ -25,3 +25,7 @@ source ~/.vimrcfiles/gui.vim
 if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
+
+
+" provisorisch, test new workflow
+set laststatus=0
