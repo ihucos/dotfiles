@@ -711,8 +711,13 @@ _pfiles(){
 pfiles(){tmux send-keys "vim `_pfiles`" Enter}
 
 pcommands(){
-  tmux send-keys "`lscommands | fzf`" Enter
+  tmux send-keys "`lscommands | fzf` "
 }
+
+ppackages(){
+  tmux send-keys "sudo apt-get install `apt-cache search '' | fzf | cut -d' ' -f1` "
+}
+
 
 
 
