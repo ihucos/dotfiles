@@ -196,9 +196,19 @@ alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
 
 
-win() {
-  tmux if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
+_termswitch() {
+  tmux -S /tmp/tmux-1000/default if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
 }
+_termhide(){python ~/projects/wintoggle.py hide}
+_termshow(){python ~/projects/wintoggle.py show}
+# map this in your gnome/kde/stuff
+alias on-meta-a="_termswitch 0; _termshow"
+alias on-meta-s="_termswitch 1; _termshow"
+alias on-meta-d="_termswitch 2; _termshow"
+alias on-meta-f="_termswitch 4; _termshow"
+alias on-meta-g="_termswitch 5; _termshow"
+alias on-meta-c="_termhide"
+
 
 
 # p(){
