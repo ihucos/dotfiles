@@ -187,7 +187,10 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias trash='mv -t ~/.local/share/Trash/files'
 alias lscolors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: Test"; done'
 
-alias lscommands='ls ${PATH//:/ }'
+# alias lscommands='ls ${PATH//:/ }'
+lscommands() {
+    (alias | cut -f1 -d= ; hash -f; hash -v | cut -f 1 -d= ; typeset +f) | sort
+}
 
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
@@ -694,13 +697,29 @@ bindkey 's' my-magic-s
 
 
 
-project-search-inline-string(){
+pstrings(){
   git exec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
 }
-project-search-all(){
+plines(){
   git exec ag  . | grep --color -E '[^:]*:' | fzf --tac
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
+_pfiles(){
+  git exec ag  -l | fzf --tac
+  # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
+}
+pfiles(){tmux send-keys "vim `_pfiles`" Enter}
+
+pcommands(){
+  tmux send-keys "`lscommands | fzf`" Enter
+}
+
+
+
+_ptags(){
+  git exec cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | fzf
+}
+ptags(){tmux send-keys "vim +\"normal zz\" -t `_ptags`" Enter}
 
 
 

@@ -152,7 +152,7 @@ endfunction
 
 call Update()
 au Syntax * Update
-au VimEnter * Update
+" au VimEnter * Update " makes vim always jump to top when opened. do i need this?
 
 " make sign column always visible
 function! PlaceDummySign()
