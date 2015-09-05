@@ -627,16 +627,6 @@ bindkey '^V' tmux-paste
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
-# space(){
-#   if [[ -z $BUFFER ]]; then
-#     # BUFFER="vim -c 'call feedkeys(\" \")'"
-#     BUFFER="vim -c ':call MultiPurposeUnite()'"
-#     zle accept-line
-#   else
-#     zle magic-space
-#   fi
-# }
-
 set-buffer-if(){
   if [[ "$BUFFER" == "$1" ]]; then
     BUFFER=$2

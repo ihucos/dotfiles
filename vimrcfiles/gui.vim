@@ -119,21 +119,6 @@ hi djangoArgument ctermfg=2 cterm=bold,italic
 hi djangoFilter ctermfg=2 cterm=bold,italic
 hi djangoVarBlock ctermfg=2
 
-hi link uniteSource__GrepLineNR SmallGrey
-" hi link uniteSource__Outline Invisible
-hi link uniteSource__Outline_function PythonFunction
-hi link uniteSource__Outline_type PythonClass
-hi uniteCandidateInputKeyword ctermbg=bg ctermfg=3
-hi uniteCandidateSourceName ctermfg=4
-hi uniteInputLine ctermfg=fg
-hi uniteSource__Buffer ctermfg=4
-hi uniteSource__Buffer_Info ctermfg=10
-hi uniteSource__Buffer_Modified ctermfg=10
-hi uniteSource__Buffer_Prefix ctermfg=10
-hi uniteSource__Buffer_Time ctermfg=10
-hi uniteSource__GrepFile ctermbg=bg ctermfg=4
-hi uniteSource__Tag_File ctermbg=NONE ctermfg=4
-
 hi vimfilerClosedFile ctermfg=4
 hi vimfilerNonMark ctermfg=11
 hi vimfilerDirectory ctermfg=4

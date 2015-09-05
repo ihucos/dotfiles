@@ -73,7 +73,7 @@ vnoremap P "_x]p`]l
 " TODO: add support for motions
 nnoremap m }}{w
 vnoremap m }
-nnoremap , {{{}}{w
+nnoremap , {{{}}{w
 vnoremap , {
 onoremap m }
 onoremap , {
@@ -150,11 +150,6 @@ inoremap <C-p> <C-r>"
 cnoremap <C-p> <C-r>"
 noremap <leader>v <C-v>
 vnoremap <leader>v <C-v>
-
-noremap <silent> <leader>j :split<cr>:call MultiPurposeUnite()<cr>
-noremap <silent> <leader>k :split<cr><C-w>k:call MultiPurposeUnite()<cr>
-noremap <silent> <leader>h :vsplit<cr><C-w>h:call MultiPurposeUnite()<cr>
-noremap <silent> <leader>l :vsplit<cr>:call MultiPurposeUnite()<cr>
 
 omap <leader>= mzgg=G\`z
 
@@ -278,26 +273,6 @@ function! UnmapEssentialsFromBuffer()
 
 endfunction
 autocmd FileType vimfiler call UnmapEssentialsFromBuffer()
-autocmd FileType unite call UnmapEssentialsFromBuffer()
-autocmd FileType unite noremap <buffer> <C-j> <enter>
-autocmd FileType unite inoremap <buffer> <C-j> <enter>
-" autocmd FileType unite setlocal scrolloff=999
-
-function! MyUnite(source, buffer_name, extra)
-  execute 'Unite ' . a:source . ' -buffer-name=' . a:buffer_name . ' -no-split -winheight=' . winheight(0) . ' ' . a:extra
-
-endfunction
-function! MultiPurposeUnite()
-    call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
-endfunction
-noremap 8 :call MultiPurposeUnite()<cr>
-noremap 4 :call MultiPurposeUnite()<cr>
-noremap <leader>/ :call MyUnite('line:wrap', 'line', '-start-insert')<cr>
-" TODO: use git grep if in git repo
-noremap <leader>o :call MyUnite('outline', 'outline', '')<cr>
-noremap <leader>t :call MyUnite('filetype filetype/new', 'filetype', '-start-insert')<cr>
-noremap <leader>y :call MyUnite('register history/yank', 'register', '')<cr>
-noremap <leader>s :call MyUnite('menu:utils', 'menu-utils', '')<cr>
 
 noremap <leader>u :UndotreeToggle<cr>
 
@@ -306,20 +281,6 @@ noremap <silent> <leader>nv :VimuxRunLastCommand<cr>
 noremap <silent> <leader>nx :VimuxCloseRunner<cr>
 noremap <silent> <leader>ni :VimuxInspect<cr>
 noremap <silent> <Leader>nz :call VimuxZoomRunner()<CR>
-
-" noremap <leader>j :call MyUnite('tag', 'tag', '-start-insert')<cr>
-" noremap <leader>k :call MyUnite('buffer:-', 'buffer', '')<cr>
-" noremap <leader>f :call MyUnite('file_rec/async', 'file_rec', '-start-insert')<cr>
-
-"
-" map <leader>f :Unite -buffer-name=files -start-insert -no-split -wrap file_rec -wipe<cr>
-" map <leader>r :Unite -buffer-name=mru -prompt-direction="top" -start-insert -winheight=20 file_mru<cr>
-" map <leader>k :Unite -buffer-name=buffers -no-split buffer:- -wipe<cr>
-" map <leader>/ :Unite -buffer-name=locate -no-split -start-insert line -wipe<cr>
-" " map <leader>h :Unite -buffer-name=xxx -no-split -start-insert locate<cr>
-" map <leader>l :Unite -buffer-name=register register<CR>
-" map <leader>j :Unite -buffer-name=tag -start-insert -no-split -wrap tag -wipe<cr>
-" " Custom mappings for the unite buffer
 
 map <leader>f :VimFilerCreate<cr>
 
@@ -350,16 +311,6 @@ cnoremap <silent> <C-x><C-l> <C-c>zH:TmuxNavigateRight<cr>
 " unmap mapping from vim-rooter
 au VimEnter * unmap <leader>cd
 
-" function! UniteTmuxNavigteOverwrite()
-"   inoremap <silent> <C-h> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateLeft<cr>
-"   inoremap <silent> <C-j> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateDown<cr>
-"   inoremap <silent> <C-k> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateUp<cr>
-"   inoremap <silent> <C-l> <ESC>:execute "normal \<plug>(unite_exit)"<cr>:TmuxNavigateRight<cr>
-" endfunction
-"
-" " exit this sort of buffers with ESC
-" autocmd FileType unite call UniteTmuxNavigteOverwrite()
-" autocmd FileType unite map <buffer> <ESC> <plug>(unite_exit)
 autocmd FileType help map <buffer> q :b#<bar>bd#<CR>
 autocmd FileType vimfiler map <buffer> q :b#<bar>bd#<CR>
 

@@ -20,7 +20,6 @@
 " Plugin 'rstacruz/sparkup' " figure out how to make it work
 " Plugin 'tpope/vim-projectionist' " is nice but does not work
 " vip:sort
-Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/vimproc'
 Plugin 'Shougo/vimshell.vim'
 Plugin 'airblade/vim-rooter'
@@ -40,14 +39,12 @@ Plugin 'kana/vim-niceblock'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
-Plugin 'lambdalisue/unite-grep-vcs'
 Plugin 'matze/vim-move'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mikewest/vimroom'
 Plugin 'mileszs/ack.vim'
 Plugin 'mjbrownie/django-template-textobjects'
 Plugin 'morhetz/gruvbox' " a color scheme
-Plugin 'osyo-manga/unite-filetype'
 Plugin 'sickill/vim-monokai'
 Plugin 'terryma/vim-multiple-cursors' " TODO: learn or remove from this list
 Plugin 'tommcdo/vim-exchange'
@@ -70,38 +67,6 @@ Plugin 'xolox/vim-misc'
 "    \ V  V /| | |_| | | | | (_| (_) | | | |  _|
 "     \_/\_/ |_|\__|_| |_|  \___\___/|_| |_|_|
 
-
-Plugin 'Shougo/unite.vim'
-Plugin 'ujihisa/unite-locate'
-Plugin 'Shougo/neomru.vim' " mru for unite
-Plugin 'tsukkee/unite-tag'
-let g:unite_force_overwrite_statusline = 0
-let g:unite_source_file_mru_limit = 100 " set up mru limit
-" call unite#custom#profile('default', 'context', { 'marked_icon':'✓'})
-let g:unite_cursor_line_highlight = 'CursorLine'
-let g:unite_prompt = '➜ '
-" call unite#filters#sorter_default#use(['sorter_rank']) " Use the rank sorter for everything
-" Set up some custom ignores
-" call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
-"             \ 'ignore_pattern', join([
-"             \ '\.git/',
-"             \ 'tmp/',
-"             \ ], '\|'))
-let g:unite_source_grep_max_candidates = 200
-if executable('ag')
-    let g:unite_source_rec_async_command= 'ag --nocolor --nogroup --hidden -g ""'
-endif
-au WinLeave plugin-unite echo <plug>(unite_exit)
-
-let g:unite_source_menu_menus = {}
-
-let g:unite_source_menu_menus.utils = {
-\ 'description' : 'Help utilities',
-\}
-
-let g:unite_source_menu_menus.utils.command_candidates = [
-    \[':VCoolor - Shows color picker to change CSS color under cursor', 'VCoolor'],
-\]
 
 Plugin 'rhysd/clever-f.vim'
 let g:clever_f_mark_cursor = 0

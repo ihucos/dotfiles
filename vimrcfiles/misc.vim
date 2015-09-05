@@ -72,15 +72,6 @@ endfunction
 command! -nargs=1 Figlet call Figlet(<f-args>)
 
 " TODO: move this to bashrc
-" autocmd VimEnter * if argc() == 0 | call MultiPurposeUnite() | endif
-
-function! MyUnite(source, buffer_name, extra)
-  execute 'Unite ' . a:source . ' -buffer-name=' . a:buffer_name . ' -no-split -winheight=' . winheight(0) . ' ' . a:extra
-endfunction
-command! -nargs=1 MyUnite call MyUnite(<f-args>, 'buffernamehere', '')
-function! MultiPurposeUnite()
-  call MyUnite('buffer:- tag file_rec/git', 'multipurpose', '-start-insert -short-source-names')
-endfunction
 
 command! -nargs=0 Diff :w !grc diff % -
 
@@ -112,13 +103,6 @@ function! PyImportRemove(module)
   call ReadCmdInp('isort -r "'.a:module.'" -')
 endfunction
 command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
-
-function! GitGrep(arg)
-  let l:a = substitute(a:arg, ' ', '\\ ', 'g')
-  call MyUnite('grep/git:.', 'grep_git', '-input=' . l:a)
-endfunction
-command! -nargs=1 GitGrep call GitGrep(<f-args>)
-
 
 function! HasGitRepo()
   let result = system('cd ' . expand('%:p:h') . '; git rev-parse --show-toplevel')
