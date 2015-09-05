@@ -147,8 +147,9 @@ alias :q=exit
 
 alias g=git
 alias t=timetrap
-alias r='git exec'
-alias manage.py='git exec python manage.py'
+gitexec(){(cd `git rev-parse --show-toplevel` && "$@")}
+alias manage.py='gitexec python manage.py'
+alias gitroot="git rev-parse --show-toplevel"
 
 # copy with progressbar
 alias cpv="rsync -poghb --backup-dir=/tmp/rsync -e /dev/null --progress --"
@@ -208,6 +209,7 @@ alias on-meta-d="_termswitch 2; _termshow"
 alias on-meta-f="_termswitch 4; _termshow"
 alias on-meta-g="_termswitch 5; _termshow"
 alias on-meta-c="_termhide"
+alias on-meta-v="_termhide"
 
 
 
@@ -647,11 +649,13 @@ set-buffer-if(){
 my-magic-g(){
   zle self-insert
   if [[ "$BUFFER" == "8" ]]; then
-    BUFFER="vim -c 'call feedkeys(\"8\")'"
+    # BUFFER="vim -c 'call feedkeys(\"8\")'"
+    BUFFER="pfiles"
     zle accept-line
   fi
   if [[ "$BUFFER" == "4" ]]; then
-    BUFFER="vim -c 'call feedkeys(\"4\")'"
+    # BUFFER="vim -c 'call feedkeys(\"4\")'"
+    BUFFER="pfiles"
     zle accept-line
   fi
 }
@@ -708,17 +712,21 @@ bindkey 's' my-magic-s
 
 
 pstrings(){
-  git exec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
+  gitexec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
 }
 plines(){
-  git exec ag  . | grep --color -E '[^:]*:' | fzf --tac
+  gitexec ag  . | grep --color -E '[^:]*:' | fzf --reverse --extended-exact --no-sort
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
 _pfiles(){
-  git exec ag  -l | fzf --tac
+  gitexec ag  -l | fzf --tac
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
-pfiles(){tmux send-keys "vim `_pfiles`" Enter}
+pfiles(){tmux send-keys "vim \`gitroot\`/`_pfiles`" Enter} # FIXME: remove don't 
+
+pallfiles(){
+  find / 2> /tmp/null | fzf --extended-exact
+}
 
 pcommands(){
   tmux send-keys "`lscommands | fzf` "
@@ -729,14 +737,28 @@ ppackages(){
 }
 
 
-
-
 _ptags(){
-  git exec cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | fzf
+  gitexec cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | fzf
 }
 ptags(){tmux send-keys "vim +\"normal zz\" -t `_ptags`" Enter}
 
+prefix(){
+  sed -e "s/^/;;$1  /"
+}
+
+pall(){
+ # sed -e 's/^/;F '
+ (cd `git rev-parse --show-toplevel` &&  {\
+   ag -l | prefix "F" ;
+   cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | prefix "T" ;
+   git branch | prefix "B" ; \
+   ag -l | xargs dirname | sort -u | prefix "D" ;
+   ag . | grep --color -E '[^:]*:' |  prefix "L" ;
+ } | fzf --extended-exact --query=";;f ")
+}
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # [ -f /home/resu/.fzf/shell/completion.zsh ] && source /home/resu/.fzf/shell/completion.zsh
+
+# export FZF_DEFAULT_OPTS="--color=16,hl:6,hl+:0,bg+:6,fg+:8,pointer:6,marker:8,info:10,prompt:6 -m --prompt='  >> '"

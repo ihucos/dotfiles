@@ -92,6 +92,33 @@ hi link pythonRun Grey
 hi link PythonDecorator Magenta
 hi link PythonDottedName Magenta
 
+hi htmlLink ctermfg=4 cterm=italic
+hi link htmlSpecialChar Base2
+" hi htmlArg ctermfg=14 cterm=italic,bold
+hi link htmlH1 White
+hi link htmlH2 White
+hi link htmlH3 White
+hi link htmlH4 White
+hi link htmlH5 White
+hi link htmlH6 White
+hi htmlTagName ctermfg=6
+hi htmlSpecialTagName ctermfg=9
+hi htmlTagN ctermfg=6
+hi htmlTag ctermfg=6 cterm=bold,italic
+hi htmlEndTag ctermfg=6 cterm=bold,italic
+hi htmlComment cterm=italic ctermfg=10
+hi htmlCommentPart cterm=italic ctermfg=10
+
+hi jsGlobalObjects ctermfg=7
+hi jsFunction ctermfg=4
+hi jsStorageClass ctermfg=4
+
+hi djangoTagBlock ctermfg=2 cterm=bold,italic
+hi djangoStatement ctermfg=2 cterm=bold,italic
+hi djangoArgument ctermfg=2 cterm=bold,italic
+hi djangoFilter ctermfg=2 cterm=bold,italic
+hi djangoVarBlock ctermfg=2
+
 hi link uniteSource__GrepLineNR SmallGrey
 " hi link uniteSource__Outline Invisible
 hi link uniteSource__Outline_function PythonFunction

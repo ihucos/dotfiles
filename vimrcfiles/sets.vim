@@ -61,3 +61,6 @@ set fillchars+=fold:\⋅
 set fillchars+=stlnc:┴
 set fillchars+=vert:│
 set fillchars+=stl:┴
+
+" set t_ZH=^[[3m
+" set t_ZR=^[[23m
