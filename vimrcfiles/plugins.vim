@@ -21,7 +21,6 @@
 " Plugin 'tpope/vim-projectionist' " is nice but does not work
 " vip:sort
 Plugin 'Shougo/vimproc'
-Plugin 'Shougo/vimshell.vim'
 Plugin 'airblade/vim-rooter'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'baskerville/bubblegum' " color scheme, I like it
@@ -34,32 +33,30 @@ Plugin 'glts/vim-cottidie'
 Plugin 'gmarik/Vundle.vim'
 Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'jpo/vim-railscasts-theme'
-Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
+" Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
 Plugin 'kana/vim-niceblock'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
-Plugin 'matze/vim-move'
+" Plugin 'matze/vim-move'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mikewest/vimroom'
-Plugin 'mileszs/ack.vim'
 Plugin 'mjbrownie/django-template-textobjects'
-Plugin 'morhetz/gruvbox' " a color scheme
-Plugin 'sickill/vim-monokai'
-Plugin 'terryma/vim-multiple-cursors' " TODO: learn or remove from this list
+" Plugin 'morhetz/gruvbox' " a color scheme
+" Plugin 'sickill/vim-monokai' " a color scheme
 Plugin 'tommcdo/vim-exchange'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-rsi' " readline like bindings in insert mode
-Plugin 'tpope/vim-sleuth'
+Plugin 'tpope/vim-sleuth' " automaitc set indedation rules
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'vim-scripts/ZoomWin'
 Plugin 'vim-scripts/matchit.zip'
 Plugin 'wellle/targets.vim'
-Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-misc' " Do i need this?
 
 "             _ _   _                        __
 "   __      _(_) |_| |__     ___ ___  _ __  / _|

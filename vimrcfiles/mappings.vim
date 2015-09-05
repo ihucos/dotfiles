@@ -12,6 +12,7 @@ let maplocalleader = "\\"
 " map K [M
 
 vnoremap p "_dP
+" noremap <LeftMouse> i
 
 " TODO: do something nice with C-c
 " map <C-c> ]M
