@@ -12,7 +12,7 @@
 # for Nico's stuff # FIXME: remove from git
 source $HOME/projects/isios/vplan/vplan-env.sh
 
-# bindkey -e
+bindkey -e
 
 # colored completion - use LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
@@ -659,6 +659,16 @@ my-magic-c(){
 }
 zle -N my-magic-c
 bindkey 'c' my-magic-c
+
+my-magic-q(){
+  zle self-insert
+  if [[ "$BUFFER" == " q" ]]; then
+    BUFFER=exit
+    zle accept-line
+  fi
+}
+zle -N my-magic-q
+bindkey 'q' my-magic-q
 
 # set-git-gui(){
 #   PREV_PD=$POSTDISPLAY
