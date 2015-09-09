@@ -224,7 +224,7 @@ _termhide(){
   python ~/projects/wintoggle.py hide
 }
 _termshow(){
-  xgamma -gamma $(_getcurrentgamma)
+  xgamma -gamma $(_getgamma)
   python ~/projects/wintoggle.py show
 }
 # map this in your gnome/kde/stuff
