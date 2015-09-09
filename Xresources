@@ -22,8 +22,8 @@ URxvt.boldItalicFont: xft:Droid\ Sans\ Mono:size=8.5
 ! URxvt*italicFont: fontlist
 !boldItalicFont: fontlist
 
-URxvt*cursorColor: #d33682
-URxvt*cursorColor2:#002b36
+URxvt*cursorColor: #FA0043
+URxvt*cursorColor2:#FFCF66
 URxvt*cursorBlink: false
 
 URxvt*pointerBlank: true

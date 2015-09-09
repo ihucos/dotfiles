@@ -79,16 +79,16 @@ vnoremap , {
 onoremap m }
 onoremap , {
 
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L $h
-onoremap H ^
-onoremap L $
+nnoremap <leader>h ^
+nnoremap <leader>l $
+vnoremap <leader>h ^
+vnoremap <leader>l $h
+onoremap <leader>h ^
+onoremap <leader>l $
 
-" NIMM: Allow undoing insert-mode ctrl-u and ctrl-w
-inoremap <C-U> <C-G>u<C-U>
-inoremap <C-W> <C-G>u<C-W>
+" " NIMM: Allow undoing insert-mode ctrl-u and ctrl-w
+" inoremap <C-U> <C-G>u<C-U>
+" inoremap <C-W> <C-G>u<C-W>
 
 " resize windows
 noremap <up> 2<C-w>+

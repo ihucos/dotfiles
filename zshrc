@@ -196,12 +196,37 @@ lscommands() {
 alias dark="dynamic-colors switch solarized-dark"
 alias light="dynamic-colors switch solarized-light"
 
+_getgamma(){
+  if [ ! -f /tmp/mygamma ]; then
+    echo "1" > /tmp/mygamma
+  fi
+  cat /tmp/mygamma
+}
+
+_incrgamma(){
+  echo $(calc $(_getgamma) + 0.1) > /tmp/mygamma
+  xgamma -gamma $(_getgamma)
+}
+_decrgamma(){
+  echo $(calc $(_getgamma) - 0.1) > /tmp/mygamma
+  xgamma -gamma $(_getgamma)
+}
+_resetgamma(){
+  echo 1 > /tmp/mygamma
+  xgamma -gamma $(_getgamma)
+}
 
 _termswitch() {
   tmux -S /tmp/tmux-1000/default if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
 }
-_termhide(){python ~/projects/wintoggle.py hide}
-_termshow(){python ~/projects/wintoggle.py show}
+_termhide(){
+  xgamma -gamma 1
+  python ~/projects/wintoggle.py hide
+}
+_termshow(){
+  xgamma -gamma $(_getcurrentgamma)
+  python ~/projects/wintoggle.py show
+}
 # map this in your gnome/kde/stuff
 alias on-meta-a="_termswitch 0; _termshow"
 alias on-meta-s="_termswitch 1; _termshow"
