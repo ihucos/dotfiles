@@ -55,10 +55,6 @@ nnoremap gV `[v`]
 " Restore case-sensitivity for jumping to tags (set ic disables it)
 map <silent> <C-]> :set noic<cr>g<C-]><silent>:set ic<cr>
 
-" macro and repeat command also in visual mode
-vnoremap <leader>. :normal .<cr>
-vnoremap <leader>@ :normal @
-
 nnoremap j gj
 nnoremap k gk
 noremap gj j
@@ -70,21 +66,24 @@ nnoremap P ]p`]l
 vnoremap p "_x]P`]l
 vnoremap P "_x]p`]l
 
-" go a paragraph up or down
-" TODO: add support for motions
-nnoremap m }}{w
-vnoremap m }
-nnoremap , {{{}}{w
-vnoremap , {
-onoremap m }
-onoremap , {
+function! NextParagraph()
+  if getline(".") == ""
+    normal! }{j
+  else
+    normal! }}{j
+  endif
+endfunction
+function! PrevParagraph()
+  normal! k{j
+endfunction
 
-nnoremap <leader>h ^
-nnoremap <leader>l $
-vnoremap <leader>h ^
-vnoremap <leader>l $h
-onoremap <leader>h ^
-onoremap <leader>l $
+nnoremap m :silent call NextParagraph()<cr>
+nnoremap , :silent call PrevParagraph()<cr>
+vnoremap m :<C-u>silent call NextParagraph()<cr>
+vnoremap , :<C-u>silent call PrevParagraph()<cr>
+onoremap m :silent call NextParagraph()<cr>
+onoremap , :silent call PrevParagraph()<cr>
+
 
 " " NIMM: Allow undoing insert-mode ctrl-u and ctrl-w
 " inoremap <C-U> <C-G>u<C-U>
@@ -106,6 +105,17 @@ inoremap <right> 2<C-w>>a
 "    | |  __/ (_| | (_| |  __/ |    | | | | | | (_| | |_) \__ \
 "    | |\___|\__,_|\__,_|\___|_|    |_| |_| |_|\__,_| .__/|___/
 "    |_|
+
+" macro and repeat command also in visual mode
+vnoremap <leader>. :normal .<cr>
+vnoremap <leader>@ :normal @
+
+nnoremap <leader>h ^
+nnoremap <leader>l $
+vnoremap <leader>h ^
+vnoremap <leader>l $h
+onoremap <leader>h ^
+onoremap <leader>l $
 
 vnoremap <leader>a :<C-u>call Pep8FixVisual()<cr>
 nnoremap <leader>a :<C-u>call Pep8FixLine()<cr>
