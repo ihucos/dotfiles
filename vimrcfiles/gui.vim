@@ -119,12 +119,6 @@ hi djangoArgument ctermfg=2 cterm=bold,italic
 hi djangoFilter ctermfg=2 cterm=bold,italic
 hi djangoVarBlock ctermfg=2
 
-hi vimfilerClosedFile ctermfg=4
-hi vimfilerNonMark ctermfg=11
-hi vimfilerDirectory ctermfg=4
-hi vimfilerColumn__TypeDirectory ctermfg=4
-hi vimfilerColumn__TimeToday ctermfg=fg
-
 hi link UndotreeTimeStamp Normal
 hi link UndotreeSavedSmall Blue
 hi link UndotreeSavedBig Yellow

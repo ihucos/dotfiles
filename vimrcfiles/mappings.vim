@@ -77,6 +77,12 @@ function! PrevParagraph()
   normal! k{j
 endfunction
 
+nnoremap <leader>j :silent call NextParagraph()<cr>
+nnoremap <leader>k :silent call PrevParagraph()<cr>
+vnoremap <leader>j :<C-u>silent call NextParagraph()<cr>
+vnoremap <leader>k :<C-u>silent call PrevParagraph()<cr>
+onoremap <leader>j :silent call NextParagraph()<cr>
+onoremap <leader>k :silent call PrevParagraph()<cr>
 nnoremap m :silent call NextParagraph()<cr>
 nnoremap , :silent call PrevParagraph()<cr>
 vnoremap m :<C-u>silent call NextParagraph()<cr>
@@ -283,7 +289,6 @@ function! UnmapEssentialsFromBuffer()
   silent! unmap <buffer> J
 
 endfunction
-autocmd FileType vimfiler call UnmapEssentialsFromBuffer()
 
 noremap <leader>u :UndotreeToggle<cr>
 
@@ -292,8 +297,6 @@ noremap <silent> <leader>nv :VimuxRunLastCommand<cr>
 noremap <silent> <leader>nx :VimuxCloseRunner<cr>
 noremap <silent> <leader>ni :VimuxInspect<cr>
 noremap <silent> <Leader>nz :call VimuxZoomRunner()<CR>
-
-map <leader>f :VimFilerCreate<cr>
 
 nnoremap <Leader>b :Tagbar<cr>
 
@@ -323,7 +326,6 @@ cnoremap <silent> <C-x><C-l> <C-c>zH:TmuxNavigateRight<cr>
 au VimEnter * unmap <leader>cd
 
 autocmd FileType help map <buffer> q :b#<bar>bd#<CR>
-autocmd FileType vimfiler map <buffer> q :b#<bar>bd#<CR>
 
 
 "  _   _                 _                                 _____ ____   ____

@@ -220,12 +220,15 @@ _termswitch() {
   tmux -S /tmp/tmux-1000/default if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
 }
 _termhide(){
+  dconf reset /org/gnome/settings-daemon/peripherals/keyboard/repeat
   xgamma -gamma 1
   python ~/projects/wintoggle.py hide
 }
 _termshow(){
-  xgamma -gamma $(_getgamma)
+  dconf write /org/gnome/settings-daemon/peripherals/keyboard/repeat false
   python ~/projects/wintoggle.py show
+  xgamma -gamma $(_getgamma)
+
 }
 # map this in your gnome/kde/stuff
 alias on-meta-a="_termswitch 0; _termshow"
