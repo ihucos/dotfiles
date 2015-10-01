@@ -17,7 +17,11 @@
 " Plugin 'mhinz/vim-startify'
 " Plugin 'xolox/vim-easytags'
 
+" Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
+" Plugin 'matze/vim-move'
+" Plugin 'morhetz/gruvbox' " a color scheme
 " Plugin 'rstacruz/sparkup' " figure out how to make it work
+" Plugin 'sickill/vim-monokai' " a color scheme
 " Plugin 'tpope/vim-projectionist' " is nice but does not work
 " vip:sort
 Plugin 'Shougo/vimproc'
@@ -33,18 +37,15 @@ Plugin 'glts/vim-cottidie'
 Plugin 'gmarik/Vundle.vim'
 Plugin 'jnurmine/Zenburn' " a colorscheme
 Plugin 'jpo/vim-railscasts-theme'
-" Plugin 'kana/vim-arpeggio' " TODO: key chords: make something interesting with this
 Plugin 'kana/vim-niceblock'
 Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
-" Plugin 'matze/vim-move'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
 Plugin 'mikewest/vimroom'
 Plugin 'mjbrownie/django-template-textobjects'
-" Plugin 'morhetz/gruvbox' " a color scheme
-" Plugin 'sickill/vim-monokai' " a color scheme
 Plugin 'tommcdo/vim-exchange'
+Plugin 'ton/vim-bufsurf'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-eunuch' " TODO: document
 Plugin 'tpope/vim-fugitive'
@@ -103,18 +104,6 @@ let g:syntastic_error_symbol = '●'
 let g:syntastic_warning_symbol = '●'
 let g:syntastic_style_warning_symbol = '◌'
 let g:syntastic_style_error_symbol = '◌'
-
-
-Plugin 'Shougo/vimfiler.vim'
-Plugin 'ton/vim-bufsurf'
-let g:vimfiler_as_default_explorer = 1
-let g:vimfiler_tree_leaf_icon = ' '
-let g:vimfiler_tree_opened_icon = '▾'
-let g:vimfiler_tree_closed_icon = '▸'
-let g:vimfiler_file_icon = '-'
-let g:vimfiler_marked_file_icon = '*'
-let g:vimfiler_ignore_pattern = '\%(.pyc\)$'
-let g:vimfiler_force_overwrite_statusline = 0
 
 
 Plugin 'christoomey/vim-tmux-navigator'

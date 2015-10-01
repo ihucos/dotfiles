@@ -1,3 +1,4 @@
+syntax on
 colo solarized
 
 " Highlight VCS conflict markers

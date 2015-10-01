@@ -9,6 +9,17 @@
 # compinit
 
 
+# ipy(){
+#   echo $1 > /tmp/ipython_execute.ipy
+#   ipython /tmp/ipython_execute.ipy
+# }
+# blu(){
+# ipy $(cat <<EOF
+# print 4
+# EOF)
+# }
+
+
 # for Nico's stuff # FIXME: remove from git
 source $HOME/projects/isios/vplan/vplan-env.sh
 
@@ -132,7 +143,14 @@ if [ -x /usr/bin/dircolors ]; then
 	alias egrep='egrep --color=auto'
 fi
 
-p() { cd ~/projects/$1; }
+p() {
+  if [ $# -eq 0 ]
+  then
+    cd ~/projects/$(cat ~/.my_dotfiles_last_project);
+  else
+    cd ~/projects/$1 && echo $1 > ~/.my_dotfiles_last_project
+  fi
+}
 _p() { _files -W ~/projects -/; }
 compdef _p p
 
@@ -187,6 +205,7 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 # alias sl='sudo !!' # [s]udo [l]ast command
 alias trash='mv -t ~/.local/share/Trash/files'
 alias lscolors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: Test"; done'
+alias ipython="ipython --no-banner"
 
 # alias lscommands='ls ${PATH//:/ }'
 lscommands() {
@@ -220,26 +239,27 @@ _termswitch() {
   tmux -S /tmp/tmux-1000/default if-shell "tmux list-windows | grep '^$1:'" "select-window -t $1" "new-window -t $1;"
 }
 _termhide(){
-  dconf reset /org/gnome/settings-daemon/peripherals/keyboard/repeat
+  # dconf reset /org/gnome/settings-daemon/peripherals/keyboard/repeat
   xgamma -gamma 1
   python ~/projects/wintoggle.py hide
 }
 _termshow(){
-  dconf write /org/gnome/settings-daemon/peripherals/keyboard/repeat false
+  # dconf write /org/gnome/settings-daemon/peripherals/keyboard/repeat false
   python ~/projects/wintoggle.py show
   xgamma -gamma $(_getgamma)
 
 }
 # map this in your gnome/kde/stuff
-alias on-meta-a="_termswitch 0; _termshow"
-alias on-meta-s="_termswitch 1; _termshow"
-alias on-meta-d="_termswitch 2; _termshow"
-alias on-meta-f="_termswitch 4; _termshow"
-alias on-meta-g="_termswitch 5; _termshow"
-alias on-meta-c="_termhide"
-alias on-meta-v="_termhide"
+show-term(){
+  _termswitch $1
+  _termshow
+}
+alias show-desktop="_termhide"
 
-
+alias tmux-left='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -L"'
+alias tmux-down='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -D"'
+alias tmux-up='tmux if-shell "\$is_vim" "send-keys C-x; send-keys C-h" "select-pane -U"'
+alias tmux-right='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -R"'
 
 # p(){
 #   if [ -z "$1" ]; then
@@ -743,17 +763,26 @@ pstrings(){
   gitexec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
 }
 plines(){
-  gitexec ag  . | grep --color -E '[^:]*:' | fzf --reverse --extended-exact --no-sort
-  # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
+  out=$(gitexec ag  . | grep --color -E '[^:]*:' | fzf --reverse --extended-exact --no-sort)
+  array=("${(@s/:/)out}") # @ modifier
+  file="${array[1]}"
+  linenr="${array[2]}"
+  tmux send-keys "vim \`gitroot\`/$file +$linenr" Enter
 }
+
 _pfiles(){
   gitexec ag  -l | fzf --tac
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
-pfiles(){tmux send-keys "vim \`gitroot\`/`_pfiles`" Enter} # FIXME: remove don't 
+pfiles(){
+  out=$(_pfiles)
+  if [ "$?" -eq 0 ]; then
+    tmux send-keys "vim \`gitroot\`/$out" Enter
+  fi
+}
 
 pallfiles(){
-  find / 2> /tmp/null | fzf --extended-exact
+  tmux send-keys "file $(find / 2> /tmp/null | fzf --extended-exact)" Enter
 }
 
 pcommands(){
@@ -764,24 +793,23 @@ ppackages(){
   tmux send-keys "sudo apt-get install `apt-cache search '' | fzf | cut -d' ' -f1` "
 }
 
-
 _ptags(){
   gitexec cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | fzf
 }
 ptags(){tmux send-keys "vim +\"normal zz\" -t `_ptags`" Enter}
 
-prefix(){
+_prefix(){
   sed -e "s/^/;;$1  /"
 }
 
 pall(){
  # sed -e 's/^/;F '
  (cd `git rev-parse --show-toplevel` &&  {\
-   ag -l | prefix "F" ;
-   cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | prefix "T" ;
-   git branch | prefix "B" ; \
-   ag -l | xargs dirname | sort -u | prefix "D" ;
-   ag . | grep --color -E '[^:]*:' |  prefix "L" ;
+   ag -l | _prefix "F" ;
+   cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | _prefix "T" ;
+   git branch | _prefix "B" ; \
+   ag -l | xargs dirname | sort -u | _prefix "D" ;
+   ag . | grep --color -E '[^:]*:' |  _prefix "L" ;
  } | fzf --extended-exact --query=";;f ")
 }
 

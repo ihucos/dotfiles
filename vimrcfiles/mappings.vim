@@ -11,7 +11,9 @@ let maplocalleader = "\\"
 " map J ]M
 " map K [M
 
-vnoremap p "_dP
+
+vnoremap <leader>/ y/<C-R>"<CR>
+
 " noremap <LeftMouse> i
 
 " TODO: do something nice with C-c
@@ -22,15 +24,13 @@ vnoremap p "_dP
 noremap / :setlocal hlsearch<cr>  \| /
 map <ESC><ESC> :nohlsearch<CR>
 
-nnoremap Q @q
-
 " ===============================
 noremap J 5j
 noremap K 5k
-noremap <C-j> 5jzz
-noremap <C-k> 5kzz
-inoremap <C-j> <ESC>5jzz
-inoremap <C-k> <ESC>5kzz
+noremap <C-j> 5j
+noremap <C-k> 5k
+inoremap <C-j> <ESC>5j
+inoremap <C-k> <ESC>5k
 noremap <C-h> 5<C-y>
 noremap <C-l> 5<C-e>
 inoremap <C-h> <esc>5<C-y>a
@@ -60,11 +60,6 @@ nnoremap k gk
 noremap gj j
 noremap gk k
 
-
-nnoremap p ]P`]l
-nnoremap P ]p`]l
-vnoremap p "_x]P`]l
-vnoremap P "_x]p`]l
 
 function! NextParagraph()
   if getline(".") == ""
@@ -191,16 +186,16 @@ cnoremap %% <C-R>=expand('%:p:h') . '/'<cr>
 cnoremap %. <C-R>=getcwd()<cr>
 
 " any number exits insert mode
-inoremap 1 <Esc>`^;
-inoremap 2 <Esc>`^
-inoremap 3 <Esc>`^
-inoremap 4 <Esc>`^
-inoremap 5 <Esc>`^
-inoremap 6 <Esc>`^
-inoremap 7 <Esc>`^
-inoremap 8 <Esc>`^
-inoremap 9 <Esc>`^
-inoremap 0 <Esc>`^
+inoremap 1 <Esc>
+inoremap 2 <Esc>
+inoremap 3 <Esc>
+inoremap 4 <Esc>
+inoremap 5 <Esc>
+inoremap 6 <Esc>
+inoremap 7 <Esc>
+inoremap 8 <Esc>
+inoremap 9 <Esc>
+inoremap 0 <Esc>
 
 inoremap <F1> 1
 inoremap <F2> 2
@@ -385,9 +380,9 @@ xnoremap id i"
 " |____/ \___|_|\___|\___|\__|   \_/\_/ |_|_| |_|\__,_|\___/ \_/\_/ |___/
 "
 
-noremap <leader>4 1<C-w>w
-noremap <leader>5 2<C-w>w
-noremap <leader>6 3<C-w>w
-noremap <leader>7 4<C-w>w
-noremap <leader>8 5<C-w>w
-noremap <leader>9 6<C-w>w
+" noremap <leader>4 1<C-w>w
+" noremap <leader>5 2<C-w>w
+" noremap <leader>6 3<C-w>w
+" noremap <leader>7 4<C-w>w
+" noremap <leader>8 5<C-w>w
+" noremap <leader>9 6<C-w>w
