@@ -13,6 +13,8 @@ let maplocalleader = "\\"
 
 
 vnoremap <leader>/ y/<C-R>"<CR>
+noremap 9 <C-d>
+noremap 0 <C-u>
 
 " noremap <LeftMouse> i
 
@@ -153,15 +155,17 @@ vmap <leader>q :<C-u>qa<cr>
 " vmap <leader>P "+P
 
 inoremap <C-v> <ESC>"+pa
-noremap <C-v> "+P
-vnoremap <C-v> "+P
+noremap <C-v> "+p
+vnoremap <C-v> "+p
 cnoremap <C-v> <C-r>+
 vnoremap <C-c> "+y
 vnoremap <C-x> "+d
 inoremap <C-p> <C-r>"
-cnoremap <C-p> <C-r>"
+" cnoremap <C-p> <C-r>"
 noremap <leader>v <C-v>
 vnoremap <leader>v <C-v>
+noremap 5 "+y
+noremap 6 "+p
 
 omap <leader>= mzgg=G\`z
 
