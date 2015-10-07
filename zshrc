@@ -701,9 +701,16 @@ zle -N my-magic-g
 bindkey '8' my-magic-g
 bindkey '4' my-magic-g
 
+# my-magic-c(){
+#   zle self-insert
+#   set-buffer-if " gc" 'git commit -am ""' 16
+# }
 my-magic-c(){
   zle self-insert
-  set-buffer-if " gc" 'git commit -am ""' 16
+  if [[ "$BUFFER" == " gc" ]]; then
+    BUFFER="git commit -a --verbose"
+    zle accept-line
+  fi
 }
 zle -N my-magic-c
 bindkey 'c' my-magic-c

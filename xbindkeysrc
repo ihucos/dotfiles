@@ -37,3 +37,40 @@
   Mod4+f
 "zsh -ic 'tmux select-pane -R'"
   Mod4+g
+
+
+;; ;; basic emacs editing
+;; "xdotool key Down"
+;;   control+n
+;; "xdotool key Up"
+;;   control+p
+;; "xdotool key Right"
+;;   control+f
+;; "xvkbd -xsendevent -text '\[Left]'"
+;;   control+b
+;; "xdotool key Home"
+;;   control+a
+;; "xdotool key End"
+;;   control+e
+;; "xdotool key Next"
+;;   control+v
+;; "xdotool key Delete"
+;;   control+d
+;; "xdotool key Control+Delete"
+;;   alt+d
+;; "xdotool key Prior"
+;;   alt+v
+;; "xdotool key Control+Right"
+;;   alt+f
+;; "xdotool key Control+Left"
+;;   alt+b
+;; "xdotool key Escape"
+;;   control+g
+;; "xdotool key Control+x"
+;;   control+w
+;; "xdotool key Control+c"
+;;   alt+w
+;; "xdotool key Control+v"
+;;   control+y
+;; "xdotool key Control+z"
+;;   control+slash

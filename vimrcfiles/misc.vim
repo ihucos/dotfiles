@@ -3,7 +3,7 @@
 " TODO: py print jedi_vim.get_script().definition()[0].description
 " TODO: jump to next ctags definition
 
-
+autocmd CursorHold * update
 
 " taken from http://vim.wikia.com/wiki/Avoiding_the_%22Hit_ENTER_to_continue%22_prompt
 command! -nargs=1 Silent
@@ -76,6 +76,9 @@ command! -nargs=1 Figlet call Figlet(<f-args>)
 command! -nargs=0 Diff :w !grc diff % -
 
 au FileType python setlocal formatprg=autopep8\ -a\ -
+au FileType gitcommit set spell
+au FileType gitcommit hi clear SpellBad
+au FileType gitcommit hi SpellBad cterm=italic,underline
 
 function! ReadCmdInp(cmd)
   let mycol = col('.')
