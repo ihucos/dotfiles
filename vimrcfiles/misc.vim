@@ -3,8 +3,6 @@
 " TODO: py print jedi_vim.get_script().definition()[0].description
 " TODO: jump to next ctags definition
 
-autocmd CursorHold * update
-
 " taken from http://vim.wikia.com/wiki/Avoiding_the_%22Hit_ENTER_to_continue%22_prompt
 command! -nargs=1 Silent
 \ | execute ':silent !'.<q-args>
@@ -89,7 +87,7 @@ endfunction
 
 " can be made much faster with python ("autopep8.fix_code")
 function! Pep8Fix(start_line, end_line)
-  call ReadCmdInp("autopep8 -aa -p 500 --range " .a:start_line." ".a:end_line. " -")
+  call ReadCmdInp("autopep8 --max-line-length=94 -aa -p 500 --range " .a:start_line." ".a:end_line. " -")
 endfunction
 function! Pep8FixLine()
   call Pep8Fix(line('.'), line('.'))
@@ -98,10 +96,10 @@ function! Pep8FixVisual()
   call Pep8Fix(line("'<"), line("'>"))
 endfunction
 
-function! PyImportAdd(module)
+function! PyImport(module)
   call ReadCmdInp('isort -a "'.a:module.'" -')
 endfunction
-command! -nargs=1 PyImportAdd silent call PyImportAdd(<f-args>)
+command! -nargs=1 PyImport silent call PyImport(<f-args>)
 function! PyImportRemove(module)
   call ReadCmdInp('isort -r "'.a:module.'" -')
 endfunction

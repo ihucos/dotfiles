@@ -1,3 +1,9 @@
+
+#stuff for dings
+alias olia_test="py.test -vs --ds=olia.test_settings src/"
+alias olia_coverage="py.test -vs --ds=olia.test_settings --cov=olia --cov-report=term-missing --cov-report=html src/"
+
+
 # TODO: backup command that backs up a file, so whe can delete it
 # TODO: comamnd annoyance: trello card create -b CBcznUbM -l 54424eda008a0516f41416f4 -n "annoyance description"
 # TODO command to cd to folder with .git in in root folders
@@ -20,9 +26,7 @@
 # }
 
 
-# for Nico's stuff # FIXME: remove from git
-source $HOME/projects/isios/vplan/vplan-env.sh
-
+WORDCHARS='_'
 bindkey -e
 
 # colored completion - use LS_COLORS
@@ -124,6 +128,7 @@ export PYTHONSTARTUP="$HOME/.pythonrc"
 
 # TODO: add /usr/bin/local/bin
 PATH=$HOME/.dynamic-colors/bin:$PATH:~/.bin:~/bin
+
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -279,12 +284,12 @@ homer(){
 }
 
 flash(){
-  # if xbacklight is installed
-  if hash xbacklight 2>/dev/null; then
-	local current=$(xbacklight -get)
-	xbacklight -set $(calc $current\*0.3) -time 50
-	xbacklight -set $current -time 200
-  fi
+  # # if xbacklight is installed
+  # if hash xbacklight 2>/dev/null; then
+	# local current=$(xbacklight -get)
+	# xbacklight -set $(calc $current\*0.3) -time 50
+	# xbacklight -set $current -time 200
+  # fi
 }
 
 ack-grep(){
@@ -301,6 +306,9 @@ man() {
 	LESS_TERMCAP_ue=$'\E[0m' \
 	LESS_TERMCAP_us=$'\E[38;5;6m' \
 	man "$@"
+}
+manpdf(){
+  man -t $1 | ps2pdf - /tmp/man.pdf && xdg-open /tmp/man.pdf
 }
 
 # TODO: utility that reads from stdin and pastes in a pastebin
@@ -427,9 +435,9 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # if [ -f "$HOME/.dynamic-colors/completions/dynamic-colors.zsh" ]; then
 #   source $HOME/.dynamic-colors/completions/dynamic-colors.zsh
 # fi
-# if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
-#   source /usr/local/bin/virtualenvwrapper_lazy.sh
-# fi
+if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
+  source /usr/local/bin/virtualenvwrapper_lazy.sh
+fi
 
 
 alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
@@ -764,8 +772,8 @@ bindkey 's' my-magic-s
 # }
 
 
-
-
+alias ssh="TERM=screen-256color ssh"
+alias fzf="TERM=screen-256color fzf" # fzf needs a correct TERM, it's picky about it, this is a hack
 pstrings(){
   gitexec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
 }
@@ -825,3 +833,8 @@ pall(){
 # [ -f /home/resu/.fzf/shell/completion.zsh ] && source /home/resu/.fzf/shell/completion.zsh
 
 # export FZF_DEFAULT_OPTS="--color=16,hl:6,hl+:0,bg+:6,fg+:8,pointer:6,marker:8,info:10,prompt:6 -m --prompt='  >> '"
+
+
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/Devel
+# source /usr/local/bin/virtualenvwrapper.sh

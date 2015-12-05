@@ -55,8 +55,8 @@ set ttyfast
 set undodir=~/.vim/tmp/undo// " undo files
 set undofile
 set undolevels=1000 " use many muchos levels of undo
-set updatetime=200
 set virtualedit=block
+set ttymouse=xterm2 " no idea why i need this, for mouse working in tmux
 
 set fillchars=fold:\ 
 set fillchars+=fold:\⋅

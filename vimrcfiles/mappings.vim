@@ -13,8 +13,8 @@ let maplocalleader = "\\"
 
 
 vnoremap <leader>/ y/<C-R>"<CR>
-noremap 9 <C-d>
-noremap 0 <C-u>
+" noremap 9 <C-d>
+" noremap 0 <C-u>
 
 " noremap <LeftMouse> i
 
@@ -164,8 +164,8 @@ inoremap <C-p> <C-r>"
 " cnoremap <C-p> <C-r>"
 noremap <leader>v <C-v>
 vnoremap <leader>v <C-v>
-noremap 5 "+y
-noremap 6 "+p
+" noremap 5 "+y
+" noremap 6 "+p
 
 omap <leader>= mzgg=G\`z
 
@@ -189,17 +189,7 @@ iabbrev iraee Irae Hueck Costa
 cnoremap %% <C-R>=expand('%:p:h') . '/'<cr>
 cnoremap %. <C-R>=getcwd()<cr>
 
-" any number exits insert mode
-inoremap 1 <Esc>
-inoremap 2 <Esc>
-inoremap 3 <Esc>
-inoremap 4 <Esc>
-inoremap 5 <Esc>
-inoremap 6 <Esc>
-inoremap 7 <Esc>
-inoremap 8 <Esc>
-inoremap 9 <Esc>
-inoremap 0 <Esc>
+" inoremap 4 <Esc>
 
 inoremap <F1> 1
 inoremap <F2> 2
@@ -211,6 +201,8 @@ inoremap <F7> 7
 inoremap <F8> 8
 inoremap <F9> 9
 inoremap <F10> 0
+
+inoremap <C-4> 4
 
 cnoremap <F1> 1
 cnoremap <F2> 2

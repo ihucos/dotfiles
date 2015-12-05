@@ -1,0 +1,3 @@
+tmux|tmux with rxvt-unicode-256color client,
+  use=rxvt-unicode-256color,
+  use=screen,

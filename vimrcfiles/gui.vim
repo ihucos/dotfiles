@@ -10,8 +10,7 @@ match TrailingWhitespace '\s\+$'
 
 hi ErrorMsg ctermfg=bg ctermbg=9
 
-" awesome 80-character limiter
-au FileType python execute "setlocal colorcolumn=" . join(range(80,335), ',')
+au FileType python execute "setlocal colorcolumn=" . join(range(95,335), ',')
 au FileType python setlocal completeopt-=preview
 au FileType undotree setlocal statusline=
 au FileType diff setlocal statusline=

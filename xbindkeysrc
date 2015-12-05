@@ -1,42 +1,33 @@
+
+
 "zsh -ic 'show-term 0'"
-  Mod4+q
+  Mod4+a
 
 "zsh -ic 'show-term 1'"
-  Mod4+w
+  Mod4+s
 
 "zsh -ic 'show-term 2'"
-  Mod4+e
+  Mod4+d
 
 "zsh -ic 'show-term 3'"
-  Mod4+r
+  Mod4+f
 
 "zsh -ic 'show-term 4'"
-  Mod4+t
+  Mod4+g
 
 "zsh -ic 'show-term 5'"
   Mod4+z
 
-"tmux select-pane -t:.+"
-  Mod4+m
-
-"tmux select-pane -t:.-"
-  Mod4+j
-
 "zsh -ic 'show-desktop'"
   Mod4+c
 
-"xvkbd -xsendevent -text ", ""
+xvkbd -xsendevent -text ", ""
   Mod4+space
 
-;; tmux arrows
-"zsh -ic 'tmux select-pane -L'"
-  Mod4+s
-"zsh -ic 'tmux select-pane -U'"
-  Mod4+d
-"zsh -ic 'tmux select-pane -D'"
-  Mod4+f
-"zsh -ic 'tmux select-pane -R'"
-  Mod4+g
+
+
+
+
 
 
 ;; ;; basic emacs editing

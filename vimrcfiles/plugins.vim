@@ -100,6 +100,7 @@ autocmd BufEnter * :SyntasticCheck
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_css_checkers = []
 let g:syntastic_python_checkers = ['flake8']
+let g:syntastic_python_flake8_args = "--max-line-length=94"
 let g:syntastic_error_symbol = '●'
 let g:syntastic_warning_symbol = '●'
 let g:syntastic_style_warning_symbol = '◌'
