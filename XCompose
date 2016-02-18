@@ -1,2 +1,0 @@
-include "%L"   # import the default Compose file for your locale
-<Multi_key> <quotedbl> <s>     : "ß"

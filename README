@@ -10,3 +10,6 @@ in vim :VimProcInstall
 Install with amke: http://www.gnu.org/software/global/download.html
 
 install git-extras for extra git commands: apt-get install git-extras
+
+sudo wget https://github.com/muennich/urxvt-perls/raw/master/clipboard -O /usr/lib/urxvt/perl/clipboard 
+
