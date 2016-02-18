@@ -42,7 +42,6 @@ Plugin 'kana/vim-textobj-user'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'koron/nyancat-vim'
 Plugin 'michaeljsmith/vim-indent-object' " ii / ai
-Plugin 'mikewest/vimroom'
 Plugin 'mjbrownie/django-template-textobjects'
 Plugin 'tommcdo/vim-exchange'
 Plugin 'ton/vim-bufsurf'

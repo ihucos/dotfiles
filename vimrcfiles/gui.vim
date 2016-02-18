@@ -2,13 +2,13 @@ syntax on
 colo solarized
 
 " Highlight VCS conflict markers
-hi VCSConflict ctermfg=bg ctermbg=9
+hi VCSConflict ctermfg=8 ctermbg=9
 match VCSConflict '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$' " seems to get overwritte by PythonExtraOperator
 
 hi TrailingWhitespace cterm=bold ctermfg=15
 match TrailingWhitespace '\s\+$'
 
-hi ErrorMsg ctermfg=bg ctermbg=9
+hi ErrorMsg ctermfg=8 ctermbg=9
 
 au FileType python execute "setlocal colorcolumn=" . join(range(95,335), ',')
 au FileType python setlocal completeopt-=preview
@@ -33,22 +33,22 @@ hi Base1   ctermfg=14 ctermbg=NONE cterm=NONE
 hi Base3   ctermfg=15 ctermbg=NONE cterm=NONE
 
 hi Small cterm=bold,italic ctermfg=NONE ctermbg=NONE
-hi SmallGrey ctermbg=bg ctermfg=10 cterm=bold,italic
-hi Grey ctermbg=bg ctermfg=10 cterm=NONE
+hi SmallGrey ctermbg=8 ctermfg=10 cterm=bold,italic
+hi Grey ctermbg=8 ctermfg=10 cterm=NONE
 hi SmallBlue ctermfg=4 ctermbg=NONE cterm=bold,italic
 hi link White Base3
 
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
 hi LineNr cterm=italic,bold
-hi MatchParen ctermbg=bg ctermfg=5
+hi MatchParen ctermbg=8 ctermfg=5
 hi Comment cterm=italic
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=NONE ctermfg=10
-hi NonText ctermbg=bg
-hi Folded ctermbg=bg cterm=NONE ctermbg=bg ctermfg=14
+hi NonText ctermbg=8
+hi Folded ctermbg=8 cterm=NONE ctermbg=8 ctermfg=14
 hi Visual ctermfg=12 ctermbg=NONE
-hi ModeMsg ctermbg=3 ctermfg=bg
+hi ModeMsg ctermbg=3 ctermfg=8
 hi Todo ctermfg=3
 hi SpellBad cterm=bold,italic,undercurl
 
@@ -87,7 +87,7 @@ hi link pythonStrFormatting Normal
 hi link pythonStrTemplate PythonString
 hi link pythonDocTest2 PythonString
 hi link pythonDocstring PythonString
-hi pythonTodo ctermfg=15 ctermbg=bg
+hi pythonTodo ctermfg=15 ctermbg=8
 hi link pythonRun Grey
 hi link PythonDecorator Magenta
 hi link PythonDottedName Magenta
@@ -130,29 +130,29 @@ hi link UndotreeCurrent Yellow
 
 hi link diffRemoved Orange
 
-hi StatusLineFile ctermbg=10 ctermfg=bg
-hi StatusLineFileReversed ctermbg=bg ctermfg=10
-hi Invisible ctermbg=bg ctermfg=bg
+hi StatusLineFile ctermbg=10 ctermfg=8
+hi StatusLineFileReversed ctermbg=8 ctermfg=10
+hi Invisible ctermbg=8 ctermfg=8
 hi StatusLineASCIIScrollbar ctermfg=10
 " bold is a hack, statuslineNC and statusline cant be the same hilight
 " not sure, why StatusLineNC needs the oposite than StatusLine, but it works
-hi StatusLineNC ctermbg=bg ctermfg=14 cterm=bold
-hi StatusLine ctermbg=14 ctermfg=bg
-hi VertSplit ctermfg=14 ctermbg=bg
+hi StatusLineNC ctermbg=8 ctermfg=14 cterm=bold
+hi StatusLine ctermbg=14 ctermfg=8
+hi VertSplit ctermfg=14 ctermbg=8
 
 hi link helpCommand Blue
 hi link qfLineNr SmallGrey
 hi link qfSeparator Invisible
 
 function! Update()
-  hi SignColumn ctermbg=bg
+  hi SignColumn ctermbg=8
   hi clear CursorLine
   hi CursorLine ctermbg=0
   hi SyntasticError ctermbg=0 cterm=underline
-  hi SyntasticErrorSign ctermfg=1 ctermbg=bg
-  hi SyntasticWarningSign ctermfg=9 ctermbg=bg
-  hi SyntasticStyleErrorSign ctermfg=12 ctermbg=bg
-  hi SyntasticStyleWarningSign ctermfg=12 ctermbg=bg
+  hi SyntasticErrorSign ctermfg=1 ctermbg=8
+  hi SyntasticWarningSign ctermfg=9 ctermbg=8
+  hi SyntasticStyleErrorSign ctermfg=12 ctermbg=8
+  hi SyntasticStyleWarningSign ctermfg=12 ctermbg=8
 
 endfunction
 
