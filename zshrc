@@ -14,6 +14,7 @@ alias olia_coverage="py.test -vs --ds=olia.test_settings --cov=olia --cov-report
 # colors
 # compinit
 
+ eval $(thefuck --alias)
 
 # ipy(){
 #   echo $1 > /tmp/ipython_execute.ipy
@@ -127,7 +128,7 @@ export LESS=" -R "
 export PYTHONSTARTUP="$HOME/.pythonrc"
 
 # TODO: add /usr/bin/local/bin
-PATH=$HOME/.dynamic-colors/bin:$PATH:~/.bin:~/bin
+PATH=$HOME/.dynamic-colors/bin:$PATH:~/.bin:~/bin:$HOME/.local/bin:$HOME/.linuxbrew/bin/
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -263,7 +264,7 @@ alias show-desktop="_termhide"
 
 alias tmux-left='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -L"'
 alias tmux-down='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -D"'
-alias tmux-up='tmux if-shell "\$is_vim" "send-keys C-x; send-keys C-h" "select-pane -U"'
+alias tmux-up='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -U"'
 alias tmux-right='tmux if-shell "$is_vim" "send-keys C-x; send-keys C-h" "select-pane -R"'
 
 # p(){
@@ -773,6 +774,7 @@ bindkey 's' my-magic-s
 
 
 alias ssh="TERM=screen-256color ssh"
+alias devel="env ssh -X localhost"
 alias fzf="TERM=screen-256color fzf" # fzf needs a correct TERM, it's picky about it, this is a hack
 pstrings(){
   gitexec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
@@ -838,3 +840,7 @@ pall(){
 # export WORKON_HOME=$HOME/.virtualenvs
 # export PROJECT_HOME=$HOME/Devel
 # source /usr/local/bin/virtualenvwrapper.sh
+
+export PATH="/usr/local/p/versions/python:$PATH"
+
+source /home/resu/.linuxbrew/Cellar/autoenv/0.1.0/activate.sh

@@ -7,8 +7,7 @@ Xft*hinting:            full
 URxvt*buffered: true
 
 ! make colors "normal" for solarized
-URxvt.intensityStyles: false
-
+URxvt.intensityStyles: false 
 /* URxvt.font: xft:Droid\ Sans\ Mono:bold:size=8.5 */
 /* URxvt.italicFont: xft:Droid\ Sans\ Mono:italic:size=8.5 */
 /* URxvt.boldItalicFont: xft:Droid\ Sans\ Mono:size=8.5 */
