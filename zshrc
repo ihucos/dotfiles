@@ -843,4 +843,4 @@ pall(){
 
 export PATH="/usr/local/p/versions/python:$PATH"
 
-source /home/resu/.linuxbrew/Cellar/autoenv/0.1.0/activate.sh
+# source ~/Dotfiles/lib/zsh-autoenv/autoenv.zsh

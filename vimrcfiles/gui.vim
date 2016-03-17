@@ -10,7 +10,7 @@ match TrailingWhitespace '\s\+$'
 
 hi ErrorMsg ctermfg=8 ctermbg=9
 
-au FileType python execute "setlocal colorcolumn=" . join(range(95,335), ',')
+au FileType python execute "setlocal colorcolumn=" . join(range(81,335), ',')
 au FileType python setlocal completeopt-=preview
 au FileType undotree setlocal statusline=
 au FileType diff setlocal statusline=
@@ -209,7 +209,6 @@ function! StatusLineStatus()
 endfunction
 
 set statusline=%{StatusLinePadding(StatusLineStatus(),\ 6)}%#StatusLineFile#▌%{StatusLineStatus()}%#StatusLineFileReversed#▌%#StatusLineASCIIScrollbar#%{ASCIIScrollbar()}%#StatusLine#
-
 
 
 
