@@ -10,7 +10,7 @@ match TrailingWhitespace '\s\+$'
 
 hi ErrorMsg ctermfg=8 ctermbg=9
 
-au FileType python execute "setlocal colorcolumn=" . join(range(95,335), ',')
+au FileType python execute "setlocal colorcolumn=" . join(range(81,335), ',')
 au FileType python setlocal completeopt-=preview
 au FileType undotree setlocal statusline=
 au FileType diff setlocal statusline=
@@ -171,6 +171,9 @@ au BufEnter * call PlaceDummySign()
 
 au WinEnter * set cursorline
 au WinLeave * set nocursorline
+
+hi link diffSubname Blue
+
 
 
 " ######################

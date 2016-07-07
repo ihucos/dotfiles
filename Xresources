@@ -13,9 +13,9 @@ URxvt.intensityStyles: false
 /* URxvt.boldItalicFont: xft:Droid\ Sans\ Mono:size=8.5 */
 
 
-URxvt.font: xft:PragmataPro:bold:size=8.5
-URxvt.italicFont: xft:PragmataPro:italic:size=8.5
-URxvt.boldItalicFont: xft:PragmataPro:size=8.5
+/* URxvt.font: xft:PragmataPro:bold:size=5.5 */
+/* URxvt.italicFont: xft:PragmataPro:italic:size=5.5 */
+/* URxvt.boldItalicFont: xft:PragmataPro:size=5.5 */
 
 /* URxvt.font: xft:Droid\ Sans\ Mono:bold:size=4.75 */
 /* URxvt.italicFont: xft:Droid\ Sans\ Mono:italic:size=4.75 */

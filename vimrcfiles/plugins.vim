@@ -249,3 +249,9 @@ vnoremap <silent> <C-W>s :call WindowSwap#EasyWindowSwap()<CR>
 
 Plugin 'jaxbot/browserlink.vim'
 let g:bl_pagefiletypes = ['javascript', "coffee", "html", "html5", "tt2html", "2html", "htmlcheetah", "htmldjango", "htmlm4", "htmlos", "phtml", "xhtml", "scss"]
+
+" Plugin 'jgdavey/tslime.vim'
+" Plugin 'christoomey/vim-tmux-runner'
+Plugin 'janko-m/vim-test'
+let test#python#runner = 'djangonose'
+" let test#strategy = "tslime"

@@ -1,12 +1,10 @@
 [user]
-	email = iraehc@hotmail.com
+	email = irae.hueck.costa@gmail.com
 	name = Irae Hueck Costa
 [push]
 	default = simple
 [init]
 	templatedir = ~/.git_template
-[credential]
-	helper = /usr/share/doc/git/contrib/credential/gnome-keyring/git-credential-gnome-keyring
 
 [alias]
 # taken from here: http://stackoverflow.com/questions/
@@ -17,6 +15,9 @@ exec = "!exec "
 [merge]
 	tool = vimdiff
 	conflictstyle=merge
-[filter "idexpansion"]
-	clean = /home/resu/bin/clean_id.py
-	smudge = /home/resu/bin/smudge_id.py
+[credential]
+	helper = osxkeychain
+[filter "lfs"]
+	smudge = git-lfs smudge %f
+	required = true
+	clean = git-lfs clean %f
