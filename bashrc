@@ -9,30 +9,8 @@ alias urls.py="vim ~/resmio/bookoya/urls.py"
 alias admin.py="vim ~/resmio/bookoya/admin.py"
 alias tasks.py="vim ~/resmio/bookoya/tasks.py"
 
-rrherokubash(){
-  heroku run bash --app resmio-$1-eu
-}
 
-rrherokulogs(){
-  heroku logs --app resmio-$1-eu --tail
-}
-
-rrshell(){
-  vagrant docker-run -t web -- python manage.py shell
-}
-
-rrbash(){
-  vagrant docker-run -t web -- bash
-}
-
-
-
-
-
-
-alias tmux='TERM=xterm-256color-italic tmux'
-
-export TERM=screen-256color-italic
+export TERM=xterm
 
 
 alias gc="git commit --verbose"
@@ -126,43 +104,10 @@ man() {
 	LESS_TERMCAP_us=$'\E[38;5;6m' \
 	man "$@"
 }
-manpdf(){
-  man -t $1 | ps2pdf - /tmp/man.pdf && xdg-open /tmp/man.pdf
-}
 
-
-dict(){ local y="$@";curl -sA"Opera" "http://www.google.com/search?q=define:${y// /+}"|grep -Po '(?<=<li>)[^<]+'|nl|perl -MHTML::Entities -pe 'decode_entities($_)' 2>/dev/null;}
-
-md () { mkdir -p "$@" && cd "$@"; }
-
-calc () { echo "$*" | bc -l; }
-
-swap()
-{ # Swap 2 filenames around, if they exist (from Uzi's bashrc).
-	local TMPFILE=tmp.$$
-
-	[ $# -ne 2 ] && echo "swap: 2 arguments needed" && return 1
-	[ ! -e $1 ] && echo "swap: $1 does not exist" && return 1
-	[ ! -e $2 ] && echo "swap: $2 does not exist" && return 1
-
-	mv "$1" $TMPFILE
-	mv "$2" "$1"
-	mv $TMPFILE "$2"
-}
 
 # Make your directories and files access rights sane.
 resetperm() { chmod -R u=rwX,g=rX,o= "$@" ;}
-
-# make directory to my user
-# mine() {adsf}
-
-encrypt (){
-  gpg -ac --no-options "$1"
-}
-
-decrypt (){
-  gpg --no-options "$1"
-}
 
 extract() {
  if [ -z "$1" ]; then
@@ -202,9 +147,6 @@ fi
 .tar.bz2 () { tar cvjf "${1%%/}.tar.bz2" "${1%%/}/"; }
 .zip     () { zip -r   "${1%%/}.zip"    "$1" ; }
 
-alias mytmux="tmux -f <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/tmux.conf)"
-alias mybash="bash --rcfile <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/bashrc)"
-alias myvim="vim -u <(curl -s https://raw.githubusercontent.com/nomoral/dotfiles/master/vimrc | grep '^ [a-zA-Z]\+ ')"
 alias v=vim
 alias e=vim
 alias :e=vim
@@ -229,6 +171,7 @@ PS1="\w \[$txtcyn\]\$git_branch\[$txtred\]\$git_dirty\[$txtrst\] \[$txtwht\]\$\[
 pstrings(){
   gitexec ag  "\"[^\"\n]{0,81}\"|'[^'\n]{0,81}'" --color | fzf --ansi --tac
 }
+
 plines(){
   out=$(gitexec ag  . | grep --color -E '[^:]*:' | fzf --reverse --extended-exact --no-sort)
   file=$(echo $out | cut -f1 -d':')
@@ -241,22 +184,7 @@ _pfiles(){
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
 pfiles(){
-  out=$(_pfiles)
-  if [ "$?" -eq 0 ]; then
-    tmux send-keys "vim \`gitroot\`/$out" Enter
-  fi
-}
-
-pallfiles(){
-  tmux send-keys "file $(find / 2> /tmp/null | fzf --extended-exact)" Enter
-}
-
-pcommands(){
-  tmux send-keys "`lscommands | fzf` "
-}
-
-ppackages(){
-  tmux send-keys "sudo apt-get install `apt-cache search '' | fzf | cut -d' ' -f1` "
+  vim $(gitroot)/$(_pfiles)
 }
 
 _ptags(){
@@ -264,20 +192,5 @@ _ptags(){
 }
 
 ptags(){
-  tmux send-keys "vim +\"normal zz\" -t `_ptags`" Enter
-}
-
-_prefix(){
-  sed -e "s/^/;;$1  /"
-}
-
-pall(){
- # sed -e 's/^/;F '
- (cd `git rev-parse --show-toplevel` &&  {\
-   ag -l | _prefix "F" ;
-   cat .git/tags | cut -d$'\t' -f1 | grep -v "^\!" | sort -u | _prefix "T" ;
-   git branch | _prefix "B" ; \
-   ag -l | xargs dirname | sort -u | _prefix "D" ;
-   ag . | grep --color -E '[^:]*:' |  _prefix "L" ;
- } | fzf --extended-exact --query=";;f ")
+  vim -t $(_ptags)
 }
