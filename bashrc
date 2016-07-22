@@ -219,7 +219,17 @@ alias tmuxrc="vim ~/Dotfiles/tmux.conf"
 # PS1='\u:$(pwd)$ '
 export GITAWAREPROMPT="/Users/irae/devstuff/git-aware-prompt/"
 source "${GITAWAREPROMPT}/main.sh"
-PS1="\w \[$txtcyn\]\$git_branch\[$txtred\]\$git_dirty\[$txtrst\] \[$txtwht\]\$\[$txtrst\] "
+
+
+exitstatus()
+{
+  if [[ $? == 0 ]]; then
+    echo "  "
+  else
+    echo -e "\e[31m$?\e[0m "
+  fi
+}
+PS1='$(exitstatus)'"\w \[$txtcyn\]\$git_branch\[$txtred\]\$git_dirty\[$txtrst\] \[$txtwht\]\$\[$txtrst\] "
 
 
 
