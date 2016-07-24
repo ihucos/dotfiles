@@ -15,7 +15,6 @@ set mouse=nvc
 
 hi! LineNr ctermbg=0 ctermfg=10
 
-let g:solarized_termcolors=16
 
 "=================================================
 " File: undotree.vim

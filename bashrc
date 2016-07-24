@@ -65,8 +65,13 @@ git_prompt() {
   fi
 }
 
+color (){
+	sola -db $(bc <<< "scale=2; ($(date +'%M') / 60) * 10")
+}
+
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
+PROMPT_COMMAND=color
 PS1='$? \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
 
 
