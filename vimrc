@@ -17,6 +17,2063 @@ hi! LineNr ctermbg=0 ctermfg=10
 
 let g:solarized_termcolors=16
 
+"=================================================
+" File: undotree.vim
+" Description: Manage your undo history in a graph.
+" Author: Ming Bai <mbbill@gmail.com>
+" License: BSD
+
+" Avoid installing twice.
+if exists('g:loaded_undotree')
+    finish
+endif
+let g:loaded_undotree = 0
+
+" At least version 7.3 with 005 patch is needed for undo branches.
+" Refer to https://github.com/mbbill/undotree/issues/4 for details.
+" Thanks kien
+if v:version < 703
+    command! -n=0 -bar UndotreeToggle :echoerr "undotree.vim needs Vim version >= 7.3"
+    finish
+endif
+if (v:version == 703 && !has("patch005"))
+    command! -n=0 -bar UndotreeToggle :echoerr "undotree.vim needs vim7.3 with patch005 applied."
+    finish
+endif
+let g:loaded_undotree = 1   " Signal plugin availability with a value of 1.
+
+"=================================================
+"Options:
+
+" Window layout
+" style 1
+" +----------+------------------------+
+" |          |                        |
+" |          |                        |
+" | undotree |                        |
+" |          |                        |
+" |          |                        |
+" +----------+                        |
+" |          |                        |
+" |   diff   |                        |
+" |          |                        |
+" +----------+------------------------+
+" Style 2
+" +----------+------------------------+
+" |          |                        |
+" |          |                        |
+" | undotree |                        |
+" |          |                        |
+" |          |                        |
+" +----------+------------------------+
+" |                                   |
+" |   diff                            |
+" |                                   |
+" +-----------------------------------+
+" Style 3
+" +------------------------+----------+
+" |                        |          |
+" |                        |          |
+" |                        | undotree |
+" |                        |          |
+" |                        |          |
+" |                        +----------+
+" |                        |          |
+" |                        |   diff   |
+" |                        |          |
+" +------------------------+----------+
+" Style 4
+" +-----------------------++----------+
+" |                        |          |
+" |                        |          |
+" |                        | undotree |
+" |                        |          |
+" |                        |          |
+" +------------------------+----------+
+" |                                   |
+" |                            diff   |
+" |                                   |
+" +-----------------------------------+
+if !exists('g:undotree_WindowLayout')
+    let g:undotree_WindowLayout = 1
+endif
+
+" undotree window width
+if !exists('g:undotree_SplitWidth')
+    if exists('g:undotree_ShortIndicators')
+        let g:undotree_SplitWidth = 24
+    else
+        let g:undotree_SplitWidth = 30
+    endif
+endif
+
+" diff window height
+if !exists('g:undotree_DiffpanelHeight')
+    let g:undotree_DiffpanelHeight = 10
+endif
+
+" auto open diff window
+if !exists('g:undotree_DiffAutoOpen')
+    let g:undotree_DiffAutoOpen = 1
+endif
+
+" if set, let undotree window get focus after being opened, otherwise
+" focus will stay in current window.
+if !exists('g:undotree_SetFocusWhenToggle')
+    let g:undotree_SetFocusWhenToggle = 0
+endif
+
+" tree node shape.
+if !exists('g:undotree_TreeNodeShape')
+    let g:undotree_TreeNodeShape = '*'
+endif
+
+if !exists('g:undotree_DiffCommand')
+    let g:undotree_DiffCommand = "diff"
+endif
+
+" relative timestamp
+if !exists('g:undotree_RelativeTimestamp')
+    let g:undotree_RelativeTimestamp = 1
+endif
+
+" Highlight changed text
+if !exists('g:undotree_HighlightChangedText')
+    let g:undotree_HighlightChangedText = 1
+endif
+
+" Highlight linked syntax type.
+" You may chose your favorite through ":hi" command
+if !exists('g:undotree_HighlightSyntaxAdd')
+    let g:undotree_HighlightSyntaxAdd = "DiffAdd"
+endif
+if !exists('g:undotree_HighlightSyntaxChange')
+    let g:undotree_HighlightSyntaxChange = "DiffChange"
+endif
+
+" Deprecates the old style configuration.
+if exists('g:undotree_SplitLocation')
+    echo "g:undotree_SplitLocation is deprecated,
+                \ please use g:undotree_WindowLayout instead."
+endif
+
+" Short time indicators
+if exists('g:undotree_ShortIndicators')
+    let s:timeSecond  = '1 s'
+    let s:timeSeconds = ' s'
+
+    let s:timeMinute  = '1 m'
+    let s:timeMinutes = ' m'
+
+    let s:timeHour  = '1 h'
+    let s:timeHours = ' h'
+
+    let s:timeDay  = '1 d'
+    let s:timeDays = ' d'
+
+    let s:timeOriginal = 'Orig'
+else
+    let s:timeSecond = '1 second ago'
+    let s:timeSeconds = ' seconds ago'
+
+    let s:timeMinute  = '1 minute ago'
+    let s:timeMinutes = ' minutes ago'
+
+    let s:timeHour  = '1 hour ago'
+    let s:timeHours = ' hours ago'
+
+    let s:timeDay  = '1 day ago'
+    let s:timeDays = ' days ago'
+
+    let s:timeOriginal = 'Original'
+endif
+
+"Custom key mappings: add this function to your vimrc.
+"You can define whatever mapping as you like, this is a hook function which
+"will be called after undotree window initialized.
+"
+"function g:Undotree_CustomMap()
+"    map <buffer> <c-n> J
+"    map <buffer> <c-p> K
+"endfunction
+
+"=================================================
+" Help text
+let s:helpmore = ['"    ===== Marks ===== ',
+            \'" >num< : current change',
+            \'" {num} : change to redo',
+            \'" [num] : the last change',
+            \'"   s   : saved changes',
+            \'"   S   : last saved change',
+            \'"   ===== Hotkeys =====']
+let s:helpless = ['" Press ? for help.']
+
+" Keymap
+let s:keymap = []
+" action, key, help.
+let s:keymap += [['Help','?','Toggle quick help']]
+let s:keymap += [['Close','q','Close this panel']]
+let s:keymap += [['FocusTarget','<tab>','Set Focus to editor']]
+let s:keymap += [['ClearHistory','C','Clear undo history']]
+let s:keymap += [['TimestampToggle','T','Toggle relative timestamp']]
+let s:keymap += [['DiffToggle','D','Toggle diff panel']]
+let s:keymap += [['GoNextState','K','Revert to next state']]
+let s:keymap += [['GoPreviousState','J','Revert to previous state']]
+let s:keymap += [['GoNextSaved','>','Revert to next saved state']]
+let s:keymap += [['GoPreviousSaved','<','Revert to previous saved state']]
+let s:keymap += [['Redo','<c-r>','Redo']]
+let s:keymap += [['Undo','u','Undo']]
+let s:keymap += [['Enter','<2-LeftMouse>','Revert to current']]
+let s:keymap += [['Enter','<cr>','Revert to current']]
+
+function! s:new(obj)
+    let newobj = deepcopy(a:obj)
+    call newobj.Init()
+    return newobj
+endfunction
+
+" Get formatted time
+function! s:gettime(time)
+    if a:time == 0
+        return s:timeOriginal
+    endif
+    if !g:undotree_RelativeTimestamp
+        let today = substitute(strftime("%c",localtime())," .*$",'','g')
+        if today == substitute(strftime("%c",a:time)," .*$",'','g')
+            return strftime("%H:%M:%S",a:time)
+        else
+            return strftime("%H:%M:%S %b%d %Y",a:time)
+        endif
+    else
+        let sec = localtime() - a:time
+        if sec < 0
+            let sec = 0
+        endif
+        if sec < 60
+            if sec == 1
+                return s:timeSecond
+            else
+                return sec.s:timeSeconds
+            endif
+        endif
+        if sec < 3600
+            if (sec/60) == 1
+                return s:timeMinute
+            else
+                return (sec/60).s:timeMinutes
+            endif
+        endif
+        if sec < 86400 "3600*24
+            if (sec/3600) == 1
+                return s:timeHour
+            else
+                return (sec/3600).s:timeHours
+            endif
+        endif
+        return (sec/86400).s:timeDays
+    endif
+endfunction
+
+function! s:exec(cmd)
+    call s:log("s:exec() ".a:cmd)
+    silent exe a:cmd
+endfunction
+
+" Don't trigger any events(like BufEnter which could cause redundant refresh)
+function! s:exec_silent(cmd)
+    call s:log("s:exec_silent() ".a:cmd)
+    let ei_bak= &eventignore
+    set eventignore=BufEnter,BufLeave,BufWinLeave,InsertLeave,CursorMoved,BufWritePost
+    silent exe a:cmd
+    let &eventignore = ei_bak
+endfunction
+
+" Return a unique id each time.
+let s:cntr = 0
+function! s:getUniqueID()
+    let s:cntr = s:cntr + 1
+    return s:cntr
+endfunction
+
+" Debug...
+let s:debug = 0
+let s:debugfile = $HOME.'/undotree_debug.log'
+" If debug file exists, enable debug output.
+if filewritable(s:debugfile)
+    let s:debug = 1
+    exec 'redir >> '. s:debugfile
+    silent echo "=======================================\n"
+    redir END
+endif
+
+function! s:log(msg)
+    if s:debug
+        exec 'redir >> ' . s:debugfile
+        silent echon strftime('%H:%M:%S') . ': ' . string(a:msg) . "\n"
+        redir END
+    endif
+endfunction
+
+"=================================================
+"Base class for panels.
+let s:panel = {}
+
+function! s:panel.Init()
+    let self.bufname = "invalid"
+endfunction
+
+function! s:panel.SetFocus()
+    let winnr = bufwinnr(self.bufname)
+    " already focused.
+    if winnr == winnr()
+        return
+    endif
+    if winnr == -1
+        echoerr "Fatal: window does not exist!"
+        return
+    endif
+    call s:log("SetFocus() winnr:".winnr." bufname:".self.bufname)
+    " wincmd would cause cursor outside window.
+    call s:exec_silent("norm! ".winnr."\<c-w>\<c-w>")
+endfunction
+
+function! s:panel.IsVisible()
+    if bufwinnr(self.bufname) != -1
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
+function! s:panel.Hide()
+    call s:log(self.bufname." Hide()")
+    if !self.IsVisible()
+        return
+    endif
+    call self.SetFocus()
+    call s:exec("quit")
+endfunction
+
+"=================================================
+" undotree panel class.
+" extended from panel.
+"
+
+" {rawtree}
+"     |
+"     | ConvertInput()               {seq2index}--> [seq1:index1]
+"     v                                             [seq2:index2] ---+
+"  {tree}                                               ...          |
+"     |                                    [asciimeta]               |
+"     | Render()                                |                    |
+"     v                                         v                    |
+" [asciitree] --> [" * | SEQ DDMMYY "] <==> [node1{seq,time,..}]     |
+"                 [" |/             "]      [node2{seq,time,..}] <---+
+"                         ...                       ...
+
+let s:undotree = s:new(s:panel)
+
+function! s:undotree.Init()
+    let self.bufname = "undotree_".s:getUniqueID()
+    " Increase to make it unique.
+    let self.width = g:undotree_SplitWidth
+    let self.opendiff = g:undotree_DiffAutoOpen
+    let self.targetid = -1
+    let self.targetBufnr = -1
+    let self.rawtree = {}  "data passed from undotree()
+    let self.tree = {}     "data converted to internal format.
+    let self.seq_last = -1
+    let self.save_last = -1
+    let self.save_last_bak = -1
+
+    " seqs
+    let self.seq_cur = -1
+    let self.seq_curhead = -1
+    let self.seq_newhead = -1
+    let self.seq_saved = {} "{saved value -> seq} pair
+
+    "backup, for mark
+    let self.seq_cur_bak = -1
+    let self.seq_curhead_bak = -1
+    let self.seq_newhead_bak = -1
+
+    let self.asciitree = []     "output data.
+    let self.asciimeta = []     "meta data behind ascii tree.
+    let self.seq2index = {}     "table used to convert seq to index.
+    let self.showHelp = 0
+endfunction
+
+function! s:undotree.BindKey()
+    if v:version > 703 || (v:version == 703 && has("patch1261"))
+        let map_options = ' <nowait> '
+    else
+        let map_options = ''
+    endif
+    let map_options = map_options.' <silent> <buffer> '
+    for i in s:keymap
+        silent exec 'nmap '.map_options.i[1].' <plug>Undotree'.i[0]
+        silent exec 'nnoremap '.map_options.'<plug>Undotree'.i[0]
+            \ .' :call <sid>undotreeAction("'.i[0].'")<cr>'
+    endfor
+    if exists('*g:Undotree_CustomMap')
+        call g:Undotree_CustomMap()
+    endif
+endfunction
+
+function! s:undotree.BindAu()
+    " Auto exit if it's the last window
+    augroup Undotree_Main
+        au!
+        au BufEnter <buffer> call s:exitIfLast()
+        au BufEnter,BufLeave <buffer> if exists('t:undotree') |
+                    \let t:undotree.width = winwidth(winnr()) | endif
+        au BufWinLeave <buffer> if exists('t:diffpanel') |
+                    \call t:diffpanel.Hide() | endif
+    augroup end
+endfunction
+
+function! s:undotree.Action(action)
+    call s:log("undotree.Action() ".a:action)
+    if !self.IsVisible() || bufname("%") != self.bufname
+        echoerr "Fatal: window does not exists."
+        return
+    endif
+    if !has_key(self,'Action'.a:action)
+        echoerr "Fatal: Action does not exists!"
+        return
+    endif
+    silent exec 'call self.Action'.a:action.'()'
+endfunction
+
+" Helper function, do action in target window, and then update itself.
+function! s:undotree.ActionInTarget(cmd)
+    if !self.SetTargetFocus()
+        return
+    endif
+    " Target should be a normal buffer.
+    if (&bt == '' || &bt == 'acwrite') && (&modifiable == 1) && (mode() == 'n')
+        call s:exec(a:cmd)
+        call self.Update()
+    endif
+    " Update not always set current focus.
+    call self.SetFocus()
+endfunction
+
+function! s:undotree.ActionHelp()
+    let self.showHelp = !self.showHelp
+    call self.Draw()
+    call self.MarkSeqs()
+endfunction
+
+function! s:undotree.ActionFocusTarget()
+    call self.SetTargetFocus()
+endfunction
+
+function! s:undotree.ActionEnter()
+    let index = self.Screen2Index(line('.'))
+    if index < 0
+        return
+    endif
+    let seq = self.asciimeta[index].seq
+    if seq == -1
+        return
+    endif
+    if seq == 0
+        call self.ActionInTarget('norm 9999u')
+        return
+    endif
+    call self.ActionInTarget('u '.self.asciimeta[index].seq)
+endfunction
+
+function! s:undotree.ActionUndo()
+    call self.ActionInTarget('undo')
+endfunction
+
+function! s:undotree.ActionRedo()
+    call self.ActionInTarget("redo")
+endfunction
+
+function! s:undotree.ActionGoPreviousState()
+    call self.ActionInTarget('earlier')
+endfunction
+
+function! s:undotree.ActionGoNextState()
+    call self.ActionInTarget('later')
+endfunction
+
+function! s:undotree.ActionGoPreviousSaved()
+    call self.ActionInTarget('earlier 1f')
+endfunction
+
+function! s:undotree.ActionGoNextSaved()
+    call self.ActionInTarget('later 1f')
+endfunction
+
+function! s:undotree.ActionDiffToggle()
+    let self.opendiff = !self.opendiff
+    call t:diffpanel.Toggle()
+    call self.UpdateDiff()
+endfunction
+
+function! s:undotree.ActionTimestampToggle()
+    if !self.SetTargetFocus()
+        return
+    endif
+    let g:undotree_RelativeTimestamp = !g:undotree_RelativeTimestamp
+    let self.targetBufnr = -1 "force update
+    call self.Update()
+    " Update not always set current focus.
+    call self.SetFocus()
+endfunction
+
+function! s:undotree.ActionClearHistory()
+    if confirm("Are you sure to clear ALL undo history?","&Yes\n&No") != 1
+        return
+    endif
+    if !self.SetTargetFocus()
+        return
+    endif
+    let ul_bak = &undolevels
+    let &undolevels = -1
+    call s:exec("norm! a \<BS>\<Esc>")
+    let &undolevels = ul_bak
+    unlet ul_bak
+    let self.targetBufnr = -1 "force update
+    call self.Update()
+endfunction
+
+function! s:undotree.ActionClose()
+    call self.Toggle()
+endfunction
+
+function! s:undotree.UpdateDiff()
+    call s:log("undotree.UpdateDiff()")
+    if !t:diffpanel.IsVisible()
+        return
+    endif
+    call t:diffpanel.Update(self.seq_cur,self.targetBufnr,self.targetid)
+endfunction
+
+" May fail due to target window closed.
+function! s:undotree.SetTargetFocus()
+    for winnr in range(1, winnr('$')) "winnr starts from 1
+        if getwinvar(winnr,'undotree_id') == self.targetid
+            if winnr() != winnr
+                call s:exec("norm! ".winnr."\<c-w>\<c-w>")
+                return 1
+            endif
+        endif
+    endfor
+    return 0
+endfunction
+
+function! s:undotree.Toggle()
+    call s:log(self.bufname." Toggle()")
+    if self.IsVisible()
+        call self.Hide()
+        call t:diffpanel.Hide()
+        call self.SetTargetFocus()
+    else
+        call self.Show()
+        if !g:undotree_SetFocusWhenToggle
+            call self.SetTargetFocus()
+        endif
+    endif
+endfunction
+
+function! s:undotree.GetStatusLine()
+    if self.seq_cur != -1
+        let seq_cur = self.seq_cur
+    else
+        let seq_cur = 'None'
+    endif
+    if self.seq_curhead != -1
+        let seq_curhead = self.seq_curhead
+    else
+        let seq_curhead = 'None'
+    endif
+    return 'current: '.seq_cur.' redo: '.seq_curhead
+endfunction
+
+function! s:undotree.Show()
+    call s:log("undotree.Show()")
+    if self.IsVisible()
+        return
+    endif
+
+    let self.targetid = w:undotree_id
+
+    " Create undotree window.
+    if g:undotree_WindowLayout == 1 || g:undotree_WindowLayout == 2
+        let cmd = "topleft vertical" .
+                    \self.width . ' new ' . self.bufname
+    else
+        let cmd = "botright vertical" .
+                    \self.width . ' new ' . self.bufname
+    endif
+    call s:exec("silent keepalt ".cmd)
+    call self.SetFocus()
+    setlocal winfixwidth
+    setlocal noswapfile
+    setlocal buftype=nowrite
+    setlocal bufhidden=delete
+    setlocal nowrap
+    setlocal foldcolumn=0
+    setlocal nobuflisted
+    setlocal nospell
+    setlocal nonumber
+    setlocal norelativenumber
+    setlocal cursorline
+    setlocal nomodifiable
+    setlocal statusline=%!t:undotree.GetStatusLine()
+    setfiletype undotree
+
+    call self.BindKey()
+    call self.BindAu()
+
+    let ei_bak= &eventignore
+    set eventignore=all
+
+    call self.SetTargetFocus()
+    let self.targetBufnr = -1 "force update
+    call self.Update()
+
+    let &eventignore = ei_bak
+
+    if self.opendiff
+        call t:diffpanel.Show()
+        call self.UpdateDiff()
+    endif
+endfunction
+
+" called outside undotree window
+function! s:undotree.Update()
+    if !self.IsVisible()
+        return
+    endif
+    " do nothing if we're in the undotree or diff panel
+    let bufname = bufname('%')
+    if bufname == self.bufname || bufname == t:diffpanel.bufname
+        return
+    endif
+    if (&bt != '' && &bt != 'acwrite') || (&modifiable == 0) || (mode() != 'n')
+        if &bt == 'quickfix' || &bt == 'nofile'
+            "Do nothing for quickfix and q:
+            call s:log("undotree.Update() ignore quickfix")
+            return
+        endif
+        if self.targetBufnr == bufnr('%') && self.targetid == w:undotree_id
+            call s:log("undotree.Update() invalid buffer NOupdate")
+            return
+        endif
+        let emptybuf = 1 "This is not a valid buffer, could be help or something.
+        call s:log("undotree.Update() invalid buffer update")
+    else
+        let emptybuf = 0
+        "update undotree,set focus
+        if self.targetBufnr == bufnr('%')
+            let self.targetid = w:undotree_id
+            let newrawtree = undotree()
+            if self.rawtree == newrawtree
+                return
+            endif
+
+            " same buffer, but seq changed.
+            if newrawtree.seq_last == self.seq_last
+                call s:log("undotree.Update() update seqs")
+                let self.rawtree = newrawtree
+                call self.ConvertInput(0) "only update seqs.
+                if (self.seq_cur == self.seq_cur_bak) &&
+                            \(self.seq_curhead == self.seq_curhead_bak)&&
+                            \(self.seq_newhead == self.seq_newhead_bak)&&
+                            \(self.save_last == self.save_last_bak)
+                    return
+                endif
+                call self.SetFocus()
+                call self.MarkSeqs()
+                call self.UpdateDiff()
+                return
+            endif
+        endif
+    endif
+    call s:log("undotree.Update() update whole tree")
+
+    let self.targetBufnr = bufnr('%')
+    let self.targetid = w:undotree_id
+    if emptybuf " Show an empty undo tree instead of do nothing.
+        let self.rawtree = {'seq_last':0,'entries':[],'time_cur':0,'save_last':0,'synced':1,'save_cur':0,'seq_cur':0}
+    else
+        let self.rawtree = undotree()
+    endif
+    let self.seq_last = self.rawtree.seq_last
+    let self.seq_cur = -1
+    let self.seq_curhead = -1
+    let self.seq_newhead = -1
+    call self.ConvertInput(1) "update all.
+    call self.Render()
+    call self.SetFocus()
+    call self.Draw()
+    call self.MarkSeqs()
+    call self.UpdateDiff()
+endfunction
+
+function! s:undotree.AppendHelp()
+    call append(0,'') "empty line
+    if self.showHelp
+        for i in s:keymap
+            call append(0,'" '.i[1].' : '.i[2])
+        endfor
+        call append(0,s:helpmore)
+    else
+        call append(0,s:helpless)
+    endif
+endfunction
+
+function! s:undotree.Index2Screen(index)
+    " calculate line number according to the help text.
+    " index starts from zero and lineNr starts from 1
+    if self.showHelp
+        " 2 means 1 empty line + 1 index padding (index starts from zero)
+        let lineNr = a:index + len(s:keymap) + len(s:helpmore) + 2
+    else
+        let lineNr = a:index + len(s:helpless) + 2
+    endif
+    return lineNr
+endfunction
+
+" <0 if index is invalid. e.g. current line is in help text.
+function! s:undotree.Screen2Index(line)
+    if self.showHelp
+        let index = a:line - len(s:keymap) - len(s:helpmore) - 2
+    else
+        let index = a:line - len(s:helpless) - 2
+    endif
+    return index
+endfunction
+
+" Current window must be undotree.
+function! s:undotree.Draw()
+    " remember the current cursor position.
+    let savedview = winsaveview()
+
+    setlocal modifiable
+    " Delete text into blackhole register.
+    call s:exec('1,$ d _')
+    call append(0,self.asciitree)
+
+    call self.AppendHelp()
+
+    "remove the last empty line
+    call s:exec('$d _')
+
+    " restore previous cursor position.
+    call winrestview(savedview)
+
+    setlocal nomodifiable
+endfunction
+
+function! s:undotree.MarkSeqs()
+    call s:log("bak(cur,curhead,newhead): ".
+                \self.seq_cur_bak.' '.
+                \self.seq_curhead_bak.' '.
+                \self.seq_newhead_bak)
+    call s:log("(cur,curhead,newhead): ".
+                \self.seq_cur.' '.
+                \self.seq_curhead.' '.
+                \self.seq_newhead)
+    setlocal modifiable
+    " reset bak seq lines.
+    if self.seq_cur_bak != -1
+        let index = self.seq2index[self.seq_cur_bak]
+        call setline(self.Index2Screen(index),self.asciitree[index])
+    endif
+    if self.seq_curhead_bak != -1
+        let index = self.seq2index[self.seq_curhead_bak]
+        call setline(self.Index2Screen(index),self.asciitree[index])
+    endif
+    if self.seq_newhead_bak != -1
+        let index = self.seq2index[self.seq_newhead_bak]
+        call setline(self.Index2Screen(index),self.asciitree[index])
+    endif
+    " mark save seqs
+    for i in keys(self.seq_saved)
+        let index = self.seq2index[self.seq_saved[i]]
+        let lineNr = self.Index2Screen(index)
+        call setline(lineNr,substitute(self.asciitree[index],
+                    \' \d\+  \zs \ze','s',''))
+    endfor
+    let max_saved_num = max(keys(self.seq_saved))
+    if max_saved_num > 0
+        let lineNr = self.Index2Screen(self.seq2index[self.seq_saved[max_saved_num]])
+        call setline(lineNr,substitute(getline(lineNr),'s','S',''))
+    endif
+    " mark new seqs.
+    if self.seq_cur != -1
+        let index = self.seq2index[self.seq_cur]
+        let lineNr = self.Index2Screen(index)
+        call setline(lineNr,substitute(getline(lineNr),
+                    \'\zs \(\d\+\) \ze [sS ] ','>\1<',''))
+        " move cursor to that line.
+        call s:exec("normal! " . lineNr . "G")
+    endif
+    if self.seq_curhead != -1
+        let index = self.seq2index[self.seq_curhead]
+        let lineNr = self.Index2Screen(index)
+        call setline(lineNr,substitute(getline(lineNr),
+                    \'\zs \(\d\+\) \ze [sS ] ','{\1}',''))
+    endif
+    if self.seq_newhead != -1
+        let index = self.seq2index[self.seq_newhead]
+        let lineNr = self.Index2Screen(index)
+        call setline(lineNr,substitute(getline(lineNr),
+                    \'\zs \(\d\+\) \ze [sS ] ','[\1]',''))
+    endif
+    setlocal nomodifiable
+endfunction
+
+" tree node class
+let s:node = {}
+
+function! s:node.Init()
+    let self.seq = -1
+    let self.p = []
+    let self.time = -1
+endfunction
+
+function! s:undotree._parseNode(in,out)
+    " type(in) == type([]) && type(out) == type({})
+    if empty(a:in) "empty
+        return
+    endif
+    let curnode = a:out
+    for i in a:in
+        if has_key(i,'alt')
+            call self._parseNode(i.alt,curnode)
+        endif
+        let newnode = s:new(s:node)
+        let newnode.seq = i.seq
+        let newnode.time = i.time
+        if has_key(i,'newhead')
+            let self.seq_newhead = i.seq
+        endif
+        if has_key(i,'curhead')
+            let self.seq_curhead = i.seq
+            let self.seq_cur = curnode.seq
+        endif
+        if has_key(i,'save')
+            let self.seq_saved[i.save] = i.seq
+        endif
+        call extend(curnode.p,[newnode])
+        let curnode = newnode
+    endfor
+endfunction
+
+"Sample:
+"let s:test={'seq_last': 4, 'entries': [{'seq': 3, 'alt': [{'seq': 1, 'time': 1345131443}, {'seq': 2, 'time': 1345131445}], 'time': 1345131490}, {'seq': 4, 'time': 1345131492, 'newhead': 1}], 'time_cur': 1345131493, 'save_last': 0, 'synced': 0, 'save_cur': 0, 'seq_cur': 4}
+
+" updatetree: 0: no update, just assign seqs;  1: update and assign seqs.
+function! s:undotree.ConvertInput(updatetree)
+    "reset seqs
+    let self.seq_cur_bak = self.seq_cur
+    let self.seq_curhead_bak = self.seq_curhead
+    let self.seq_newhead_bak = self.seq_newhead
+    let self.save_last_bak = self.save_last
+
+    let self.seq_cur = -1
+    let self.seq_curhead = -1
+    let self.seq_newhead = -1
+    let self.seq_saved = {}
+
+    "Generate root node
+    let root = s:new(s:node)
+    let root.seq = 0
+    let root.time = 0
+
+    call self._parseNode(self.rawtree.entries,root)
+
+    let self.save_last = self.rawtree.save_last
+    " Note: Normally, the current node should be the one that seq_cur points to,
+    " but in fact it's not. May be bug, bug anyway I found a workaround:
+    " first try to find the parent node of 'curhead', if not found, then use
+    " seq_cur.
+    if self.seq_cur == -1
+        let self.seq_cur = self.rawtree.seq_cur
+    endif
+    " undo history is cleared
+    if empty(self.rawtree.entries)
+        let self.seq_cur = 0
+    endif
+    if a:updatetree
+        let self.tree = root
+    endif
+endfunction
+
+
+"=================================================
+" Ascii undo tree generator
+"
+" Example:
+" 6 8  7
+" |/   |
+" 2    4
+"  \   |
+"   1  3  5
+"    \ | /
+"      0
+
+" Tree sieve, p:fork, x:none
+"
+" x         8
+" 8x        | 7
+" 87         \ \
+" x87       6 | |
+" 687       |/ /
+" p7x       | | 5
+" p75       | 4 |
+" p45       | 3 |
+" p35       | |/
+" pp        2 |
+" 2p        1 |
+" 1p        |/
+" p         0
+" 0
+"
+" Data sample:
+"let example = {'seq':0,'p':[{'seq':1,'p':[{'seq':2,'p':[{'seq':6,'p':[]},{'seq':8,'p':[]}]}]},{'seq':3,'p':[{'seq':4,'p':[{'seq':7,'p':[]}]}]},{'seq':5,'p':[]}]}
+"
+" Convert self.tree -> self.asciitree
+function! s:undotree.Render()
+    " We gonna modify self.tree so we'd better make a copy first.
+    " Can not make a copy because variable nested too deep, gosh.. okay,
+    " fine..
+    " let tree = deepcopy(self.tree)
+    let tree = self.tree
+    let slots = [tree]
+    let out = []
+    let outmeta = []
+    let seq2index = {}
+    let TYPE_E = type({})
+    let TYPE_P = type([])
+    let TYPE_X = type('x')
+    while slots != []
+        "find next node
+        let foundx = 0 " 1 if x element is found.
+        let index = 0 " Next element to be print.
+
+        " Find x element first.
+        for i in range(len(slots))
+            if type(slots[i]) == TYPE_X
+                let foundx = 1
+                let index = i
+                break
+            endif
+        endfor
+
+        " Then, find the element with minimun seq.
+        let minseq = 99999999
+        let minnode = {}
+        if foundx == 0
+            "assume undo level isn't more than this... of course
+            for i in range(len(slots))
+                if type(slots[i]) == TYPE_E
+                    if slots[i].seq < minseq
+                        let minseq = slots[i].seq
+                        let index = i
+                        let minnode = slots[i]
+                        continue
+                    endif
+                endif
+                if type(slots[i]) == TYPE_P
+                    for j in slots[i]
+                        if j.seq < minseq
+                            let minseq = j.seq
+                            let index = i
+                            let minnode = j
+                            continue
+                        endif
+                    endfor
+                endif
+            endfor
+        endif
+
+        " output.
+        let onespace = " "
+        let newline = onespace
+        let newmeta = {}
+        let node = slots[index]
+        if type(node) == TYPE_X
+            let newmeta = s:new(s:node) "invalid node.
+            if index+1 != len(slots) " not the last one, append '\'
+                for i in range(len(slots))
+                    if i < index
+                        let newline = newline.'| '
+                    endif
+                    if i > index
+                        let newline = newline.' \'
+                    endif
+                endfor
+            endif
+            call remove(slots,index)
+        endif
+        if type(node) == TYPE_E
+            let newmeta = node
+            let seq2index[node.seq]=len(out)
+            for i in range(len(slots))
+                if index == i
+                    let newline = newline.g:undotree_TreeNodeShape.' '
+                else
+                    let newline = newline.'| '
+                endif
+            endfor
+            let newline = newline.'   '.(node.seq).'    '.
+                        \'('.s:gettime(node.time).')'
+            " update the printed slot to its child.
+            if empty(node.p)
+                let slots[index] = 'x'
+            endif
+            if len(node.p) == 1 "only one child.
+                let slots[index] = node.p[0]
+            endif
+            if len(node.p) > 1 "insert p node
+                let slots[index] = node.p
+            endif
+            let node.p = [] "cut reference.
+        endif
+        if type(node) == TYPE_P
+            let newmeta = s:new(s:node) "invalid node.
+            for k in range(len(slots))
+                if k < index
+                    let newline = newline."| "
+                endif
+                if k == index
+                    let newline = newline."|/ "
+                endif
+                if k > index
+                    let newline = newline."/ "
+                endif
+            endfor
+            call remove(slots,index)
+            if len(node) == 2
+                if node[0].seq > node[1].seq
+                    call insert(slots,node[1],index)
+                    call insert(slots,node[0],index)
+                else
+                    call insert(slots,node[0],index)
+                    call insert(slots,node[1],index)
+                endif
+            endif
+            " split P to E+P if elements in p > 2
+            if len(node) > 2
+                call remove(node,index(node,minnode))
+                call insert(slots,minnode,index)
+                call insert(slots,node,index)
+            endif
+        endif
+        unlet node
+        if newline != onespace
+            let newline = substitute(newline,'\s*$','','g') "remove trailing space.
+            call insert(out,newline,0)
+            call insert(outmeta,newmeta,0)
+        endif
+    endwhile
+    let self.asciitree = out
+    let self.asciimeta = outmeta
+    " revert index.
+    let totallen = len(out)
+    for i in keys(seq2index)
+        let seq2index[i] = totallen - 1 - seq2index[i]
+    endfor
+    let self.seq2index = seq2index
+endfunction
+
+"=================================================
+"diff panel
+let s:diffpanel = s:new(s:panel)
+
+function! s:diffpanel.Update(seq,targetBufnr,targetid)
+    call s:log('diffpanel.Update(),seq:'.a:seq.' bufname:'.bufname(a:targetBufnr))
+    if !self.diffexecutable
+        return
+    endif
+    let diffresult = []
+    let self.changes.add = 0
+    let self.changes.del = 0
+
+    if a:seq == 0
+        let diffresult = []
+    else
+        if has_key(self.cache,a:targetBufnr.'_'.a:seq)
+            call s:log("diff cache hit.")
+            let diffresult = self.cache[a:targetBufnr.'_'.a:seq]
+        else
+            let ei_bak = &eventignore
+            set eventignore=all
+            let targetWinnr = -1
+
+            " Double check the target winnr and bufnr
+            for winnr in range(1, winnr('$')) "winnr starts from 1
+                if (getwinvar(winnr,'undotree_id') == a:targetid)
+                            \&& winbufnr(winnr) == a:targetBufnr
+                    let targetWinnr = winnr
+                endif
+            endfor
+            if targetWinnr == -1
+                return
+            endif
+            call s:exec_silent(targetWinnr." wincmd w")
+
+            " remember and restore cursor and window position.
+            let savedview = winsaveview()
+
+            let new = getbufline(a:targetBufnr,'^','$')
+            silent undo
+            let old = getbufline(a:targetBufnr,'^','$')
+            silent redo
+
+            call winrestview(savedview)
+
+            " diff files.
+            let tempfile1 = tempname()
+            let tempfile2 = tempname()
+            if writefile(old,tempfile1) == -1
+                echoerr "Can not write to temp file:".tempfile1
+            endif
+            if writefile(new,tempfile2) == -1
+                echoerr "Can not write to temp file:".tempfile2
+            endif
+            let diffresult = split(system(g:undotree_DiffCommand.' '.tempfile1.' '.tempfile2),"\n")
+            call s:log("diffresult: ".string(diffresult))
+            if delete(tempfile1) != 0
+                echoerr "Can not delete temp file:".tempfile1
+            endif
+            if delete(tempfile2) != 0
+                echoerr "Can not delete temp file:".tempfile2
+            endif
+            let &eventignore = ei_bak
+            "Update cache
+            let self.cache[a:targetBufnr.'_'.a:seq] = diffresult
+        endif
+    endif
+
+    call self.ParseDiff(diffresult)
+
+    call self.SetFocus()
+
+    setlocal modifiable
+    call s:exec('1,$ d _')
+
+    call append(0,diffresult)
+    call append(0,'- seq: '.a:seq.' -')
+
+    "remove the last empty line
+    if getline("$") == ""
+        call s:exec('$d _')
+    endif
+    call s:exec('norm! gg') "move cursor to line 1.
+    setlocal nomodifiable
+    call t:undotree.SetFocus()
+endfunction
+
+function! s:diffpanel.ParseDiff(diffresult)
+    " set target focus first.
+    call t:undotree.SetTargetFocus()
+
+    if empty(a:diffresult)
+        return
+    endif
+    " clear previous highlighted syntax
+    " matchadd associates with windows.
+    if exists("w:undotree_diffmatches")
+        for i in w:undotree_diffmatches
+            call matchdelete(i)
+        endfor
+    endif
+    let w:undotree_diffmatches = []
+    let lineNr = 0
+    for line in a:diffresult
+        let matchnum = matchstr(line,'^[0-9,\,]*[ac]\zs\d*\ze')
+        if !empty(matchnum)
+            let lineNr = str2nr(matchnum)
+            let matchwhat = matchstr(line,'^[0-9,\,]*\zs[ac]\ze\d*')
+            continue
+        endif
+        if matchstr(line,'^<.*$') != ''
+            let self.changes.del += 1
+        endif
+        let matchtext = matchstr(line,'^>\zs .*$')
+        if empty(matchtext)
+            continue
+        endif
+        let self.changes.add += 1
+        if g:undotree_HighlightChangedText
+            if matchtext != ' '
+                let matchtext = '\%'.lineNr.'l\V'.escape(matchtext[1:],'"\') "remove beginning space.
+                call s:log("matchadd(".matchwhat.") ->  ".matchtext)
+                call add(w:undotree_diffmatches,matchadd((matchwhat ==# 'a' ? g:undotree_HighlightSyntaxAdd : g:undotree_HighlightSyntaxChange),matchtext))
+            endif
+        endif
+
+        let lineNr = lineNr+1
+    endfor
+endfunction
+
+function! s:diffpanel.GetStatusLine()
+    let max = winwidth(0) - 4
+    let sum = self.changes.add + self.changes.del
+    if sum > max
+        let add = self.changes.add * max / sum + 1
+        let del = self.changes.del * max / sum + 1
+    else
+        let add = self.changes.add
+        let del = self.changes.del
+    endif
+    return string(sum).' '.repeat('+',add).repeat('-',del)
+endfunction
+
+function! s:diffpanel.Init()
+    let self.bufname = "diffpanel_".s:getUniqueID()
+    let self.cache = {}
+    let self.changes = {'add':0, 'del':0}
+    let self.diffexecutable = executable('diff')
+    if !self.diffexecutable
+        echoerr '"diff" is not executable.'
+    endif
+endfunction
+
+function! s:diffpanel.Toggle()
+    call s:log(self.bufname." Toggle()")
+    if self.IsVisible()
+        call self.Hide()
+    else
+        call self.Show()
+    endif
+endfunction
+
+function! s:diffpanel.Show()
+    call s:log("diffpanel.Show()")
+    if self.IsVisible()
+        return
+    endif
+    " Create diffpanel window.
+    call t:undotree.SetFocus() "can not exist without undotree
+    " remember and restore cursor and window position.
+    let savedview = winsaveview()
+
+    let ei_bak= &eventignore
+    set eventignore=all
+
+    if g:undotree_WindowLayout == 1 || g:undotree_WindowLayout == 3
+        let cmd = 'belowright '.g:undotree_DiffpanelHeight.'new '.self.bufname
+    else
+        let cmd = 'botright '.g:undotree_DiffpanelHeight.'new '.self.bufname
+    endif
+    call s:exec_silent(cmd)
+
+    setlocal winfixwidth
+    setlocal winfixheight
+    setlocal noswapfile
+    setlocal buftype=nowrite
+    setlocal bufhidden=delete
+    setlocal nowrap
+    setlocal nobuflisted
+    setlocal nospell
+    setlocal nonumber
+    setlocal norelativenumber
+    setlocal nocursorline
+    setlocal nomodifiable
+    setlocal statusline=%!t:diffpanel.GetStatusLine()
+
+    let &eventignore = ei_bak
+
+    " syntax need filetype autocommand
+    setfiletype diff
+    setlocal foldcolumn=0
+    setlocal nofoldenable
+
+    call self.BindAu()
+    call t:undotree.SetFocus()
+    call winrestview(savedview)
+endfunction
+
+function! s:diffpanel.BindAu()
+    " Auto exit if it's the last window or undotree closed.
+    augroup Undotree_Diff
+        au!
+        au BufEnter <buffer> call s:exitIfLast()
+        au BufEnter <buffer> if !t:undotree.IsVisible()
+                    \|call t:diffpanel.Hide() |endif
+    augroup end
+endfunction
+
+function! s:diffpanel.CleanUpHighlight()
+    call s:log("CleanUpHighlight()")
+    " save current position
+    let curwinnr = winnr()
+    let savedview = winsaveview()
+
+    " clear w:undotree_diffmatches in all windows.
+    let winnum = winnr('$')
+    for i in range(1,winnum)
+        call s:exec_silent("norm! ".i."\<c-w>\<c-w>")
+        if exists("w:undotree_diffmatches")
+            for j in w:undotree_diffmatches
+                call matchdelete(j)
+            endfor
+            let w:undotree_diffmatches = []
+        endif
+    endfor
+
+    "restore position
+    call s:exec_silent("norm! ".curwinnr."\<c-w>\<c-w>")
+    call winrestview(savedview)
+endfunction
+
+function! s:diffpanel.Hide()
+    call s:log(self.bufname." Hide()")
+    if !self.IsVisible()
+        return
+    endif
+    call self.SetFocus()
+    call s:exec("quit")
+    call self.CleanUpHighlight()
+endfunction
+
+"=================================================
+" It will set the target of undotree window to the current editing buffer.
+function! s:undotreeAction(action)
+    call s:log("undotreeAction()")
+    if !exists('t:undotree')
+        echoerr "Fatal: t:undotree does not exists!"
+        return
+    endif
+    call t:undotree.Action(a:action)
+endfunction
+
+function! s:exitIfLast()
+    let num = 0
+    if t:undotree.IsVisible()
+        let num = num + 1
+    endif
+    if t:diffpanel.IsVisible()
+        let num = num + 1
+    endif
+    if winnr('$') == num
+        call t:undotree.Hide()
+        call t:diffpanel.Hide()
+    endif
+endfunction
+
+"=================================================
+"called outside undotree window
+function! UndotreeUpdate()
+    if !exists('t:undotree')
+        return
+    endif
+    if !exists('w:undotree_id')
+        let w:undotree_id = 'id_'.s:getUniqueID()
+        call s:log("Unique window id assigned: ".w:undotree_id)
+    endif
+    " assume window layout won't change during updating.
+    let thiswinnr = winnr()
+    call t:undotree.Update()
+    " focus moved
+    if winnr() != thiswinnr
+        call s:exec("norm! ".thiswinnr."\<c-w>\<c-w>")
+    endif
+endfunction
+
+function! UndotreeToggle()
+    call s:log(">>> UndotreeToggle()")
+    if !exists('w:undotree_id')
+        let w:undotree_id = 'id_'.s:getUniqueID()
+        call s:log("Unique window id assigned: ".w:undotree_id)
+    endif
+
+    if !exists('t:undotree')
+        let t:undotree = s:new(s:undotree)
+        let t:diffpanel = s:new(s:diffpanel)
+    endif
+    call t:undotree.Toggle()
+    call s:log("<<< UndotreeToggle() leave")
+endfunction
+
+function! UndotreeIsVisible()
+    return (exists('t:undotree') && t:undotree.IsVisible())
+endfunction
+
+function! UndotreeHide()
+    if UndotreeIsVisible()
+        call UndotreeToggle()
+    endif
+endfunction
+
+function! UndotreeShow()
+    if ! UndotreeIsVisible()
+        call UndotreeToggle()
+    else
+        call t:undotree.SetFocus()
+    endif
+endfunction
+
+function! UndotreeFocus()
+    if UndotreeIsVisible()
+        call t:undotree.SetFocus()
+    endif
+endfunction
+
+
+"let s:auEvents = "InsertEnter,InsertLeave,WinEnter,WinLeave,CursorMoved"
+let s:auEvents = "BufEnter,InsertLeave,CursorMoved,BufWritePost"
+augroup Undotree
+    exec "au! ".s:auEvents." * call UndotreeUpdate()"
+augroup END
+
+"=================================================
+" User commands.
+command! -n=0 -bar UndotreeToggle   :call UndotreeToggle()
+command! -n=0 -bar UndotreeHide     :call UndotreeHide()
+command! -n=0 -bar UndotreeShow     :call UndotreeShow()
+command! -n=0 -bar UndotreeFocus    :call UndotreeFocus()
+
+" vim: set et fdm=marker sts=4 sw=4:
+
+"=================================================
+" File: undotree.vim
+" Description: undotree syntax
+" Author: Ming Bai <mbbill@gmail.com>
+" License: BSD
+
+syn match UndotreeNode ' \zs\*\ze '
+syn match UndotreeNodeCurrent '\zs\*\ze.*>\d\+<'
+syn match UndotreeTimeStamp '(.*)$'
+syn match UndotreeFirstNode 'Original'
+syn match UndotreeBranch '[|/\\]'
+syn match UndotreeSeq ' \zs\d\+\ze '
+syn match UndotreeCurrent '>\d\+<'
+syn match UndotreeNext '{\d\+}'
+syn match UndotreeHead '\[\d\+]'
+syn match UndotreeHelp '^".*$' contains=UndotreeHelpKey,UndotreeHelpTitle
+syn match UndotreeHelpKey '^" \zs.\{-}\ze:' contained
+syn match UndotreeHelpTitle '===.*===' contained
+syn match UndotreeSavedSmall ' \zss\ze '
+syn match UndotreeSavedBig ' \zsS\ze '
+
+hi def link UndotreeNode Question
+hi def link UndotreeNodeCurrent Statement
+hi def link UndotreeTimeStamp Function
+hi def link UndotreeFirstNode Function
+hi def link UndotreeBranch Constant
+hi def link UndotreeSeq Comment
+hi def link UndotreeCurrent Statement
+hi def link UndotreeNext Type
+hi def link UndotreeHead Identifier
+hi def link UndotreeHelp Comment
+hi def link UndotreeHelpKey Function
+hi def link UndotreeHelpTitle Type
+hi def link UndotreeSavedSmall WarningMsg
+hi def link UndotreeSavedBig MatchParen
+
+" vim: set et fdm=marker sts=4 sw=4:
+
+" surround.vim - Surroundings
+" Author:       Tim Pope <http://tpo.pe/>
+" Version:      2.1
+" GetLatestVimScripts: 1697 1 :AutoInstall: surround.vim
+
+if exists("g:loaded_surround") || &cp || v:version < 700
+  finish
+endif
+let g:loaded_surround = 1
+
+" Input functions {{{1
+
+function! s:getchar()
+  let c = getchar()
+  if c =~ '^\d\+$'
+    let c = nr2char(c)
+  endif
+  return c
+endfunction
+
+function! s:inputtarget()
+  let c = s:getchar()
+  while c =~ '^\d\+$'
+    let c .= s:getchar()
+  endwhile
+  if c == " "
+    let c .= s:getchar()
+  endif
+  if c =~ "\<Esc>\|\<C-C>\|\0"
+    return ""
+  else
+    return c
+  endif
+endfunction
+
+function! s:inputreplacement()
+  let c = s:getchar()
+  if c == " "
+    let c .= s:getchar()
+  endif
+  if c =~ "\<Esc>" || c =~ "\<C-C>"
+    return ""
+  else
+    return c
+  endif
+endfunction
+
+function! s:beep()
+  exe "norm! \<Esc>"
+  return ""
+endfunction
+
+function! s:redraw()
+  redraw
+  return ""
+endfunction
+
+" }}}1
+
+" Wrapping functions {{{1
+
+function! s:extractbefore(str)
+  if a:str =~ '\r'
+    return matchstr(a:str,'.*\ze\r')
+  else
+    return matchstr(a:str,'.*\ze\n')
+  endif
+endfunction
+
+function! s:extractafter(str)
+  if a:str =~ '\r'
+    return matchstr(a:str,'\r\zs.*')
+  else
+    return matchstr(a:str,'\n\zs.*')
+  endif
+endfunction
+
+function! s:fixindent(str,spc)
+  let str = substitute(a:str,'\t',repeat(' ',&sw),'g')
+  let spc = substitute(a:spc,'\t',repeat(' ',&sw),'g')
+  let str = substitute(str,'\(\n\|\%^\).\@=','\1'.spc,'g')
+  if ! &et
+    let str = substitute(str,'\s\{'.&ts.'\}',"\t",'g')
+  endif
+  return str
+endfunction
+
+function! s:process(string)
+  let i = 0
+  for i in range(7)
+    let repl_{i} = ''
+    let m = matchstr(a:string,nr2char(i).'.\{-\}\ze'.nr2char(i))
+    if m != ''
+      let m = substitute(strpart(m,1),'\r.*','','')
+      let repl_{i} = input(match(m,'\w\+$') >= 0 ? m.': ' : m)
+    endif
+  endfor
+  let s = ""
+  let i = 0
+  while i < strlen(a:string)
+    let char = strpart(a:string,i,1)
+    if char2nr(char) < 8
+      let next = stridx(a:string,char,i+1)
+      if next == -1
+        let s .= char
+      else
+        let insertion = repl_{char2nr(char)}
+        let subs = strpart(a:string,i+1,next-i-1)
+        let subs = matchstr(subs,'\r.*')
+        while subs =~ '^\r.*\r'
+          let sub = matchstr(subs,"^\r\\zs[^\r]*\r[^\r]*")
+          let subs = strpart(subs,strlen(sub)+1)
+          let r = stridx(sub,"\r")
+          let insertion = substitute(insertion,strpart(sub,0,r),strpart(sub,r+1),'')
+        endwhile
+        let s .= insertion
+        let i = next
+      endif
+    else
+      let s .= char
+    endif
+    let i += 1
+  endwhile
+  return s
+endfunction
+
+function! s:wrap(string,char,type,removed,special)
+  let keeper = a:string
+  let newchar = a:char
+  let s:input = ""
+  let type = a:type
+  let linemode = type ==# 'V' ? 1 : 0
+  let before = ""
+  let after  = ""
+  if type ==# "V"
+    let initspaces = matchstr(keeper,'\%^\s*')
+  else
+    let initspaces = matchstr(getline('.'),'\%^\s*')
+  endif
+  let pairs = "b()B{}r[]a<>"
+  let extraspace = ""
+  if newchar =~ '^ '
+    let newchar = strpart(newchar,1)
+    let extraspace = ' '
+  endif
+  let idx = stridx(pairs,newchar)
+  if newchar == ' '
+    let before = ''
+    let after  = ''
+  elseif exists("b:surround_".char2nr(newchar))
+    let all    = s:process(b:surround_{char2nr(newchar)})
+    let before = s:extractbefore(all)
+    let after  =  s:extractafter(all)
+  elseif exists("g:surround_".char2nr(newchar))
+    let all    = s:process(g:surround_{char2nr(newchar)})
+    let before = s:extractbefore(all)
+    let after  =  s:extractafter(all)
+  elseif newchar ==# "p"
+    let before = "\n"
+    let after  = "\n\n"
+  elseif newchar ==# 's'
+    let before = ' '
+    let after  = ''
+  elseif newchar ==# ':'
+    let before = ':'
+    let after = ''
+  elseif newchar =~# "[tT\<C-T><]"
+    let dounmapp = 0
+    let dounmapb = 0
+    if !maparg(">","c")
+      let dounmapb = 1
+      " Hide from AsNeeded
+      exe "cn"."oremap > ><CR>"
+    endif
+    let default = ""
+    if newchar ==# "T"
+      if !exists("s:lastdel")
+        let s:lastdel = ""
+      endif
+      let default = matchstr(s:lastdel,'<\zs.\{-\}\ze>')
+    endif
+    let tag = input("<",default)
+    if dounmapb
+      silent! cunmap >
+    endif
+    let s:input = tag
+    if tag != ""
+      let keepAttributes = ( match(tag, ">$") == -1 )
+      let tag = substitute(tag,'>*$','','')
+      let attributes = ""
+      if keepAttributes
+        let attributes = matchstr(a:removed, '<[^ \t\n]\+\zs\_.\{-\}\ze>')
+      endif
+      let s:input = tag . '>'
+      if tag =~ '/$'
+        let tag = substitute(tag, '/$', '', '')
+        let before = '<'.tag.attributes.' />'
+        let after = ''
+      else
+        let before = '<'.tag.attributes.'>'
+        let after  = '</'.substitute(tag,' .*','','').'>'
+      endif
+      if newchar == "\<C-T>"
+        if type ==# "v" || type ==# "V"
+          let before .= "\n\t"
+        endif
+        if type ==# "v"
+          let after  = "\n". after
+        endif
+      endif
+    endif
+  elseif newchar ==# 'l' || newchar == '\'
+    " LaTeX
+    let env = input('\begin{')
+    if env != ""
+      let s:input = env."\<CR>"
+      let env = '{' . env
+      let env .= s:closematch(env)
+      echo '\begin'.env
+      let before = '\begin'.env
+      let after  = '\end'.matchstr(env,'[^}]*').'}'
+    endif
+  elseif newchar ==# 'f' || newchar ==# 'F'
+    let fnc = input('function: ')
+    if fnc != ""
+      let s:input = fnc."\<CR>"
+      let before = substitute(fnc,'($','','').'('
+      let after  = ')'
+      if newchar ==# 'F'
+        let before .= ' '
+        let after = ' ' . after
+      endif
+    endif
+  elseif newchar ==# "\<C-F>"
+    let fnc = input('function: ')
+    let s:input = fnc."\<CR>"
+    let before = '('.fnc.' '
+    let after = ')'
+  elseif idx >= 0
+    let spc = (idx % 3) == 1 ? " " : ""
+    let idx = idx / 3 * 3
+    let before = strpart(pairs,idx+1,1) . spc
+    let after  = spc . strpart(pairs,idx+2,1)
+  elseif newchar == "\<C-[>" || newchar == "\<C-]>"
+    let before = "{\n\t"
+    let after  = "\n}"
+  elseif newchar !~ '\a'
+    let before = newchar
+    let after  = newchar
+  else
+    let before = ''
+    let after  = ''
+  endif
+  let after  = substitute(after ,'\n','\n'.initspaces,'g')
+  if type ==# 'V' || (a:special && type ==# "v")
+    let before = substitute(before,' \+$','','')
+    let after  = substitute(after ,'^ \+','','')
+    if after !~ '^\n'
+      let after  = initspaces.after
+    endif
+    if keeper !~ '\n$' && after !~ '^\n'
+      let keeper .= "\n"
+    elseif keeper =~ '\n$' && after =~ '^\n'
+      let after = strpart(after,1)
+    endif
+    if before !~ '\n\s*$'
+      let before .= "\n"
+      if a:special
+        let before .= "\t"
+      endif
+    endif
+  endif
+  if type ==# 'V'
+    let before = initspaces.before
+  endif
+  if before =~ '\n\s*\%$'
+    if type ==# 'v'
+      let keeper = initspaces.keeper
+    endif
+    let padding = matchstr(before,'\n\zs\s\+\%$')
+    let before  = substitute(before,'\n\s\+\%$','\n','')
+    let keeper = s:fixindent(keeper,padding)
+  endif
+  if type ==# 'V'
+    let keeper = before.keeper.after
+  elseif type =~ "^\<C-V>"
+    " Really we should be iterating over the buffer
+    let repl = substitute(before,'[\\~]','\\&','g').'\1'.substitute(after,'[\\~]','\\&','g')
+    let repl = substitute(repl,'\n',' ','g')
+    let keeper = substitute(keeper."\n",'\(.\{-\}\)\(\n\)',repl.'\n','g')
+    let keeper = substitute(keeper,'\n\%$','','')
+  else
+    let keeper = before.extraspace.keeper.extraspace.after
+  endif
+  return keeper
+endfunction
+
+function! s:wrapreg(reg,char,removed,special)
+  let orig = getreg(a:reg)
+  let type = substitute(getregtype(a:reg),'\d\+$','','')
+  let new = s:wrap(orig,a:char,type,a:removed,a:special)
+  call setreg(a:reg,new,type)
+endfunction
+" }}}1
+
+function! s:insert(...) " {{{1
+  " Optional argument causes the result to appear on 3 lines, not 1
+  let linemode = a:0 ? a:1 : 0
+  let char = s:inputreplacement()
+  while char == "\<CR>" || char == "\<C-S>"
+    " TODO: use total count for additional blank lines
+    let linemode += 1
+    let char = s:inputreplacement()
+  endwhile
+  if char == ""
+    return ""
+  endif
+  let cb_save = &clipboard
+  set clipboard-=unnamed clipboard-=unnamedplus
+  let reg_save = @@
+  call setreg('"',"\r",'v')
+  call s:wrapreg('"',char,"",linemode)
+  " If line mode is used and the surrounding consists solely of a suffix,
+  " remove the initial newline.  This fits a use case of mine but is a
+  " little inconsistent.  Is there anyone that would prefer the simpler
+  " behavior of just inserting the newline?
+  if linemode && match(getreg('"'),'^\n\s*\zs.*') == 0
+    call setreg('"',matchstr(getreg('"'),'^\n\s*\zs.*'),getregtype('"'))
+  endif
+  " This can be used to append a placeholder to the end
+  if exists("g:surround_insert_tail")
+    call setreg('"',g:surround_insert_tail,"a".getregtype('"'))
+  endif
+  if col('.') >= col('$')
+    norm! ""p
+  else
+    norm! ""P
+  endif
+  if linemode
+    call s:reindent()
+  endif
+  norm! `]
+  call search('\r','bW')
+  let @@ = reg_save
+  let &clipboard = cb_save
+  return "\<Del>"
+endfunction " }}}1
+
+function! s:reindent() " {{{1
+  if exists("b:surround_indent") ? b:surround_indent : (!exists("g:surround_indent") || g:surround_indent)
+    silent norm! '[=']
+  endif
+endfunction " }}}1
+
+function! s:dosurround(...) " {{{1
+  let scount = v:count1
+  let char = (a:0 ? a:1 : s:inputtarget())
+  let spc = ""
+  if char =~ '^\d\+'
+    let scount = scount * matchstr(char,'^\d\+')
+    let char = substitute(char,'^\d\+','','')
+  endif
+  if char =~ '^ '
+    let char = strpart(char,1)
+    let spc = 1
+  endif
+  if char == 'a'
+    let char = '>'
+  endif
+  if char == 'r'
+    let char = ']'
+  endif
+  let newchar = ""
+  if a:0 > 1
+    let newchar = a:2
+    if newchar == "\<Esc>" || newchar == "\<C-C>" || newchar == ""
+      return s:beep()
+    endif
+  endif
+  let cb_save = &clipboard
+  set clipboard-=unnamed clipboard-=unnamedplus
+  let append = ""
+  let original = getreg('"')
+  let otype = getregtype('"')
+  call setreg('"',"")
+  let strcount = (scount == 1 ? "" : scount)
+  if char == '/'
+    exe 'norm! '.strcount.'[/d'.strcount.']/'
+  elseif char =~# '[[:punct:][:space:]]' && char !~# '[][(){}<>"''`]'
+    exe 'norm! T'.char
+    if getline('.')[col('.')-1] == char
+      exe 'norm! l'
+    endif
+    exe 'norm! dt'.char
+  else
+    exe 'norm! d'.strcount.'i'.char
+  endif
+  let keeper = getreg('"')
+  let okeeper = keeper " for reindent below
+  if keeper == ""
+    call setreg('"',original,otype)
+    let &clipboard = cb_save
+    return ""
+  endif
+  let oldline = getline('.')
+  let oldlnum = line('.')
+  if char ==# "p"
+    call setreg('"','','V')
+  elseif char ==# "s" || char ==# "w" || char ==# "W"
+    " Do nothing
+    call setreg('"','')
+  elseif char =~ "[\"'`]"
+    exe "norm! i \<Esc>d2i".char
+    call setreg('"',substitute(getreg('"'),' ','',''))
+  elseif char == '/'
+    norm! "_x
+    call setreg('"','/**/',"c")
+    let keeper = substitute(substitute(keeper,'^/\*\s\=','',''),'\s\=\*$','','')
+  elseif char =~# '[[:punct:][:space:]]' && char !~# '[][(){}<>]'
+    exe 'norm! F'.char
+    exe 'norm! df'.char
+  else
+    " One character backwards
+    call search('\m.', 'bW')
+    exe "norm! da".char
+  endif
+  let removed = getreg('"')
+  let rem2 = substitute(removed,'\n.*','','')
+  let oldhead = strpart(oldline,0,strlen(oldline)-strlen(rem2))
+  let oldtail = strpart(oldline,  strlen(oldline)-strlen(rem2))
+  let regtype = getregtype('"')
+  if char =~# '[\[({<T]' || spc
+    let keeper = substitute(keeper,'^\s\+','','')
+    let keeper = substitute(keeper,'\s\+$','','')
+  endif
+  if col("']") == col("$") && col('.') + 1 == col('$')
+    if oldhead =~# '^\s*$' && a:0 < 2
+      let keeper = substitute(keeper,'\%^\n'.oldhead.'\(\s*.\{-\}\)\n\s*\%$','\1','')
+    endif
+    let pcmd = "p"
+  else
+    let pcmd = "P"
+  endif
+  if line('.') + 1 < oldlnum && regtype ==# "V"
+    let pcmd = "p"
+  endif
+  call setreg('"',keeper,regtype)
+  if newchar != ""
+    let special = a:0 > 2 ? a:3 : 0
+    call s:wrapreg('"',newchar,removed,special)
+  endif
+  silent exe 'norm! ""'.pcmd.'`['
+  if removed =~ '\n' || okeeper =~ '\n' || getreg('"') =~ '\n'
+    call s:reindent()
+  endif
+  if getline('.') =~ '^\s\+$' && keeper =~ '^\s*\n'
+    silent norm! cc
+  endif
+  call setreg('"',original,otype)
+  let s:lastdel = removed
+  let &clipboard = cb_save
+  if newchar == ""
+    silent! call repeat#set("\<Plug>Dsurround".char,scount)
+  else
+    silent! call repeat#set("\<Plug>C".(a:0 > 2 && a:3 ? "S" : "s")."urround".char.newchar.s:input,scount)
+  endif
+endfunction " }}}1
+
+function! s:changesurround(...) " {{{1
+  let a = s:inputtarget()
+  if a == ""
+    return s:beep()
+  endif
+  let b = s:inputreplacement()
+  if b == ""
+    return s:beep()
+  endif
+  call s:dosurround(a,b,a:0 && a:1)
+endfunction " }}}1
+
+function! s:opfunc(type,...) " {{{1
+  let char = s:inputreplacement()
+  if char == ""
+    return s:beep()
+  endif
+  let reg = '"'
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let cb_save  = &clipboard
+  set clipboard-=unnamed clipboard-=unnamedplus
+  let reg_save = getreg(reg)
+  let reg_type = getregtype(reg)
+  let type = a:type
+  if a:type == "char"
+    silent exe 'norm! v`[o`]"'.reg.'y'
+    let type = 'v'
+  elseif a:type == "line"
+    silent exe 'norm! `[V`]"'.reg.'y'
+    let type = 'V'
+  elseif a:type ==# "v" || a:type ==# "V" || a:type ==# "\<C-V>"
+    let &selection = sel_save
+    let ve = &virtualedit
+    if !(a:0 && a:1)
+      set virtualedit=
+    endif
+    silent exe 'norm! gv"'.reg.'y'
+    let &virtualedit = ve
+  elseif a:type =~ '^\d\+$'
+    let type = 'v'
+    silent exe 'norm! ^v'.a:type.'$h"'.reg.'y'
+    if mode() ==# 'v'
+      norm! v
+      return s:beep()
+    endif
+  else
+    let &selection = sel_save
+    let &clipboard = cb_save
+    return s:beep()
+  endif
+  let keeper = getreg(reg)
+  if type ==# "v" && a:type !=# "v"
+    let append = matchstr(keeper,'\_s\@<!\s*$')
+    let keeper = substitute(keeper,'\_s\@<!\s*$','','')
+  endif
+  call setreg(reg,keeper,type)
+  call s:wrapreg(reg,char,"",a:0 && a:1)
+  if type ==# "v" && a:type !=# "v" && append != ""
+    call setreg(reg,append,"ac")
+  endif
+  silent exe 'norm! gv'.(reg == '"' ? '' : '"' . reg).'p`['
+  if type ==# 'V' || (getreg(reg) =~ '\n' && type ==# 'v')
+    call s:reindent()
+  endif
+  call setreg(reg,reg_save,reg_type)
+  let &selection = sel_save
+  let &clipboard = cb_save
+  if a:type =~ '^\d\+$'
+    silent! call repeat#set("\<Plug>Y".(a:0 && a:1 ? "S" : "s")."surround".char.s:input,a:type)
+  else
+    silent! call repeat#set("\<Plug>SurroundRepeat".char.s:input)
+  endif
+endfunction
+
+function! s:opfunc2(arg)
+  call s:opfunc(a:arg,1)
+endfunction " }}}1
+
+function! s:closematch(str) " {{{1
+  " Close an open (, {, [, or < on the command line.
+  let tail = matchstr(a:str,'.[^\[\](){}<>]*$')
+  if tail =~ '^\[.\+'
+    return "]"
+  elseif tail =~ '^(.\+'
+    return ")"
+  elseif tail =~ '^{.\+'
+    return "}"
+  elseif tail =~ '^<.+'
+    return ">"
+  else
+    return ""
+  endif
+endfunction " }}}1
+
+nnoremap <silent> <Plug>SurroundRepeat .
+nnoremap <silent> <Plug>Dsurround  :<C-U>call <SID>dosurround(<SID>inputtarget())<CR>
+nnoremap <silent> <Plug>Csurround  :<C-U>call <SID>changesurround()<CR>
+nnoremap <silent> <Plug>CSurround  :<C-U>call <SID>changesurround(1)<CR>
+nnoremap <silent> <Plug>Yssurround :<C-U>call <SID>opfunc(v:count1)<CR>
+nnoremap <silent> <Plug>YSsurround :<C-U>call <SID>opfunc2(v:count1)<CR>
+" <C-U> discards the numerical argument but there's not much we can do with it
+nnoremap <silent> <Plug>Ysurround  :<C-U>set opfunc=<SID>opfunc<CR>g@
+nnoremap <silent> <Plug>YSurround  :<C-U>set opfunc=<SID>opfunc2<CR>g@
+vnoremap <silent> <Plug>VSurround  :<C-U>call <SID>opfunc(visualmode(),visualmode() ==# 'V' ? 1 : 0)<CR>
+vnoremap <silent> <Plug>VgSurround :<C-U>call <SID>opfunc(visualmode(),visualmode() ==# 'V' ? 0 : 1)<CR>
+inoremap <silent> <Plug>Isurround  <C-R>=<SID>insert()<CR>
+inoremap <silent> <Plug>ISurround  <C-R>=<SID>insert(1)<CR>
+
+if !exists("g:surround_no_mappings") || ! g:surround_no_mappings
+  nmap ds  <Plug>Dsurround
+  nmap cs  <Plug>Csurround
+  nmap cS  <Plug>CSurround
+  nmap ys  <Plug>Ysurround
+  nmap yS  <Plug>YSurround
+  nmap yss <Plug>Yssurround
+  nmap ySs <Plug>YSsurround
+  nmap ySS <Plug>YSsurround
+  xmap S   <Plug>VSurround
+  xmap gS  <Plug>VgSurround
+  if !exists("g:surround_no_insert_mappings") || ! g:surround_no_insert_mappings
+    if !hasmapto("<Plug>Isurround","i") && "" == mapcheck("<C-S>","i")
+      imap    <C-S> <Plug>Isurround
+    endif
+    imap      <C-G>s <Plug>Isurround
+    imap      <C-G>S <Plug>ISurround
+  endif
+endif
+
+" vim:set ft=vim sw=2 sts=2 et:
+
 " Vim syntax file
 " Language:             Python
 " Current Maintainer:   Dmitry Vasiliev <dima at hlabs dot org>

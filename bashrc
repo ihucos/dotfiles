@@ -13,22 +13,10 @@ alias tasks.py="vim ~/resmio/bookoya/tasks.py"
 export TERM=xterm
 
 
-alias gc="git commit --verbose"
-alias gs="git status -s"
-alias gsf=" git diff master --name-only | cat"
-alias gco="git checkout"
-alias gcom="git checkout master"
-
-
 alias ls='ls -G'
 
 
-### EXPERIMENTAL
-export PYTHONDONTWRITEBYTECODE="1"
-###
-
 export EDITOR='vim'
-
 export LESS=" -R "
 
 PATH=$PATH:~/.bin:~/bin
@@ -59,6 +47,36 @@ alias sudo='sudo '
 gitexec(){(cd `git rev-parse --show-toplevel` && "$@")}
 alias manage.py='gitexec python manage.py'
 alias gitroot="git rev-parse --show-toplevel"
+cdd(){
+     export PWD="cd $(git rev-parse --show-toplevel)/$1"
+}
+
+
+git_prompt() {
+  # Based on: http://stackoverflow.com/a/13003854/170413
+  local branch
+  if branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null); then
+    if [[ "$branch" == "HEAD" ]]; then
+      branch='detached*'
+    fi
+    echo "$branch $(git status --porcelain 2> /dev/null | grep -c ^)"
+  else
+    echo ""
+  fi
+}
+
+set_tmux_info(){
+  tmux set -g status-right-length 64
+  # tmux set -g status-right "$(git status -s --porcelain | awk '{print}' ORS=' | ')"
+  tmux set -g status-right "$(git config --get remote.origin.url)"
+}
+
+# if git and TMUX exists
+export PROMPT_COMMAND=set_tmux_info
+
+# PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
+# PS1='\u:$(pwd)$ '
+PS1='$? \w $(git_prompt) $ '
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
@@ -69,24 +87,8 @@ alias l.='ls -d .* --color=auto'
 alias lx='ls -lXB'        # sort by extension
 # alias lt='ls -ltr'        # sort by date
 
-alias pipi="sudo pip install"
-alias pips="pip search"
-alias pipu="sudo pip uninstall"
-alias pipr="sudo pip uninstall"
-
-alias cd..="cd .."
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....='cd ../../../../'
-alias .4='cd ../../../../'
-alias .5='cd ../../../../..'
-
-alias hist='history | grep $1'
-alias path='echo -e ${PATH//:/\\n}'
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 # alias sl='sudo !!' # [s]udo [l]ast command
-alias trash='mv -t ~/.local/share/Trash/files'
 alias lscolors='for code in {0..255}; do echo -e "\e[38;05;${code}m $code: Test"; done'
 alias ipython="ipython --no-banner"
 
@@ -108,62 +110,6 @@ man() {
 
 # Make your directories and files access rights sane.
 resetperm() { chmod -R u=rwX,g=rX,o= "$@" ;}
-
-extract() {
- if [ -z "$1" ]; then
-	# display usage if no parameters given
-	echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
- else
-	if [ -f $1 ] ; then
-		# NAME=${1%.*}
-		# mkdir $NAME && cd $NAME
-		case $1 in
-		  *.tar.bz2)   tar xvjf ../$1    ;;
-		  *.tar.gz)    tar xvzf ../$1    ;;
-		  *.tar.xz)    tar xvJf ../$1    ;;
-		  *.lzma)      unlzma ../$1      ;;
-		  *.bz2)       bunzip2 ../$1     ;;
-		  *.rar)       unrar x -ad ../$1 ;;
-		  *.gz)        gunzip ../$1      ;;
-		  *.tar)       tar xvf ../$1     ;;
-		  *.tbz2)      tar xvjf ../$1    ;;
-		  *.tgz)       tar xvzf ../$1    ;;
-		  *.zip)       unzip ../$1       ;;
-		  *.Z)         uncompress ../$1  ;;
-		  *.7z)        7z x ../$1        ;;
-		  *.xz)        unxz ../$1        ;;
-		  *.exe)       cabextract ../$1  ;;
-		  *)           echo "extract: '$1' - unknown archive method" ;;
-		esac
-	else
-		echo "$1 - file does not exist"
-	fi
-fi
-}
-
-# Creates an archive from given directory
-.tar     () { tar cvf  "${1%%/}.tar"     "${1%%/}/"; }
-.tar.gz  () { tar cvzf "${1%%/}.tar.gz"  "${1%%/}/"; }
-.tar.bz2 () { tar cvjf "${1%%/}.tar.bz2" "${1%%/}/"; }
-.zip     () { zip -r   "${1%%/}.zip"    "$1" ; }
-
-alias v=vim
-alias e=vim
-alias :e=vim
-alias vimrc="vim ~/Dotfiles/vimrc"
-alias bashrc="vim ~/.bashrc"
-alias zshrc="vim ~/Dotfiles/zshrc"
-alias tmux.conf="vim ~/Dotfiles/tmux.conf"
-alias tmuxconf="vim ~/Dotfiles/tmux.conf"
-alias tmuxrc="vim ~/Dotfiles/tmux.conf"
-
-# PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
-# PS1='\u:$(pwd)$ '
-export GITAWAREPROMPT="/Users/irae/devstuff/git-aware-prompt/"
-source "${GITAWAREPROMPT}/main.sh"
-PS1="\w \[$txtcyn\]\$git_branch\[$txtred\]\$git_dirty\[$txtrst\] \[$txtwht\]\$\[$txtrst\] "
-
-
 
 # alias ssh="TERM=screen-256color ssh"
 # alias fzf="TERM=screen-256color fzf" # fzf needs a correct TERM, it's picky about it, this is a hack

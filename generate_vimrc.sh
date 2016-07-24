@@ -1,4 +1,9 @@
 
+
+# https://github.com/sheerun/vim-polyglot
+# neomake
+# editorconfig
+
 echo
 echo
 echo
@@ -21,6 +26,16 @@ hi! LineNr ctermbg=0 ctermfg=10
 let g:solarized_termcolors=16
 
 EndOfMessage
+
+
+curl https://raw.githubusercontent.com/mbbill/undotree/master/plugin/undotree.vim
+echo
+
+curl https://raw.githubusercontent.com/mbbill/undotree/master/syntax/undotree.vim
+echo
+
+curl https://raw.githubusercontent.com/tpope/vim-surround/master/plugin/surround.vim
+echo
 
 curl https://raw.githubusercontent.com/hdima/python-syntax/master/syntax/python.vim
 echo
