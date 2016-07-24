@@ -59,24 +59,15 @@ git_prompt() {
     if [[ "$branch" == "HEAD" ]]; then
       branch='detached*'
     fi
-    echo "$branch $(git status --porcelain 2> /dev/null | grep -c ^)"
+    echo "$branch $(git status --porcelain 2> /dev/null | grep -c ^) "
   else
     echo ""
   fi
 }
 
-set_tmux_info(){
-  tmux set -g status-right-length 64
-  # tmux set -g status-right "$(git status -s --porcelain | awk '{print}' ORS=' | ')"
-  tmux set -g status-right "$(git config --get remote.origin.url)"
-}
-
-# if git and TMUX exists
-export PROMPT_COMMAND=set_tmux_info
-
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
-PS1='$? \w $(git_prompt) $ '
+PS1='$? \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
