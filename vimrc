@@ -18,6 +18,8 @@ Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
 call plug#end()
 
+colo solarized
+
 
 function! Figlet(text)
   execute ":read !figlet " . a:text
