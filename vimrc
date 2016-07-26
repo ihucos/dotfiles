@@ -16,7 +16,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
-call plug#begin('~/.vim/plugged')
+call plug#end()
 
 
 function! Figlet(text)
