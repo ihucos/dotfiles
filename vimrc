@@ -5,6 +5,8 @@ set number
 set mouse=nvc
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 
+inoremap 4 <ESC>
+vnoremap 4 <ESC>
 
 hi! LineNr ctermbg=0 ctermfg=10
 

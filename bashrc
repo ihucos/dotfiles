@@ -135,3 +135,5 @@ _ptags(){
 ptags(){
   vim -t $(_ptags)
 }
+
+eval $(thefuck --alias)
