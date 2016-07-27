@@ -6,7 +6,6 @@ set mouse=nvc
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 
 inoremap 4 <ESC>
-vnoremap 4 <ESC>
 
 hi! LineNr ctermbg=0 ctermfg=10
 
@@ -23,6 +22,9 @@ Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 colo solarized
+
+autocmd! BufWritePost * Neomake
+autocmd! BufReadPost * Neomake
 
 
 function! Figlet(text)
@@ -61,6 +63,11 @@ endfunction
 function! Pep8FixVisual()
   call Pep8Fix(line("'<"), line("'>"))
 endfunction
+
+vnoremap <space>p :<C-u>call Pep8FixVisual()<cr>
+nnoremap <space>p :<C-u>call Pep8FixLine()<cr>
+
+
 
 function! PyImport(module)
   call ReadCmdInp('isort -a "'.a:module.'" -')
@@ -227,6 +234,18 @@ hi SyntasticWarningSign ctermfg=9 ctermbg=8
 hi SyntasticStyleErrorSign ctermfg=12 ctermbg=8
 hi SyntasticStyleWarningSign ctermfg=12 ctermbg=8
 " endfunction
+
+
+" hi clear CursorLine
+" augroup CLClear
+"     autocmd! ColorScheme * hi clear CursorLine
+" augroup END
+
+" hi CursorLineNR ctermfg=5
+" augroup CLNRSet
+"     autocmd! ColorScheme * hi CursorLineNR ctermfg=5
+" augroup END
+
 
 " call Update()
 " au Syntax * Update

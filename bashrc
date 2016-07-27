@@ -62,7 +62,7 @@ git_prompt() {
     if [[ "$branch" == "HEAD" ]]; then
       branch='detached*'
     fi
-    echo "$branch $(git status --porcelain 2> /dev/null | grep -c ^) "
+    echo "[$branch $(git status --porcelain 2> /dev/null | grep -c ^)] "
   else
     echo ""
   fi
@@ -71,7 +71,7 @@ git_prompt() {
 
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
-PS1='$? \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
+PS1='$?| \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
