@@ -8,12 +8,10 @@ alias views.py="vim ~/resmio/bookoya/views.py"
 alias urls.py="vim ~/resmio/bookoya/urls.py"
 alias admin.py="vim ~/resmio/bookoya/admin.py"
 alias tasks.py="vim ~/resmio/bookoya/tasks.py"
+alias settings.py="vim ~/resmio/resmioproject/settings.py"
 
 alias gs='git status -s'
 alias gc='git commit --verbose'
-
-
-export TERM=screen-256color-italic
 
 
 alias ls='ls -G'
@@ -21,6 +19,8 @@ alias ls='ls -G'
 
 export EDITOR='vim'
 export LESS=" -R "
+
+alias tmux="TERM=xterm-256color tmux"
 
 PATH=$PATH:~/.bin:~/bin
 

@@ -5,8 +5,6 @@ set number
 set mouse=nvc
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 
-inoremap 4 <ESC>
-
 hi! LineNr ctermbg=0 ctermfg=10
 
 
@@ -44,7 +42,7 @@ command! -nargs=0 Diff :w !grc diff % -
 au FileType python setlocal formatprg=autopep8\ -a\ -
 au FileType gitcommit set spell
 au FileType gitcommit hi clear SpellBad
-au FileType gitcommit hi SpellBad cterm=italic,underline
+au FileType gitcommit hi SpellBad cterm=underline
 
 function! ReadCmdInp(cmd)
   let mycol = col('.')
@@ -112,17 +110,16 @@ hi Violet  ctermfg=13 ctermbg=NONE cterm=NONE
 hi Base1   ctermfg=14 ctermbg=NONE cterm=NONE
 hi Base3   ctermfg=15 ctermbg=NONE cterm=NONE
 
-hi Small cterm=bold,italic ctermfg=NONE ctermbg=NONE
-hi SmallGrey ctermbg=8 ctermfg=10 cterm=bold,italic
+hi Small cterm=bold ctermfg=NONE ctermbg=NONE
+hi SmallGrey ctermbg=8 ctermfg=10 cterm=bold
 hi Grey ctermbg=8 ctermfg=10 cterm=NONE
-hi SmallBlue ctermfg=4 ctermbg=NONE cterm=bold,italic
+hi SmallBlue ctermfg=4 ctermbg=NONE cterm=bold
 hi link White Base3
 
 hi ColorColumn ctermbg=0
 hi CursorLineNr ctermfg=0 ctermbg=3 cterm=bold
-hi LineNr cterm=italic,bold
+hi LineNr cterm=bold
 hi MatchParen ctermbg=8 ctermfg=5
-hi Comment cterm=italic
 hi NonText ctermbg=0 ctermbg=0
 hi SpecialKey ctermbg=NONE ctermfg=10
 hi NonText ctermbg=8
@@ -130,7 +127,7 @@ hi Folded ctermbg=8 cterm=NONE ctermbg=8 ctermfg=14
 hi Visual ctermfg=12 ctermbg=NONE
 hi ModeMsg ctermbg=3 ctermfg=8
 hi Todo ctermfg=3
-hi SpellBad cterm=bold,italic,undercurl
+hi SpellBad cterm=bold,undercurl
 
 " hi PythonImport ctermbg=NONE ctermfg=3 cterm=NONE
 " hi link pythonClassParameters pythonClass
@@ -172,9 +169,9 @@ hi link pythonRun Grey
 hi link PythonDecorator Magenta
 hi link PythonDottedName Magenta
 
-hi htmlLink ctermfg=4 cterm=italic
+hi htmlLink ctermfg=4
 hi link htmlSpecialChar Base2
-" hi htmlArg ctermfg=14 cterm=italic,bold
+" hi htmlArg ctermfg=14 cterm=bold
 hi link htmlH1 White
 hi link htmlH2 White
 hi link htmlH3 White
@@ -184,19 +181,19 @@ hi link htmlH6 White
 hi htmlTagName ctermfg=6
 hi htmlSpecialTagName ctermfg=9
 hi htmlTagN ctermfg=6
-hi htmlTag ctermfg=6 cterm=bold,italic
-hi htmlEndTag ctermfg=6 cterm=bold,italic
-hi htmlComment cterm=italic ctermfg=10
-hi htmlCommentPart cterm=italic ctermfg=10
+hi htmlTag ctermfg=6 cterm=bold
+hi htmlEndTag ctermfg=6 cterm=bold
+hi htmlComment  ctermfg=10
+hi htmlCommentPart  ctermfg=10
 
 hi jsGlobalObjects ctermfg=7
 hi jsFunction ctermfg=4
 hi jsStorageClass ctermfg=4
 
-hi djangoTagBlock ctermfg=2 cterm=bold,italic
-hi djangoStatement ctermfg=2 cterm=bold,italic
-hi djangoArgument ctermfg=2 cterm=bold,italic
-hi djangoFilter ctermfg=2 cterm=bold,italic
+hi djangoTagBlock ctermfg=2 cterm=bold
+hi djangoStatement ctermfg=2 cterm=bold
+hi djangoArgument ctermfg=2 cterm=bold
+hi djangoFilter ctermfg=2 cterm=bold
 hi djangoVarBlock ctermfg=2
 
 hi link UndotreeTimeStamp Normal

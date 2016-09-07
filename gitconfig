@@ -23,3 +23,5 @@ exec = "!exec "
 	clean = git-lfs clean %f
 [core]
 	excludesfile = /Users/irae/.gitignore
+[color]
+	diff = always
