@@ -12,6 +12,8 @@ alias settings.py="vim ~/resmio/resmioproject/settings.py"
 
 alias gs='git status -s'
 alias gc='git commit --verbose'
+alias gb='git branch --sort=-committerdate | head -n 5'
+
 
 
 alias ls='ls -G'

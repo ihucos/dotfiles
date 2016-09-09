@@ -4,6 +4,7 @@ set t_Co=16
 set number
 set mouse=nvc
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
+set clipboard=unnamed
 
 hi! LineNr ctermbg=0 ctermfg=10
 
