@@ -12,8 +12,25 @@ alias settings.py="vim ~/resmio/resmioproject/settings.py"
 
 alias gs='git status -s'
 alias gc='git commit --verbose'
-alias gb='git branch --sort=-committerdate | head -n 5'
+alias gb='git branch --sort=-committerdate | head -n 20'
 
+_e(){
+  echo "$ $@"
+  $@
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
+}
+
+gpr(){
+    (
+    _e git checkout master
+    _e git checkout -b $1
+    _e git commit -a --verbose
+    _e git push --set-upstream origin $1
+    _e open "https://github.com/resmio/resmio/compare/$1?expand=1"
+    )
+}
 
 
 alias ls='ls -G'
@@ -73,7 +90,7 @@ git_prompt() {
 
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
-PS1='$?| \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
+PS1='$? \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
