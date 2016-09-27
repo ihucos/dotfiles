@@ -23,5 +23,10 @@ exec = "!exec "
 	clean = git-lfs clean %f
 [core]
 	excludesfile = /Users/irae/.gitignore
+	editor = /usr/local/bin/vim
 [color]
 	diff = always
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = 0

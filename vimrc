@@ -18,6 +18,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
+Plug 'python-rope/ropevim'
 call plug#end()
 
 colo solarized

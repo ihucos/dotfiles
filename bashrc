@@ -13,6 +13,9 @@ alias settings.py="vim ~/resmio/resmioproject/settings.py"
 alias gs='git status -s'
 alias gc='git commit --verbose'
 alias gb='git branch --sort=-committerdate | head -n 20'
+gsb() {
+  git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/heads/ | fzf --ansi | awk '{print $1;}' | xargs git checkout
+}
 
 _e(){
   echo "$ $@"
