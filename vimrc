@@ -300,3 +300,13 @@ function! StatusLineStatus()
   let stat = expand('%:t') . ':' . line(".")
   return stat
 endfunction
+
+
+
+
+
+
+
+" for Resmio
+set makeprg=pre-commit\ run\ --all-files
+set errorformat=%E%f:%l:\ could\ not\ compile,%-Z%p^,%E%f:%l:%c:\ %m,%E%f:%l:\ %m,%-G%.%#
