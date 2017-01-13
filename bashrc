@@ -10,7 +10,18 @@ alias admin.py="vim ~/resmio/bookoya/admin.py"
 alias tasks.py="vim ~/resmio/bookoya/tasks.py"
 alias settings.py="vim ~/resmio/resmioproject/settings.py"
 
-alias gs='git status -s'
+fix() {
+  vim +"setlocal makeprg=pre-commit\ run\ flake8\ --all-files" +"make"
+}
+
+# alias gs='git status -s'
+gs(){
+  git diff --stat | cat
+  echo ""
+  echo ""
+  git status -s
+}
+
 alias gc='git commit --verbose'
 alias gb='git branch --sort=-committerdate | head -n 20'
 gsb() {
@@ -34,6 +45,17 @@ gpr(){
     _e open "https://github.com/resmio/resmio/compare/$1?expand=1"
     )
 }
+
+# FIXME: if tmux exists
+
+
+# if [ -n "${TMUX+1}" ]; then
+#   echo 'hi'
+# PROMPT_COMMAND='tmux set -g status-right "#(cd #{pane_current_path} && git rev-parse --abbrev-ref HEAD) | $(git status --porcelain 2> /dev/null | grep -c ^) | $? "'
+# # fi
+
+tmux set status-right-length 120
+PROMPT_COMMAND='((tmux set -g status-right "#(cd #{pane_current_path} && git rev-parse --abbrev-ref HEAD) | #(cd #{pane_current_path} && git status --porcelain 2> /dev/null | grep -c ^) | $? ") & )'
 
 
 alias ls='ls -G'
@@ -77,23 +99,9 @@ cdd(){
 }
 
 
-git_prompt() {
-  # Based on: http://stackoverflow.com/a/13003854/170413
-  local branch
-  if branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null); then
-    if [[ "$branch" == "HEAD" ]]; then
-      branch='detached*'
-    fi
-    echo "[$branch $(git status --porcelain 2> /dev/null | grep -c ^)] "
-  else
-    echo ""
-  fi
-}
-
-
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
-PS1='$? \w $(git_prompt)'"\[\033[38;5;15m\]$\[\033[0m\] "
+PS1='\w '"\[\033[38;5;15m\]$\[\033[0m\] "
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
@@ -143,7 +151,7 @@ plines(){
 }
 
 _pfiles(){
-  gitexec ag  -l | fzf --tac
+  gitexec ag  -l 2> /dev/null | fzf --tac
   # ag  "^.{1,}$" | grep --color -E '[^:]*:' | fzf --tac
 }
 pfiles(){

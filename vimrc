@@ -4,6 +4,8 @@ set t_Co=16
 set number
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 set clipboard=unnamed
+set background=dark
+
 
 hi! LineNr ctermbg=0 ctermfg=10
 
@@ -17,7 +19,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
-Plug 'python-rope/ropevim'
+Plug 'majutsushi/tagbar'
 call plug#end()
 
 colo solarized
@@ -38,7 +40,7 @@ command! -nargs=1 Figlet call Figlet(<f-args>)
 
 " TODO: move this to bashrc
 
-command! -nargs=0 Diff :w !grc diff % -
+command! -nargs=0 Diff :w !diff % -
 
 au FileType python setlocal formatprg=autopep8\ -a\ -
 au FileType gitcommit set spell
@@ -302,10 +304,9 @@ endfunction
 
 
 
-
-
-
+set grepprg=ag\ --nogroup\ --nocolor
 
 " for Resmio
-set makeprg=pre-commit\ run\ --all-files
+au FileType * setlocal makeprg=pre-commit\ run\ flake8\ --all-files
+" set makeprg=pre-commit\ run\ --all-files
 set errorformat=%E%f:%l:\ could\ not\ compile,%-Z%p^,%E%f:%l:%c:\ %m,%E%f:%l:\ %m,%-G%.%#

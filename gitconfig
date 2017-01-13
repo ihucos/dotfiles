@@ -22,7 +22,7 @@ exec = "!exec "
 	required = true
 	clean = git-lfs clean %f
 [core]
-	excludesfile = /Users/irae/.gitignore
+	excludesfile = /Users/iraehueckcosta/.gitignore
 	editor = /usr/local/bin/vim
 [color]
 	diff = always
