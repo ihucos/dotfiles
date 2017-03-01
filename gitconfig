@@ -30,3 +30,6 @@ exec = "!exec "
 	tool = vimdiff
 [difftool]
 	prompt = 0
+[github]
+	user = ihucos
+	token = 38f65378035576d54690f47cfd356a1e6e5c6ce1

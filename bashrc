@@ -2,17 +2,11 @@
 # Resmio stuff
 # ============
 
-alias api.py="vim ~/resmio/bookoya/api.py"
-alias models.py="vim ~/resmio/bookoya/models.py"
-alias views.py="vim ~/resmio/bookoya/views.py"
-alias urls.py="vim ~/resmio/bookoya/urls.py"
-alias admin.py="vim ~/resmio/bookoya/admin.py"
-alias tasks.py="vim ~/resmio/bookoya/tasks.py"
-alias settings.py="vim ~/resmio/resmioproject/settings.py"
-
 fix() {
   vim +"setlocal makeprg=pre-commit\ run\ flake8\ --all-files" +"make"
 }
+
+alias fiximports="autoflake --in-place --remove-all-unused-imports "
 
 # alias gs='git status -s'
 gs(){
@@ -44,6 +38,10 @@ gpr(){
     _e git push --set-upstream origin $1
     _e open "https://github.com/resmio/resmio/compare/$1?expand=1"
     )
+}
+
+vimsearch() {
+  vim +:"grep $1" +:copen
 }
 
 # FIXME: if tmux exists

@@ -20,6 +20,8 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
+Plug 'python-rope/ropevim'
+Plug 'ervandew/supertab'
 call plug#end()
 
 colo solarized
@@ -27,6 +29,9 @@ colo solarized
 autocmd! BufWritePost * Neomake
 autocmd! BufReadPost * Neomake
 
+autocmd FileType python setlocal omnifunc=RopeCompleteFunc
+let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
+let ropevim_guess_project=1
 
 function! Figlet(text)
   execute ":read !figlet " . a:text
@@ -69,15 +74,16 @@ vnoremap <space>p :<C-u>call Pep8FixVisual()<cr>
 nnoremap <space>p :<C-u>call Pep8FixLine()<cr>
 
 
-
 function! PyImport(module)
   call ReadCmdInp('isort -a "'.a:module.'" -')
 endfunction
 command! -nargs=1 PyImport silent call PyImport(<f-args>)
-function! PyImportRemove(module)
-  call ReadCmdInp('isort -r "'.a:module.'" -')
-endfunction
-command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
+" function! PyAutoflake()
+"   call ReadCmdInp("autoflake --remove-all-unused-imports " .expand('%:p'))
+" endfunction
+" command! -nargs=0 PyAutoflake silent call PyAutoflake(<f-args>)
+
+
 
 
 
@@ -304,7 +310,7 @@ endfunction
 
 
 
-set grepprg=ag\ --nogroup\ --nocolor
+set grepprg=ag\ --nogroup\ --nocolor\ --python
 
 " for Resmio
 au FileType * setlocal makeprg=pre-commit\ run\ flake8\ --all-files
