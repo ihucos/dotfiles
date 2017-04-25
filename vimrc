@@ -3,9 +3,9 @@ syntax on
 set t_Co=16
 set number
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
+set noswapfile
 set clipboard=unnamed
 set background=dark
-
 
 hi! LineNr ctermbg=0 ctermfg=10
 
@@ -78,10 +78,10 @@ function! PyImport(module)
   call ReadCmdInp('isort -a "'.a:module.'" -')
 endfunction
 command! -nargs=1 PyImport silent call PyImport(<f-args>)
-" function! PyAutoflake()
-"   call ReadCmdInp("autoflake --remove-all-unused-imports " .expand('%:p'))
-" endfunction
-" command! -nargs=0 PyAutoflake silent call PyAutoflake(<f-args>)
+function! PyImportRemove(module)
+  call ReadCmdInp('isort -r "'.a:module.'" -')
+endfunction
+command! -nargs=1 PyImportRemove silent call PyImportRemove(<f-args>)
 
 
 
@@ -310,7 +310,7 @@ endfunction
 
 
 
-set grepprg=ag\ --nogroup\ --nocolor\ --python
+set grepprg=ag\ --nogroup\ --nocolor\ --html
 
 " for Resmio
 au FileType * setlocal makeprg=pre-commit\ run\ flake8\ --all-files

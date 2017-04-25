@@ -22,6 +22,10 @@ gsb() {
   git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/heads/ | fzf --ansi | awk '{print $1;}' | xargs git checkout
 }
 
+gsba() {
+  git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/remotes/  | fzf --ansi | awk '{print $1;}'  |  awk -F '/' '{print $2;}' | xargs git checkout
+}
+
 _e(){
   echo "$ $@"
   $@
