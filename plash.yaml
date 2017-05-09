@@ -1,0 +1,37 @@
+
+- 
+  - apt
+  - cowsay
+  - curl
+  - git
+  - python3
+  - silversearcher-ag
+  - vim
+  - wget
+  - ssh
+  - man
+
+
+- [layer]
+# install fzf
+- 
+  - eval
+  - wget https://github.com/junegunn/fzf-bin/releases/download/0.16.7/fzf-0.16.7-linux_amd64.tgz -O /tmp/fzf.tgz
+  - tar -xzf /tmp/fzf.tgz -C /tmp
+  - cp /tmp/fzf /usr/local/bin/
+  - rm /tmp/fzf /tmp/fzf.tgz
+- [layer]
+# install docker
+
+
+- [import-prefixed-envs, HOME, USER, PATH]
+- 
+  - eval
+  - ln -s $HOST_HOME/.ssh/ /root/
+  - echo "ssh -q -t $HOST_USER@192.168.65.1 \"cd \$PWD && PATH=$HOST_PATH \$@\"" > /usr/local/bin/hostcmd
+  - chmod u+x /usr/local/bin/hostcmd
+
+- [layer]
+
+
+
