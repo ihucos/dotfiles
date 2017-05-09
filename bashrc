@@ -1,6 +1,5 @@
-# ============
-# Resmio stuff
-# ============
+
+
 
 fix() {
   vim +"setlocal makeprg=pre-commit\ run\ flake8\ --all-files" +"make"
@@ -17,7 +16,6 @@ gs(){
 }
 
 alias gc='git commit --verbose'
-alias gb='git branch --sort=-committerdate | head -n 20'
 gsb() {
   git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/heads/ | fzf --ansi | awk '{print $1;}' | xargs git checkout
 }
@@ -50,15 +48,24 @@ vimsearch() {
 
 # FIXME: if tmux exists
 
+cdl(){
+  [ -s /tmp/lastpwd ] && cd $(cat /tmp/lastpwd) &> /dev/null # access rights?
+}
+cdl
+PROMPT_COMMAND='echo $PWD > /tmp/lastpwd'
 
 # if [ -n "${TMUX+1}" ]; then
 #   echo 'hi'
 # PROMPT_COMMAND='tmux set -g status-right "#(cd #{pane_current_path} && git rev-parse --abbrev-ref HEAD) | $(git status --porcelain 2> /dev/null | grep -c ^) | $? "'
 # # fi
 
-tmux set status-right-length 120
-PROMPT_COMMAND='((tmux set -g status-right "#(cd #{pane_current_path} && git rev-parse --abbrev-ref HEAD) | #(cd #{pane_current_path} && git status --porcelain 2> /dev/null | grep -c ^) | $? ") & )'
-
+command_exists () {
+    type "$1" &> /dev/null ;
+}
+if command_exists mvim ; then
+  tmux set status-right-length 120
+  PROMPT_COMMAND='((tmux set -g status-right "#(cd #{pane_current_path} && git rev-parse --abbrev-ref HEAD) | #(cd #{pane_current_path} && git status --porcelain 2> /dev/null | grep -c ^) | $? ") & )'
+fi
 
 alias ls='ls -G'
 
@@ -70,8 +77,10 @@ alias tmux="TERM=xterm-256color tmux"
 
 PATH=$PATH:~/.bin:~/bin
 
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+if [ -z "$PLASH_ENV" ]; then
+  export LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -104,6 +113,9 @@ cdd(){
 # PS1='\[\033[0;32;40m\]\u:$(pwd) $\e[0m '
 # PS1='\u:$(pwd)$ '
 PS1='\w '"\[\033[38;5;15m\]$\[\033[0m\] "
+
+
+[ -n "$PLASH_ENV" ] && PS1="($PLASH_ENV) $PS1"
 
 
 # alias ls='ls --group-directories-first --sort=extension --color=auto'
@@ -168,4 +180,6 @@ ptags(){
   vim -t $(_ptags)
 }
 
-eval $(thefuck --alias)
+if command_exists thefuck; then
+  eval $(thefuck --alias)
+fi

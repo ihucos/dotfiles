@@ -239,3 +239,5 @@ pall(){
    ag . | grep --color -E '[^:]*:' |  _prefix "L" ;
  } | fzf --extended-exact --query=";;f ")
 }
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
