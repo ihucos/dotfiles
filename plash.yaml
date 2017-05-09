@@ -10,7 +10,7 @@
   - wget
   - ssh
   - man
-
+  - tig
 
 - [layer]
 # install fzf
@@ -22,8 +22,6 @@
   - rm /tmp/fzf /tmp/fzf.tgz
 - [layer]
 # install docker
-
-
 - [import-prefixed-envs, HOME, USER, PATH]
 - 
   - eval
@@ -33,5 +31,22 @@
 
 - [layer]
 
+- 
+  - eval
+  - echo 'hostcmd plash $@'  > /usr/local/bin/plash
+  - chmod u+x /usr/local/bin/plash
 
 
+  - echo 'hostcmd docker $@'  > /usr/local/bin/docker
+  - chmod u+x /usr/local/bin/docker
+
+- [layer]
+
+- [layer]
+
+- 
+  - eval
+  - curl -L https://github.com/docker/compose/releases/download/1.12.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+  - chmod u+x /usr/local/bin/docker-compose
+
+- [layer]

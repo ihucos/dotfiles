@@ -1,5 +1,10 @@
 
 
+if [ -n "$PLASH_ENV" ]; then
+  alias git="hostcmd git"
+  # alias plash="hostcmd palsh"
+  # alias docker="hostcmd docker"
+fi
 
 fix() {
   vim +"setlocal makeprg=pre-commit\ run\ flake8\ --all-files" +"make"
