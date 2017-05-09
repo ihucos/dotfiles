@@ -85,6 +85,9 @@ PATH=$PATH:~/.bin:~/bin
 if [ -z "$PLASH_ENV" ]; then
   export LANG=en_US.UTF-8
   export LC_ALL=en_US.UTF-8
+else
+  export LANG=C.UTF-8
+  export LC_ALL=C.UTF-8
 fi
 
 # make less more friendly for non-text input files, see lesspipe(1)

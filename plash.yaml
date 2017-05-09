@@ -4,13 +4,22 @@
   - cowsay
   - curl
   - git
+  - man
   - python3
   - silversearcher-ag
+  - ssh
+  - tig
+  - tmux
   - vim
   - wget
-  - ssh
-  - man
-  - tig
+
+- [layer]
+
+- [
+  pip,
+  isort,
+  autopep8,
+]
 
 - [layer]
 # install fzf
