@@ -1,15 +1,8 @@
+Notes to install in new system:
 
-
-notes to install in new system:
-
-make this:
-http://stackoverflow.com/questions/13385690/how-to-use-git-with-gnome-keyring-integration
-
-in vim :VimProcInstall
-
-Install with amke: http://www.gnu.org/software/global/download.html
-
-install git-extras for extra git commands: apt-get install git-extras
-
-sudo wget https://github.com/muennich/urxvt-perls/raw/master/clipboard -O /usr/lib/urxvt/perl/clipboard 
-
+clone to ~/dotfiles
+then:
+$ stow git
+$ stow tmux
+$ stow bash
+$ stow vim
