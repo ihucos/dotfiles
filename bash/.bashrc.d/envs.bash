@@ -1,0 +1,8 @@
+PROMPT_DIRTRIM=3
+CDPATH=.:~
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
+EDITOR='vim'
+LESS=" -R "
+GREP_COLOR='43;30'
+PATH=$PATH:~/.bin:~/bin
