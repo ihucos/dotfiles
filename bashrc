@@ -1,7 +1,16 @@
 
+PROMPT_DIRTRIM=3
+CDPATH=.:~
 
+
+docker-attach-last(){
+  docker attach $(docker ps --format '{{.ID}}' | head -1)
+}
+
+alias tmux="TERM=xterm-256color tmux"
 if [ -n "$PLASH_ENV" ]; then
-  alias git="hostcmd git"
+  # alias git="hostcmd git"
+  alias tmux="TERM=xterm-256color tmux -S /tmp/mytmuxsock"
   # alias plash="hostcmd palsh"
   # alias docker="hostcmd docker"
 fi
@@ -14,19 +23,22 @@ alias fiximports="autoflake --in-place --remove-all-unused-imports "
 
 # alias gs='git status -s'
 gs(){
-  git diff --stat | cat
-  echo ""
-  echo ""
   git status -s
+  echo ""
+  if [ -n "$PLASH_ENV" ]; then
+    hostcmd "git diff --stat | cat"
+  else
+    git diff --stat | cat
+  fi
 }
 
 alias gc='git commit --verbose'
 gsb() {
-  git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/heads/ | fzf --ansi | awk '{print $1;}' | xargs git checkout
+  env git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/heads/ | fzf --ansi | awk '{print $1;}' | xargs git checkout
 }
 
 gsba() {
-  git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/remotes/  | fzf --ansi | awk '{print $1;}'  |  awk -F '/' '{print $2;}' | xargs git checkout
+  env git for-each-ref --format='%(color:blue)%(refname:short) %(color:10)%(committerdate:relative)  -- %(contents:subject)%(color:reset)' --sort -committerdate refs/remotes/  | fzf --ansi | awk '{print $1;}'  |  awk -F '/' '{print $2;}' | xargs git checkout
 }
 
 _e(){
@@ -53,11 +65,13 @@ vimsearch() {
 
 # FIXME: if tmux exists
 
-cdl(){
-  [ -s /tmp/lastpwd ] && cd $(cat /tmp/lastpwd) &> /dev/null # access rights?
-}
-cdl
-PROMPT_COMMAND='echo $PWD > /tmp/lastpwd'
+# cdl(){
+#   [ -s /tmp/lastpwd ] && cd $(cat /tmp/lastpwd) &> /dev/null # access rights?
+# }
+# cdl
+# PROMPT_COMMAND='echo $PWD > /tmp/lastpwd'
+# PROMPT_COMMAND='cp $SCRIPT /tmp/last && > $SCRIPT'
+
 
 # if [ -n "${TMUX+1}" ]; then
 #   echo 'hi'
@@ -77,8 +91,6 @@ alias ls='ls -G'
 
 export EDITOR='vim'
 export LESS=" -R "
-
-alias tmux="TERM=xterm-256color tmux"
 
 PATH=$PATH:~/.bin:~/bin
 
@@ -191,3 +203,21 @@ ptags(){
 if command_exists thefuck; then
   eval $(thefuck --alias)
 fi
+
+
+# [[ -z "$SCRIPT" ]] && exec script -qF /tmp/script-$$
+
+
+# Eternal bash history.
+# ---------------------
+# Undocumented feature which sets the size to "unlimited".
+# http://stackoverflow.com/questions/9457233/unlimited-bash-history
+export HISTFILESIZE=
+export HISTSIZE=
+export HISTTIMEFORMAT="[%F %T] "
+# Change the file location because certain bash sessions truncate .bash_history file upon close.
+# http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
+export HISTFILE=~/.bash_eternal_history
+# Force prompt to write history after every command.
+# http://superuser.com/questions/20900/bash-history-loss
+PROMPT_COMMAND="history -a; history -r  $PROMPT_COMMAND"

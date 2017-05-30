@@ -4,7 +4,7 @@ set t_Co=16
 set number
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 set noswapfile
-set clipboard=unnamed
+" set clipboard=unnamed
 set background=dark
 
 hi! LineNr ctermbg=0 ctermfg=10

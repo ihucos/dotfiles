@@ -1,25 +1,31 @@
 
 - 
   - apt
+  - command-not-found
   - cowsay
+  - ctags
   - curl
   - git
   - man
   - python3
   - silversearcher-ag
   - ssh
+  - strace
   - tig
   - tmux
   - vim
   - wget
+  - python3-pip
 
-- [layer]
+-
+  - layer
 
-- [
-  pip,
-  isort,
-  autopep8,
-]
+-
+  - pip
+  - isort
+  - autopep8
+  # - pre-commit
+  - thefuck
 
 - [layer]
 # install fzf
@@ -34,7 +40,7 @@
 - [import-prefixed-envs, HOME, USER, PATH]
 - 
   - eval
-  - ln -s $HOST_HOME/.ssh/ /root/
+  - ln -s $HOST_HOME/.ssh/ /root/ || true
   - echo "ssh -q -t $HOST_USER@192.168.65.1 \"cd \$PWD && PATH=$HOST_PATH \$@\"" > /usr/local/bin/hostcmd
   - chmod u+x /usr/local/bin/hostcmd
 
