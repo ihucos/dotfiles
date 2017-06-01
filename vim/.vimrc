@@ -4,7 +4,7 @@ set t_Co=16
 set number
 set tags=.git/tags; " see http://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
 set noswapfile
-" set clipboard=unnamed
+set clipboard=unnamed
 set background=dark
 
 hi! LineNr ctermbg=0 ctermfg=10
@@ -20,8 +20,7 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
 Plug 'majutsushi/tagbar'
-Plug 'python-rope/ropevim'
-Plug 'ervandew/supertab'
+" Plug 'ervandew/supertab'
 call plug#end()
 
 colo solarized
@@ -70,8 +69,11 @@ function! Pep8FixVisual()
   call Pep8Fix(line("'<"), line("'>"))
 endfunction
 
-vnoremap <space>p :<C-u>call Pep8FixVisual()<cr>
-nnoremap <space>p :<C-u>call Pep8FixLine()<cr>
+" vnoremap <space>p :<C-u>call Pep8FixVisual()<cr>
+" nnoremap <space>p :<C-u>call Pep8FixLine()<cr>
+" vnoremap 
+" nnoremap
+
 
 
 function! PyImport(module)

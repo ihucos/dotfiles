@@ -16,6 +16,7 @@ _prompt_git(){
 	:
 
 }
+
 # prompt(){
 # 	[[ $(git rev-parse --is-inside-work-tree) == true ]] ||
 # 		return
