@@ -4,9 +4,9 @@ _prompt_exit_status(){
 
 	EXIT=$?
 	if [ $EXIT != 0 ]; then
-		tput setaf 1
+		# tput setaf 1
 		printf "$EXIT"
-		tput sgr0
+		# tput sgr0
 	fi
 }
 
