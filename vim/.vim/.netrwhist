@@ -1,7 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =5
+let g:netrw_dirhist_cnt =6
 let g:netrw_dirhist_1='/home/resu/dotfiles/bash/.bashrc.d'
 let g:netrw_dirhist_2='/Users/iraehueckcosta/plash/plash'
 let g:netrw_dirhist_3='/Users/iraehueckcosta/plash/bin'
 let g:netrw_dirhist_4='/Users/iraehueckcosta/plash/plash'
 let g:netrw_dirhist_5='/Users/iraehueckcosta/plash/devscripts'
+let g:netrw_dirhist_6='/Users/iraehueckcosta/dotfiles'

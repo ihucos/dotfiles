@@ -1,4 +1,4 @@
-alias tmux="TERM=xterm-256color tmux"
+# alias tmux="TERM=xterm-256color tmux"
 
 if [ -x /usr/bin/dircolors ]; then
 	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
