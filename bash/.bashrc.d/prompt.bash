@@ -1,4 +1,10 @@
-PS1='$(_prompt_exit_status) \w '"\[\033[38;5;15m\]$\[\033[0m\] \$(_prompt_git)"
+PS1='$(__prompt_plash)$(_prompt_exit_status) \w '"\[\033[38;5;15m\]$\[\033[0m\] \$(_prompt_git)"
+
+__prompt_plash(){
+	exit=$?
+	test -f /plashenv && printf "($(cat /plashenv 2>/dev/null || true))"
+	exit $exit
+}
 
 _prompt_exit_status(){
 
