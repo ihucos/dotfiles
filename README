@@ -2,7 +2,5 @@ Notes to install in new system:
 
 clone to ~/dotfiles
 then:
-$ stow git
-$ stow tmux
 $ stow bash
-$ stow vim
+$ stow nvim
