@@ -70,17 +70,14 @@ function! RunFloat0(cmd)
     exec "FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.95 --height=0.90 --autoclose=0 bash -lc '".a:cmd."'"
 endfunction
 
-function! RunFloatBig(cmd)
-    exec "FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.95 --height=0.95 --autoclose=1 bash -lc '".a:cmd."'"
-endfunction
-
 command! -nargs=1 RunFloat call RunFloat(<f-args>)
 command! -nargs=1 RunFloat2 call RunFloat2(<f-args>)
 command! -nargs=1 RunFloat0 call RunFloat0(<f-args>)
-command! -nargs=1 RunFloatBig call RunFloatBig(<f-args>)
 
 
-execute $VIM_EVAL
+
+" some more mappings
+execute system('bash -lc "printenv VIM_EVAL"')
 
 
 
@@ -92,11 +89,6 @@ noremap <leader>o :w<CR>
 
 noremap <leader>x :tabnew<CR>:terminal<CR>A
 noremap <leader>c :tabnew<CR>:terminal<CR>A
-noremap <leader>gd :!git diff<CR>
-noremap <leader>gs :!git status -s<CR>
-noremap <leader>gc :!git commit -am ""<left>
-noremap <leader>gp :!git push<CR>
-noremap <leader>gg :!git<space>
 noremap <leader>v :source ~/.config/nvim/init.vim<CR>
 noremap <leader>w <C-w>
 noremap <leader>tt :let @a=expand("%:p")<CR>:tabnew<CR>:terminal<CR>ihans test --tb=native<space><C-\><C-N>"api

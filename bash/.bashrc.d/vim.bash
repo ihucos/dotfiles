@@ -119,20 +119,34 @@ function map {
 	vimadd "map $1 $2"
 }
 
-map '<leader>ft' ':RunFloat findtags ^<c-r>=expand("<cword>")<cr>$<CR>'
-map '<leader>fl' ':RunFloat findlines <c-r>=expand("<cword>")<cr><CR>'
-map '<leader>fr' ':RunFloat findrecent<CR>'
-map '<leader>fs' ':RunFloat findstatus<CR>'
-map '<leader>fd' ':RunFloat finddirectory<CR>'
-map '<leader>fb' ':RunFloat findbranch<CR>'
-map '<leader>ff' ':RunFloat findfiles<CR>'
+floatbase="FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.8 --height=0.90"
+
+function mapfloat {
+	vimadd  'map <leader>'"$1"' :'"$floatbase"' --autoclose=1 bash -lc '"$2"' <c-r>=expand("<cword>")<cr><cr>'
+}
+
+function mapfloat0 {
+	vimadd  'map <leader>'"$1"' :'"$floatbase"' --autoclose=0 bash -lc '"$2"' <c-r>=expand("<cword>")<cr><cr>'
+}
+
+mapfloat ff findfiles
+mapfloat fr findrecent
+mapfloat fs findstatus
+mapfloat fd finddirectory
+mapfloat fb findbranch
+mapfloat fl findlines
+mapfloat ft findtags
+mapfloat0 fa findalias
+mapfloat0 tr testrecent
+
+map '<leader>tf' ':'"$floatbase"' hans test --tb=native <C-r>=expand('"'"'%'"'"')<CR><CR>'
 
 
-map '<leader>fc' ':RunFloat2 findcmd<CR>'
-map '<leader>fa' ':RunFloat0 findalias<CR>'
+mapfloat l lazygit
+mapfloat s bash
+mapfloat gd "git diff"
 
-map '<leader>l' ':RunFloat lazygit<CR>'
+
+
 map '<leader>j' ':!bash -lc openjira<CR>'
-map '<leader>s' ':RunFloat bash<CR>'
-map '<leader>tr' ':RunFloat0 bash -lc testrecent<CR><C-\><C-n>'
-map '<leader>tf' ':RunFloat0 hans test --tb=native <C-r>=expand('"'"'%'"'"')<CR><CR>'
+
