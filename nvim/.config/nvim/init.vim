@@ -80,21 +80,11 @@ command! -nargs=1 RunFloat0 call RunFloat0(<f-args>)
 command! -nargs=1 RunFloatBig call RunFloatBig(<f-args>)
 
 
-nnoremap <leader>l :Buffers<CR>
+execute $VIM_EVAL
 
-nnoremap <leader>ft :RunFloat findtags ^<c-r>=expand("<cword>")<cr>$<CR>
-nnoremap <leader>fl :RunFloat findlines <c-r>=expand("<cword>")<cr><CR>
-nnoremap <leader>ff :RunFloat findfiles<CR>
-nnoremap <leader>fr :RunFloat findrecent<CR>
-nnoremap <leader>fs :RunFloat findstatus<CR>
-nnoremap <leader>fd :RunFloat finddirectory<CR>
-nnoremap <leader>fb :RunFloat findbranch<CR>
-nnoremap <leader>fc :RunFloat2 findcmd<CR>
-nnoremap <leader>fa :RunFloat0 findalias<CR>
 
-nnoremap <leader>l :RunFloatBig lazygit<CR>
-nnoremap <leader>j :!bash -lc openjira<CR>
-nnoremap <leader>s :RunFloat bash<CR>
+
+
 
 noremap <leader>o :w<CR>
 " nnoremap <leader>ob :e ~/.bashrc<CR>
@@ -109,8 +99,8 @@ noremap <leader>gp :!git push<CR>
 noremap <leader>gg :!git<space>
 noremap <leader>v :source ~/.config/nvim/init.vim<CR>
 noremap <leader>w <C-w>
-noremap <leader>tt :let @a=expand("%:p")<CR>:tabnew<CR>:terminal<CR>igit exec direnv exec venv/bin/pytest --tb=native -Wignore<space><C-\><C-N>"api
-noremap <leader>tf :!git exec direnv exec venv/bin/pytest --tb=native -Wignore <C-r>=expand('%')<CR><space>
+noremap <leader>tt :let @a=expand("%:p")<CR>:tabnew<CR>:terminal<CR>ihans test --tb=native<space><C-\><C-N>"api
+" noremap <leader>tf :!hans exec --tb=native <C-r>=expand('%')<CR><space>
 noremap <leader>b :!plash --from ubuntu:focal --apt python3-pip -l --pip3 black==19.10b0 -- /usr/local/bin/black %:p<CR>
 noremap <leader>i :!isort  --skip venv3 --skip venv --skip venv2 --skip migrations --settings-path setup.cfg %:p
 noremap <leader>r :<Up><CR>

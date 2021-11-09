@@ -36,84 +36,11 @@ function genctags {
 
 
 
-function findlines {
-	ag . |
-		fzf \
-			--query="$1" \
-			--tac \
-			--exact \
-			--no-extended \
-			-d: \
-			-n3.. \
-			--no-sort \
-			--preview "cat {1} --number | tail --lines=+{2}"\
-			--preview-window='bottom:10' |
-	cut -d: -f1,2 |
-	tr ':' ' ' |
-	xargs sh -c '[ -z $1 ] && exit 0; nvr +FloatermHide "+e $0" +$1'
-}
-
-
-function findtags {
-	git ls-files |
-		xargs ctags --excmd=number -f - |
-		fzf \
-			--query="$1" \
-			--exact -d$'\t' \
-			--with-nth=1 \
-			--nth=1 \
-			--preview 'a={3}; printf {2}"\n"; cat -n {2} | tail --quiet -n +${a::-2}' \
-			--preview-window='right:70%' |
-			python3 -c '
-import os
-try:
-    i=input().split("\t")
-except EOFError:
-    pass
-else:
-    os.execlp("nvr", "nvr", "+FloatermHide", f"+e {i[1]}", f"+{i[2][:-2]}")'
-}
-
-function finddirectory {
-	line='echo $(basename $(dirname "$1")),$(dirname ${1/#$HOME/\~})'
-	find ~/byrd -maxdepth 4 -name .git -type d -prune |
-		xargs -L1 bash -c "$line" -- |
-		column -ts, |
-		sort |
-		fzf -s, --nth 1 --exact |
-		awk '{ print $2 }' |
-		xargs -I{} nvr -c 'cd {}'
-}
-
-function findbranch {
-	git branch -a |
-		grep -v '*' |
-		xargs -L1 |
-		fzf --preview "git log --stat $(git merge-base --fork-point develop {})..{}" |
-		xargs git checkout
-}
-
-
-function findfiles {
-	ag -l |
-		fzf --preview 'cat -n {}' |
-		xargs -I {} nvr +FloatermHide +'e {}'
-}
-
-function findstatus {
-	git status -s |
-		fzf --preview -d' ' --nth 2 --preview 'git diff HEAD {2}' |
-		awk  '{print $2}' |
-		xargs -I {} nvr +FloatermHide +'e {}'
-}
-
-function findrecent {
+function testrecent {
 	{
 		git diff --name-only $(git merge-base --fork-point develop)..HEAD .
 		git status -s --porcelain | xargs -L1 | cut -d' ' -f2
-	} |
-		fzf --preview 'git diff develop {}' |
-		xargs -I {} nvr +FloatermHide +'e {}'
+	} | grep '/tests/' | xargs bash -xc 'hans test --tb=native "$@"' -s
 }
 
 function findcmd {
@@ -123,14 +50,6 @@ function findcmd {
 		# --bind 'change:reload:cd /tmp; sudo -u nobody -- $(echo {q} | cut -d" " -f1,2) --help 2>&1 \
 		--preview 'cd /tmp; sudo -u nobody -- $(echo {q} | cut -d" " -f1,2) --help' \
 		--preview-window='right:60%'
-}
-
-function findalias {
-	bash -lc 'compgen -A function' | sort | uniq |
-		fzf \
-		    --preview 'bash -lc "alias {} 2> /dev/null || declare -f {}"' \
-		    --preview-window='right:66%' |
-		    xargs bash -lc
 }
 
 
