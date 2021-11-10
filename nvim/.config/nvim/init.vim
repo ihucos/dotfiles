@@ -83,24 +83,11 @@ execute system('bash -lc "printenv VIM_EVAL"')
 
 
 
-noremap <leader>o :w<CR>
-" nnoremap <leader>ob :e ~/.bashrc<CR>
-" nnoremap <leader>ov :e ~/.config/nvim/init.vim<CR>
 
-noremap <leader>x :tabnew<CR>:terminal<CR>A
-noremap <leader>c :tabnew<CR>:terminal<CR>A
-noremap <leader>v :source ~/.config/nvim/init.vim<CR>
-noremap <leader>w <C-w>
-noremap <leader>tt :let @a=expand("%:p")<CR>:tabnew<CR>:terminal<CR>ihans test --tb=native<space><C-\><C-N>"api
-" noremap <leader>tf :!hans exec --tb=native <C-r>=expand('%')<CR><space>
-noremap <leader>b :!plash --from ubuntu:focal --apt python3-pip -l --pip3 black==19.10b0 -- /usr/local/bin/black %:p<CR>
-noremap <leader>i :!isort  --skip venv3 --skip venv --skip venv2 --skip migrations --settings-path setup.cfg %:p
-noremap <leader>r :<Up><CR>
-map <leader><leader> <C-w><C-w>
-
-map <leader>w <C-w>
-map <leader><leader> <C-w><C-w>
 map <esc> <C-w><C-w>
+map <leader><leader> <C-w><C-w>
+map <leader>w <C-w>
+map <leader>r :<Up><CR>
 
 
 

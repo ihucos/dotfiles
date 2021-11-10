@@ -1,5 +1,44 @@
+#
+# END INIT
+#
+export VIM_EVAL="echo " # dummy comamnd
+function vimadd {
+	VIM_EVAL="$VIM_EVAL | $1"
+}
+function vimappend {
+	VIM_EVAL="${VIM_EVAL}$1"
+}
+function map {
+	vimadd "noremap <leader>$1 $2"
+}
+
+floatbase="FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.9 --height=0.90"
+
+function mapfloat {
+	if [ -z "$3" ]
+	then
+		expand='<cword>'
+	else
+		expand="$3"
+	fi
+	vimadd  "noremap <leader>$1 :$floatbase bash -lc '$2 <c-r>=expand('${expand}')<cr>'<cr>"
+}
+
+function mapfloat0 {
+	if [ -z "$3" ]
+	then
+		expand='<cword>'
+	else
+		expand="$3"
+	fi
+	vimadd  "noremap <leader>$1 :$floatbase --autoclose=0 bash -lc '$2 <c-r>=expand('${expand}')<cr>'<cr>"
+}
+#
+# END INIT
+#
 
 
+mapfloat ff findfiles
 function findfiles {
 	ag . |
 		fzf \
@@ -18,6 +57,7 @@ function findfiles {
 }
 
 
+mapfloat0 fa findalias
 function findalias {
 	bash -lc 'compgen -A function' | sort | uniq |
 		fzf \
@@ -28,6 +68,7 @@ function findalias {
 
 
 
+mapfloat fl findlines
 function findlines {
 	ag . |
 		fzf \
@@ -46,6 +87,7 @@ function findlines {
 }
 
 
+mapfloat ft findtags
 function findtags {
 	git ls-files |
 		xargs ctags --excmd=number -f - |
@@ -66,6 +108,7 @@ else:
     os.execlp("nvr", "nvr", "+FloatermHide", f"+e {i[1]}", f"+{i[2][:-2]}")'
 }
 
+mapfloat fd finddirectory
 function finddirectory {
 	line='echo $(basename $(dirname "$1")),$(dirname ${1/#$HOME/\~})'
 	find ~/byrd ~/dotfiles -maxdepth 4 -name .git -type d -prune |
@@ -77,6 +120,7 @@ function finddirectory {
 		xargs -I{} nvr -c 'cd {}'
 }
 
+mapfloat fb findbranch
 function findbranch {
 	git branch -a |
 		grep -v '*' |
@@ -94,6 +138,7 @@ function findfiles {
 
 
 
+mapfloat fs findstatus
 function findstatus {
 	git status -s |
 		fzf --preview -d' ' --nth 2 --preview 'git diff HEAD {2}' |
@@ -101,6 +146,7 @@ function findstatus {
 		xargs -I {} nvr +FloatermHide +'e {}'
 }
 
+mapfloat fr findrecent
 function findrecent {
 	{
 		git diff --name-only $(git merge-base --fork-point develop)..HEAD .
@@ -111,35 +157,20 @@ function findrecent {
 }
 
 
-export VIM_EVAL="echo " # dummy comamnd
-function vimadd {
-	VIM_EVAL="$VIM_EVAL | $1"
-}
-function map {
-	vimadd "map $1 $2"
+
+mapfloat0 b vimblack "%:p"
+function vimblack {
+	plash --from ubuntu:focal --apt python3-pip -l --pip3 black==19.10b0 -- /usr/local/bin/black "$1"
 }
 
-floatbase="FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.8 --height=0.90"
-
-function mapfloat {
-	vimadd  'map <leader>'"$1"' :'"$floatbase"' --autoclose=1 bash -lc '"$2"' <c-r>=expand("<cword>")<cr><cr>'
+mapfloat0 i vimisort "%:p"
+function vimisort {
+	isort --skip venv3 --skip venv --skip venv2 --skip migrations --settings-path setup.cfg "$1"
 }
 
-function mapfloat0 {
-	vimadd  'map <leader>'"$1"' :'"$floatbase"' --autoclose=0 bash -lc '"$2"' <c-r>=expand("<cword>")<cr><cr>'
-}
-
-mapfloat ff findfiles
-mapfloat fr findrecent
-mapfloat fs findstatus
-mapfloat fd finddirectory
-mapfloat fb findbranch
-mapfloat fl findlines
-mapfloat ft findtags
-mapfloat0 fa findalias
 mapfloat0 tr testrecent
 
-map '<leader>tf' ':'"$floatbase"' hans test --tb=native <C-r>=expand('"'"'%'"'"')<CR><CR>'
+map 'tf' ':'"$floatbase"' hans test --tb=native <C-r>=expand('"'"'%'"'"')<CR><CR>'
 
 
 mapfloat l lazygit
@@ -147,6 +178,9 @@ mapfloat s bash
 mapfloat gd "git diff"
 
 
-
-map '<leader>j' ':!bash -lc openjira<CR>'
-
+map 'j' ':!bash -lc openjira<CR>'
+map o ':w<CR>'
+map x ':tabnew<CR>:terminal<CR>A'
+map c ':tabnew<CR>:terminal<CR>A'
+map v ':source ~/.config/nvim/init.vim<CR>'
+map tt ':let @a=expand("%:p")<CR>:tabnew<CR>:terminal<CR>ihans test --tb=native<C-\><C-N>"api'
