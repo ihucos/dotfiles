@@ -5,6 +5,7 @@ PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[0
 
 alias ll='ls -alF'
 alias la='ls -A'
+alias ranger='TERM=vt100 ranger'
 
 # from ubuntu
 if [ -f /usr/share/bash-completion/bash_completion ]; then
