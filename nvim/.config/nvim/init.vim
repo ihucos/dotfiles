@@ -57,65 +57,24 @@ set tags=./tags;
 tnoremap <leader><leader> <C-\><C-n>
 imap <leader><leader> <esc>
 
-
-function! RunFloat(cmd)
-    exec "FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.8 --height=0.90 --autoclose=1 bash -lc '".a:cmd."'"
+function! Reload()
+    exec ":source ~/.config/nvim/init.vim"
 endfunction
-
-function! RunFloat2(cmd)
-    exec "FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.95 --height=0.90 --autoclose=2 bash -lc '".a:cmd."'"
-endfunction
-
-function! RunFloat0(cmd)
-    exec "FloatermNew --title=━ --borderchars=━┃━┃┏┓┛┗ --width=0.95 --height=0.90 --autoclose=0 bash -lc '".a:cmd."'"
-endfunction
-
-command! -nargs=1 RunFloat call RunFloat(<f-args>)
-command! -nargs=1 RunFloat2 call RunFloat2(<f-args>)
-command! -nargs=1 RunFloat0 call RunFloat0(<f-args>)
-
+command! Reload call Reload(<f-args>)
 
 
 " some more mappings
 execute system('bash -lc "printenv VIM_EVAL"')
 
 
-
-
-
-
 map <esc> <C-w><C-w>
-map <leader><leader> <C-w><C-w>
-map <leader>w <C-w>
-map <leader>r :<Up><CR>
-
-
-
-
+map <tab> <C-w><C-w>
 inoremap - _
 inoremap _ -
 map ; :
 
-
-
-
-
-function! WinMove(key)
-    let t:curwin = winnr()
-    exec "wincmd ".a:key
-    if (t:curwin == winnr())
-        if (match(a:key,'[jk]'))
-            wincmd v
-        else
-            wincmd s
-        endif
-        exec "wincmd ".a:key
-    endif
-endfunction
-
 nnoremap <PageUp> <C-y>
 nnoremap <PageDown> <C-e>
-
 inoremap <PageUp> <C-X><C-y>
 inoremap <PageDown> <C-X><C-e>
 
