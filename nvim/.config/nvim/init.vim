@@ -151,7 +151,7 @@ endif
 function! Float() abort
     " Create the scratch buffer displayed in the floating window
 
-    let cmd = 'python3 ~/verbs/verbs.py '.expand('%:p').' '.expand(line('.')).' '.expand('<cword>').' '
+    let cmd = 'python3 ~/verbs/verbs.py '.shellescape(expand('%:p')).' '.shellescape(expand(line('.'))).' '.shellescape(expand('<cword>')).' '
 
     let g:floatbuf = nvim_create_buf(v:false, v:true)
 
@@ -169,6 +169,7 @@ function! Float() abort
                 \ 'col': (ui.width/2) - (width/2),
                 \ 'row': (ui.height/2) - (height/2),
                 \ 'anchor': 'NW',
+                \ 'border': 'double',
                 \ 'style': 'minimal',
                 \ }
     let float = nvim_open_win(g:floatbuf, 1, opts)
