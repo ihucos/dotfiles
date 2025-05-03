@@ -123,7 +123,7 @@ function Float()
 
   local ui = vim.api.nvim_list_uis()[1]
   local width = ui.width - 20
-  local height = ui.height - 10
+  local height = ui.height - 5
   local col = math.floor((ui.width - width) / 2)
   local row = math.floor((ui.height - height) / 2)
 
@@ -158,9 +158,6 @@ function FloatClose()
   end
 end
 
--- Keybind
-vim.keymap.set("n", "<space><space>", Float, { noremap = true, silent = true })
 
--- Optional: command aliases
 vim.api.nvim_create_user_command("Float", Float, {})
 vim.api.nvim_create_user_command("FloatClose", FloatClose, {})
