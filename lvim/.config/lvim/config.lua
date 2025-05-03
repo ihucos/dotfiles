@@ -110,42 +110,6 @@ lvim.plugins = {
 lvim.builtin.cmp.active = false
 
 
-function Float()
-  local buf = vim.api.nvim_create_buf(false, true)
-
-  local ui = vim.api.nvim_list_uis()[1]
-  local width = ui.width - 20
-  local height = ui.height - 5
-  local col = math.floor((ui.width - width) / 2)
-  local row = math.floor((ui.height - height) / 2)
-
-  local opts = {
-    style = "minimal",
-    relative = "editor",
-    width = width,
-    height = height,
-    row = row,
-    col = col,
-    border = "double",
-  }
-
-  local file = vim.fn.expand("%:p")
-  local line = vim.fn.line(".")
-  local cword = vim.fn.expand("<cword>")
-  local cmd = "python3 ~/verbs/verbs.py " .. vim.fn.shellescape(file) .. " " .. vim.fn.shellescape(line) .. " " .. vim.fn.shellescape(cword)
-
-  vim.g.floatbuf = buf
-  vim.api.nvim_open_win(buf, true, opts)
-
-  -- Start terminal with command
-  vim.fn.termopen(cmd)
-  vim.cmd("startinsert")
-end
-
-
-
-
-
 
 
 -- Float function in Lua
