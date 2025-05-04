@@ -2,10 +2,10 @@
 # vim: set ft=jinja
 {% set changes|prompt("ollama/gemma3:1b") %}
 
-Summarize these changes in two sentences:
+Summarize these changes in two sentences. Be explicit:
 ```
   {% filter run() %}
-    output=$(git diff --cached | grep '^[-+]')
+    output=$(git diff --cached --unified=0 | grep -v '^@')
     echo "$output"
     if [[ -z "$output" ]]; then
       echo "Error: No staged changes with git" >&2 
