@@ -1,0 +1,29 @@
+#!/usr/bin/env siesta
+# vim: set ft=jinja
+{% set changes|prompt("ollama/gemma3:1b") %}
+
+Summarize these changes in two sentences:
+```
+  {% filter run() %}
+    output=$(git diff --cached | grep '^[-+]')
+    echo "$output"
+    if [[ -z "$output" ]]; then
+      echo "Error: No staged changes with git" >&2 
+      exit 1
+    fi
+  {% endfilter %}
+```
+{% endset %}
+
+
+{% set commit|prompt("ollama/gemma3:1b")|code|trim("[]") %}
+Print a correct commit message in triple brackets based on this input:
+```
+{{changes}}
+```
+{% endset %}
+
+
+{% filter run %}
+git commit -am {{ commit|askedit|quote }}
+{% endfilter %}
