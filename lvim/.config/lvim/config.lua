@@ -8,7 +8,7 @@
 lvim.leader = ","
 
 lvim.colorscheme = "solarized"
-vim.opt.background="dark"
+vim.opt.background="light"
 
 
 lvim.builtin.terminal.open_mapping = "<A-h>"
@@ -22,6 +22,8 @@ vim.keymap.set("n", "<Space>", ":Float<CR>", { noremap = true, silent = true })
 vim.keymap.set('n', ';', ":")
 
 
+
+vim.opt.termguicolors = true
 
 lvim.lsp.buffer_mappings.insert_mode['<C-n>'] = lvim.lsp.buffer_mappings.insert_mode['<C-space>']
 
@@ -129,7 +131,7 @@ function Float()
     height = height,
     row = row,
     col = col,
-    border = "double",
+    border = "single",
   }
 
   local file = vim.fn.expand("%:p")
@@ -156,3 +158,4 @@ end
 
 vim.api.nvim_create_user_command("Float", Float, {})
 vim.api.nvim_create_user_command("FloatClose", FloatClose, {})
+
