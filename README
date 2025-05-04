@@ -2,5 +2,4 @@ Notes to install in new system:
 
 clone to ~/dotfiles
 then:
-$ stow bash
-$ stow nvim
+$ stow dotfiles
