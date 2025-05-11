@@ -19,6 +19,7 @@ vim.keymap.set('t', '<esc><esc>', "<C-\\><C-n>", {silent = true})
 vim.keymap.set("i", "<Space><Space>", "<Esc>", { noremap = true, silent = true })
 vim.keymap.set('n', '<esc>', "<C-w><C-w>", {silent = true})
 vim.keymap.set("n", "<Space>", ":Float<CR>", { noremap = true, silent = true })
+vim.keymap.set("x", "<Space>", ":lua Float(\"visual\")<CR>", { noremap = true, silent = true })
 vim.keymap.set('n', ';', ":")
 
 
@@ -114,7 +115,7 @@ lvim.builtin.cmp.active = false
 
 
 -- Float function in Lua
-function Float()
+function Float(mode)
   local buf = vim.api.nvim_create_buf(false, true)
 
   local ui = vim.api.nvim_list_uis()[1]
@@ -135,8 +136,16 @@ function Float()
 
   local file = vim.fn.expand("%:p")
   local line = vim.fn.line(".")
+
+  if mode == "visual" then
+    local end_line = vim.fn.getpos("'>")[2]
+    line = line .. "," .. end_line
+  end
+
+
   local cword = vim.fn.expand("<cword>")
   local cmd = "python3 ~/verbs/verbs.py " .. vim.fn.shellescape(file) .. " " .. vim.fn.shellescape(line) .. " " .. vim.fn.shellescape(cword)
+
 
   vim.g.floatbuf = buf
   vim.api.nvim_open_win(buf, true, opts)
