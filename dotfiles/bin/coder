@@ -47,6 +47,25 @@ prompt_template = textwrap.dedent(
 ).strip("\n ")
 
 
+def get_current_vim_buffer():
+    cur = subprocess.run(
+        "nvr --remote-expr 'bufname(\"\")'",
+        text=True,
+        capture_output=True,
+        shell=True,
+    ).stdout.strip("\n")
+    return cur.replace(os.path.expanduser("~"), "~")
+
+
+def get_last_vim_line_range():
+    from = subprocess.run(
+        "nvr --remote-expr 'getpos(\"\")'",
+        text=True,
+        capture_output=True,
+        shell=True,
+    ).stdout.strip("\n")
+
+
 def get_project_files(project_dir):
     return (
         subprocess.check_output(
@@ -82,7 +101,6 @@ def get_git_projects_choices():
     return choices
 
 
-VIM_OPEN_FILE = "/tmp/a"
 VIM_SELECTION = "test this is"
 
 
@@ -131,7 +149,7 @@ def submit(
     env = jinja2.Environment()
     env.filters["cat"] = lambda f: cat(os.path.join(project_dir, f))
     template = env.from_string(prompt_template)
-    prompt = template.render(open_file=VIM_OPEN_FILE, **locals())
+    prompt = template.render(open_file=get_current_vim_buffer(), **locals())
 
     if echo_generated_prompt:
         yield (gr.Textbox(value=prompt), gr.Button(value="Apply", size="sm"))
@@ -158,66 +176,72 @@ def submit(
 
 with gr.Blocks() as demo:
     gr.Markdown("# Code Genie 2000")
-    with gr.Row(equal_height=True):
-        with gr.Column(), gr.Group(), gr.Accordion("Inital Prompt generator"):
 
-            model = gr.Radio(
-                MODELS,
-                value="ollama/qwen3:4b",
-                show_label=False,
+    model = gr.Radio(
+        MODELS,
+        value="ollama/qwen3:4b",
+        show_label=False,
+    )
+
+    with gr.Group(), gr.Accordion("Prompt generator"):
+
+        with gr.Row():
+            include_selection = gr.Checkbox(label="Include selection")
+            include_open_file = gr.Checkbox()
+            gr.Timer(1).tick(
+                lambda: gr.Checkbox(label=f"Include `{get_current_vim_buffer()}`"),
+                outputs=include_open_file,
+            )
+            dont_think = gr.Checkbox(label="Don't think (for qwen)", value=True)
+
+        with gr.Row():
+            project_dropdown = gr.Dropdown(
+                ["<select project>"] + get_git_projects_choices(),
+                label="Project",
+                interactive=True,
             )
 
-            with gr.Row():
-                include_selection = gr.Checkbox(label="Include selection")
-                include_open_file = gr.Checkbox(label=f"Include `{VIM_OPEN_FILE}`")
-                dont_think = gr.Checkbox(label="Don't think (for qwen)", value=True)
-
-            with gr.Row():
-                project_dropdown = gr.Dropdown(
-                    ["<select project>"] + get_git_projects_choices(), label="Project", interactive=True
-                )
-
-                project_files_dropdown = gr.Dropdown(
-                    ["<select project first>"],
-                    value=[],
-                    multiselect=True,
-                    label="Project files",
-                    scale=4
-                )
-
-            project_dropdown.change(
-                fn=lambda project: gr.Dropdown(choices=get_project_files(project)),
-                inputs=project_dropdown,
-                outputs=project_files_dropdown,
+            project_files_dropdown = gr.Dropdown(
+                ["<select project first>"],
+                value=[],
+                multiselect=True,
+                label="Project files",
+                scale=4,
             )
 
-            user_prompt = gr.TextArea(label="Header text")
-            echo_generated_prompt = gr.Checkbox(
-                label="Echo generated prompt (debugging)"
+        project_dropdown.change(
+            fn=lambda project: gr.Dropdown(choices=get_project_files(project)),
+            inputs=project_dropdown,
+            outputs=project_files_dropdown,
+        )
+
+        user_prompt = gr.TextArea(label="Header text")
+        echo_generated_prompt = gr.Checkbox(label="Echo generated prompt (debugging)")
+
+        with gr.Accordion("Completion settings...", open=False):
+            temperature = gr.Slider(
+                0, 4, value=0.8, label="Temperature", info="How creative it is"
+            )
+            top_p = gr.Slider(
+                0,
+                0.9,
+                value=0.8,
+                label="Top p",
+                info="Higher value for more diverse text.",
             )
 
-            with gr.Accordion("Completion settings...", open=False):
-                temperature = gr.Slider(
-                    0, 4, value=0.8, label="Temperature", info="How creative it is"
-                )
-                top_p = gr.Slider(
-                    0,
-                    0.9,
-                    value=0.8,
-                    label="Top p",
-                    info="Higher value for more diverse text.",
-                )
+        submit_button = gr.Button(value="Send to Chat")
 
-            submit_button = gr.Button(value="Send", variant="primary")
-
-        with gr.Column():
-            chatbot = gr.Chatbot(allow_tags=True)
-            chat = gr.ChatInterface(
-                fn=chat_respond,
-                type="messages",
-                additional_inputs=[model],
-                chatbot=chatbot,
-            )
+    chatbot = gr.Chatbot(
+        allow_tags=True,
+        height="calc(100vh - 80px)",
+    )
+    chat = gr.ChatInterface(
+        fn=chat_respond,
+        type="messages",
+        additional_inputs=[model],
+        chatbot=chatbot,
+    )
 
     inputs = [
         model,
