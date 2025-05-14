@@ -1,0 +1,240 @@
+#!/usr/bin/env python3.12
+
+import gradio as gr
+import jinja2
+import textwrap
+import subprocess
+import os
+
+
+MODELS = [
+    ("qwen3 0.6b", "ollama/qwen3:0.6b"),
+    ("qwen3 4b", "ollama/qwen3:4b"),
+    ("qwen3 8b", "ollama/qwen3:8b"),
+    ("qwen3 14b", "ollama/qwen3:14b"),
+    ("DeepSeek-R1", "deepseek/deepseek-reasoner"),
+]
+
+prompt_template = textwrap.dedent(
+    """
+    {{user_prompt}}
+    {%- if selection and include_selection %}
+
+    Selected code:
+    ```
+    {{selection}}
+    ```
+
+    {%- endif %}
+    {%- if include_open_file %}
+
+    ``` {{open_file}}
+    {{open_file|cat}}
+    ```
+
+    {%- endif %}
+    {%- for file in project_files %}
+
+    ``` {{file}}
+    {{file|cat}}
+    ```
+    {%- endfor %}
+    {%- if dont_think %}
+
+    /no_think
+    {%- endif %}
+    """
+).strip("\n ")
+
+
+def get_project_files(project_dir):
+    return (
+        subprocess.check_output(
+            ["git", "ls-files"],
+            cwd=project_dir,
+        )
+        .decode()
+        .splitlines()
+    )
+
+
+def get_git_projects_choices():
+    gits = subprocess.run(
+        [
+            "find",
+            os.path.expanduser("~"),
+            "-maxdepth",
+            "2",
+            "-type",
+            "d",
+            "-name",
+            ".git",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    choices = []
+    for git in gits:
+        project_dir = os.path.dirname(git)
+        project_name = os.path.basename(project_dir)
+        choices.append((project_name, project_dir))
+    return choices
+
+
+VIM_OPEN_FILE = "/tmp/a"
+VIM_SELECTION = "test this is"
+
+
+def cat(file):
+    with open(file) as f:
+        return f.read()
+
+
+def chat_respond(message, chat_history, model):
+    from litellm import completion
+
+    response = completion(
+        model=model,
+        # temperature=temperature,
+        # top_p=top_p,
+        messages=chat_history + [{"role": "user", "content": message + "\n/no_think"}],
+        stream=True,
+    )
+
+    resp = ""
+    for part in response:
+        content = part.choices[0].delta["content"] or ""
+        resp += content
+        yield resp
+
+
+def submit(
+    model,
+    temperature,
+    top_p,
+    include_selection,
+    include_open_file,
+    dont_think,
+    project_files,
+    user_prompt,
+    echo_generated_prompt,
+    chat_history,
+    project_dir,
+    _,
+):
+
+    chat_history = []
+    # chat_history.append(gr.ChatMessage(role="user", content="asdf"))
+    chat_history.append(dict(role="assistant", content=""))
+
+    env = jinja2.Environment()
+    env.filters["cat"] = lambda f: cat(os.path.join(project_dir, f))
+    template = env.from_string(prompt_template)
+    prompt = template.render(open_file=VIM_OPEN_FILE, **locals())
+
+    if echo_generated_prompt:
+        yield (gr.Textbox(value=prompt), gr.Button(value="Apply", size="sm"))
+    else:
+        from litellm import completion
+
+        response = completion(
+            model=model,
+            temperature=temperature,
+            top_p=top_p,
+            messages=[
+                {
+                    "content": prompt,
+                    "role": "user",
+                },
+            ],
+            stream=True,
+        )
+
+        for part in response:
+            chat_history[-1]["content"] += part.choices[0].delta["content"] or ""
+            yield chat_history
+
+
+with gr.Blocks() as demo:
+    gr.Markdown("# Code Genie 2000")
+    with gr.Row(equal_height=True):
+        with gr.Column(), gr.Group(), gr.Accordion("Inital Prompt generator"):
+
+            model = gr.Radio(
+                MODELS,
+                value="ollama/qwen3:4b",
+                show_label=False,
+            )
+
+            with gr.Row():
+                include_selection = gr.Checkbox(label="Include selection")
+                include_open_file = gr.Checkbox(label=f"Include `{VIM_OPEN_FILE}`")
+                dont_think = gr.Checkbox(label="Don't think (for qwen)", value=True)
+
+            with gr.Row():
+                project_dropdown = gr.Dropdown(
+                    ["<select project>"] + get_git_projects_choices(), label="Project", interactive=True
+                )
+
+                project_files_dropdown = gr.Dropdown(
+                    ["<select project first>"],
+                    value=[],
+                    multiselect=True,
+                    label="Project files",
+                    scale=4
+                )
+
+            project_dropdown.change(
+                fn=lambda project: gr.Dropdown(choices=get_project_files(project)),
+                inputs=project_dropdown,
+                outputs=project_files_dropdown,
+            )
+
+            user_prompt = gr.TextArea(label="Header text")
+            echo_generated_prompt = gr.Checkbox(
+                label="Echo generated prompt (debugging)"
+            )
+
+            with gr.Accordion("Completion settings...", open=False):
+                temperature = gr.Slider(
+                    0, 4, value=0.8, label="Temperature", info="How creative it is"
+                )
+                top_p = gr.Slider(
+                    0,
+                    0.9,
+                    value=0.8,
+                    label="Top p",
+                    info="Higher value for more diverse text.",
+                )
+
+            submit_button = gr.Button(value="Send", variant="primary")
+
+        with gr.Column():
+            chatbot = gr.Chatbot(allow_tags=True)
+            chat = gr.ChatInterface(
+                fn=chat_respond,
+                type="messages",
+                additional_inputs=[model],
+                chatbot=chatbot,
+            )
+
+    inputs = [
+        model,
+        temperature,
+        top_p,
+        include_selection,
+        include_open_file,
+        dont_think,
+        project_files_dropdown,
+        user_prompt,
+        echo_generated_prompt,
+        chatbot,
+        project_dropdown,
+        submit_button,
+    ]
+
+    submit_button.click(submit, inputs=inputs, outputs=[chatbot])
+    user_prompt.submit(submit, inputs=inputs, outputs=[chatbot])
+
+demo.launch()
