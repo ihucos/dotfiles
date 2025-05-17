@@ -166,4 +166,3 @@ end
 
 vim.api.nvim_create_user_command("Float", Float, {})
 vim.api.nvim_create_user_command("FloatClose", FloatClose, {})
-

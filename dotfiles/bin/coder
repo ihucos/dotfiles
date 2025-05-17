@@ -15,7 +15,7 @@ MODELS = [
     ("DeepSeek-R1", "deepseek/deepseek-reasoner"),
 ]
 
-prompt_template = textwrap.dedent(
+PROMPT_TEMPLATE = textwrap.dedent(
     """
     {{user_prompt}}
     {%- if selection and include_selection %}
@@ -47,23 +47,31 @@ prompt_template = textwrap.dedent(
 ).strip("\n ")
 
 
-def get_current_vim_buffer():
-    cur = subprocess.run(
-        "nvr --remote-expr 'bufname(\"\")'",
-        text=True,
+def nvim(expr):
+    out = subprocess.run(
+        ["nvr", "--remote-expr", expr],
         capture_output=True,
-        shell=True,
-    ).stdout.strip("\n")
+        text=True,
+    ).stdout
+    return out
+
+def copy(data):
+    subprocess.run("pbcopy", text=True, input=data)
+
+def vim_get_current_buffer():
+    cur = nvim('bufname("")')
     return cur.replace(os.path.expanduser("~"), "~")
 
 
-def get_last_vim_line_range():
-    from = subprocess.run(
-        "nvr --remote-expr 'getpos(\"\")'",
-        text=True,
-        capture_output=True,
-        shell=True,
-    ).stdout.strip("\n")
+def vim_get_cursor():
+    a = nvim('getpos(".")').split(", ")[1]
+    b = nvim('getpos("v")').split(", ")[1]
+
+    start = min(a, b)
+    stop = max(a, b)
+    if start == stop:
+        return f"line {start}"
+    return f"lines {start} - {stop}"
 
 
 def get_project_files(project_dir):
@@ -101,9 +109,6 @@ def get_git_projects_choices():
     return choices
 
 
-VIM_SELECTION = "test this is"
-
-
 def cat(file):
     with open(file) as f:
         return f.read()
@@ -136,10 +141,11 @@ def submit(
     dont_think,
     project_files,
     user_prompt,
-    echo_generated_prompt,
     chat_history,
     project_dir,
     _,
+    *,
+    copy_button=False
 ):
 
     chat_history = []
@@ -147,31 +153,32 @@ def submit(
     chat_history.append(dict(role="assistant", content=""))
 
     env = jinja2.Environment()
-    env.filters["cat"] = lambda f: cat(os.path.join(project_dir, f))
-    template = env.from_string(prompt_template)
-    prompt = template.render(open_file=get_current_vim_buffer(), **locals())
+    env.filters["cat"] = lambda f: cat(os.path.join(project_dir, os.path.expanduser(f)))
+    template = env.from_string(PROMPT_TEMPLATE)
+    prompt = template.render(open_file=vim_get_current_buffer(), **locals())
 
-    if echo_generated_prompt:
-        yield (gr.Textbox(value=prompt), gr.Button(value="Apply", size="sm"))
-    else:
-        from litellm import completion
+    if copy_button:
+        copy(prompt)
+        return
 
-        response = completion(
-            model=model,
-            temperature=temperature,
-            top_p=top_p,
-            messages=[
-                {
-                    "content": prompt,
-                    "role": "user",
-                },
-            ],
-            stream=True,
-        )
+    from litellm import completion
 
-        for part in response:
-            chat_history[-1]["content"] += part.choices[0].delta["content"] or ""
-            yield chat_history
+    response = completion(
+        model=model,
+        temperature=temperature,
+        top_p=top_p,
+        messages=[
+            {
+                "content": prompt,
+                "role": "user",
+            },
+        ],
+        stream=True,
+    )
+
+    for part in response:
+        chat_history[-1]["content"] += part.choices[0].delta["content"] or ""
+        yield chat_history
 
 
 with gr.Blocks() as demo:
@@ -186,11 +193,15 @@ with gr.Blocks() as demo:
     with gr.Group(), gr.Accordion("Prompt generator"):
 
         with gr.Row():
-            include_selection = gr.Checkbox(label="Include selection")
             include_open_file = gr.Checkbox()
             gr.Timer(1).tick(
-                lambda: gr.Checkbox(label=f"Include `{get_current_vim_buffer()}`"),
+                lambda: gr.Checkbox(label=f"Include `{vim_get_current_buffer()}`"),
                 outputs=include_open_file,
+            )
+            include_selection = gr.Checkbox(label="Include selection")
+            gr.Timer(1).tick(
+                lambda: gr.Checkbox(label=f"Include {vim_get_cursor()}"),
+                outputs=include_selection,
             )
             dont_think = gr.Checkbox(label="Don't think (for qwen)", value=True)
 
@@ -216,9 +227,8 @@ with gr.Blocks() as demo:
         )
 
         user_prompt = gr.TextArea(label="Header text")
-        echo_generated_prompt = gr.Checkbox(label="Echo generated prompt (debugging)")
 
-        with gr.Accordion("Completion settings...", open=False):
+        with gr.Accordion("More settings...", open=False):
             temperature = gr.Slider(
                 0, 4, value=0.8, label="Temperature", info="How creative it is"
             )
@@ -230,7 +240,9 @@ with gr.Blocks() as demo:
                 info="Higher value for more diverse text.",
             )
 
-        submit_button = gr.Button(value="Send to Chat")
+        with gr.Row():
+            submit_button = gr.Button(value="Send to Chat", variant="primary")
+            copy_button = gr.Button(value="Copy to clipboard")
 
     chatbot = gr.Chatbot(
         allow_tags=True,
@@ -252,13 +264,13 @@ with gr.Blocks() as demo:
         dont_think,
         project_files_dropdown,
         user_prompt,
-        echo_generated_prompt,
         chatbot,
         project_dropdown,
         submit_button,
     ]
 
     submit_button.click(submit, inputs=inputs, outputs=[chatbot])
+    copy_button.click(lambda *args: submit(*args, copy_button=True), inputs=inputs, outputs=[chatbot])
     user_prompt.submit(submit, inputs=inputs, outputs=[chatbot])
 
 demo.launch()

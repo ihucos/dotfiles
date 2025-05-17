@@ -12,3 +12,8 @@ unset -v config
 #                                      |___/
 #
 # use ~/.bashrc.d/myscript.bash instead
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/ihucos/.lmstudio/bin"
+# End of LM Studio CLI section
+
