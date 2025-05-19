@@ -12,12 +12,11 @@ MODELS = [
     ("qwen3 4b", "ollama/qwen3:4b"),
     ("qwen3 8b", "ollama/qwen3:8b"),
     ("qwen3 14b", "ollama/qwen3:14b"),
-    ("DeepSeek-R1", "deepseek/deepseek-reasoner"),
 ]
 
 PROMPT_TEMPLATE = textwrap.dedent(
     """
-    {{user_prompt}}
+    {{message}}
     {%- if selection and include_selection %}
 
     Selected code:
@@ -55,8 +54,10 @@ def nvim(expr):
     ).stdout
     return out
 
+
 def copy(data):
     subprocess.run("pbcopy", text=True, input=data)
+
 
 def vim_get_current_buffer():
     cur = nvim('bufname("")')
@@ -114,25 +115,9 @@ def cat(file):
         return f.read()
 
 
-def chat_respond(message, chat_history, model):
-    from litellm import completion
-
-    response = completion(
-        model=model,
-        # temperature=temperature,
-        # top_p=top_p,
-        messages=chat_history + [{"role": "user", "content": message + "\n/no_think"}],
-        stream=True,
-    )
-
-    resp = ""
-    for part in response:
-        content = part.choices[0].delta["content"] or ""
-        resp += content
-        yield resp
-
-
 def submit(
+    message,
+    history,
     model,
     temperature,
     top_p,
@@ -140,45 +125,41 @@ def submit(
     include_open_file,
     dont_think,
     project_files,
-    user_prompt,
-    chat_history,
     project_dir,
-    _,
+    send_context,
     *,
-    copy_button=False
+    copy_button=False,
 ):
-
-    chat_history = []
     # chat_history.append(gr.ChatMessage(role="user", content="asdf"))
-    chat_history.append(dict(role="assistant", content=""))
+    # chat_history.append(dict(role="assistant", content=""))
 
     env = jinja2.Environment()
     env.filters["cat"] = lambda f: cat(os.path.join(project_dir, os.path.expanduser(f)))
     template = env.from_string(PROMPT_TEMPLATE)
-    prompt = template.render(open_file=vim_get_current_buffer(), **locals())
+    if send_context:
+        prompt = template.render(open_file=vim_get_current_buffer(), **locals())
+    else:
+        prompt = message + "\nno_think"
 
     if copy_button:
         copy(prompt)
         return
 
+    print(prompt)
     from litellm import completion
 
     response = completion(
         model=model,
         temperature=temperature,
         top_p=top_p,
-        messages=[
-            {
-                "content": prompt,
-                "role": "user",
-            },
-        ],
+        messages=history + [{"role": "user", "content": prompt}],
         stream=True,
     )
 
+    resp = ""
     for part in response:
-        chat_history[-1]["content"] += part.choices[0].delta["content"] or ""
-        yield chat_history
+        resp += part.choices[0].delta["content"] or ""
+        yield resp
 
 
 with gr.Blocks() as demo:
@@ -190,8 +171,7 @@ with gr.Blocks() as demo:
         show_label=False,
     )
 
-    with gr.Group(), gr.Accordion("Prompt generator"):
-
+    with gr.Group(), gr.Accordion("Additional context"):
         with gr.Row():
             include_open_file = gr.Checkbox()
             gr.Timer(1).tick(
@@ -203,7 +183,7 @@ with gr.Blocks() as demo:
                 lambda: gr.Checkbox(label=f"Include {vim_get_cursor()}"),
                 outputs=include_selection,
             )
-            dont_think = gr.Checkbox(label="Don't think (for qwen)", value=True)
+            dont_think = gr.Checkbox(label="/no_think (for qwen)", value=True)
 
         with gr.Row():
             project_dropdown = gr.Dropdown(
@@ -226,8 +206,6 @@ with gr.Blocks() as demo:
             outputs=project_files_dropdown,
         )
 
-        user_prompt = gr.TextArea(label="Header text")
-
         with gr.Accordion("More settings...", open=False):
             temperature = gr.Slider(
                 0, 4, value=0.8, label="Temperature", info="How creative it is"
@@ -240,20 +218,9 @@ with gr.Blocks() as demo:
                 info="Higher value for more diverse text.",
             )
 
-        with gr.Row():
-            submit_button = gr.Button(value="Send to Chat", variant="primary")
-            copy_button = gr.Button(value="Copy to clipboard")
-
-    chatbot = gr.Chatbot(
-        allow_tags=True,
-        height="calc(100vh - 80px)",
-    )
-    chat = gr.ChatInterface(
-        fn=chat_respond,
-        type="messages",
-        additional_inputs=[model],
-        chatbot=chatbot,
-    )
+    with gr.Row():
+        copy_button = gr.Button(value="Copy to clipboard", scale=4)
+        send_context = gr.Checkbox(label="Send context to chat")
 
     inputs = [
         model,
@@ -263,14 +230,24 @@ with gr.Blocks() as demo:
         include_open_file,
         dont_think,
         project_files_dropdown,
-        user_prompt,
-        chatbot,
         project_dropdown,
-        submit_button,
+        send_context,
     ]
 
-    submit_button.click(submit, inputs=inputs, outputs=[chatbot])
-    copy_button.click(lambda *args: submit(*args, copy_button=True), inputs=inputs, outputs=[chatbot])
-    user_prompt.submit(submit, inputs=inputs, outputs=[chatbot])
+    copy_button.click(lambda *args: submit(*args, copy_button=True), inputs=inputs)
+
+    chatbot = gr.Chatbot(
+        allow_tags=True,
+        type="messages",
+        height="calc(100vh - 500px)",
+        resizable=True,
+    )
+    chat = gr.ChatInterface(
+        fn=submit,
+        type="messages",
+        chatbot=chatbot,
+        save_history=True,
+        additional_inputs=inputs,
+    )
 
 demo.launch()
