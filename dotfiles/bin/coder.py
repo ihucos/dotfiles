@@ -163,19 +163,6 @@ with gr.Blocks() as demo:
 
     with gr.Group(), gr.Accordion("Additional context"):
         with gr.Row():
-            include_open_file = gr.Checkbox()
-            gr.Timer(1).tick(
-                lambda: gr.Checkbox(label=f"Include `{vim_get_current_buffer()}`"),
-                outputs=include_open_file,
-            )
-            include_selection = gr.Checkbox(label="Include selection")
-            gr.Timer(1).tick(
-                lambda: gr.Checkbox(label=f"Include {vim_get_cursor()}"),
-                outputs=include_selection,
-            )
-            dont_think = gr.Checkbox(label="/no_think (for qwen)", value=True)
-
-        with gr.Row():
             project_dropdown = gr.Dropdown(
                 ["<select project>"] + get_git_projects_choices(),
                 label="Project",
@@ -210,7 +197,19 @@ with gr.Blocks() as demo:
             )
 
         with gr.Row():
-            send_context = gr.Checkbox(label="Send context with chat message")
+            include_open_file = gr.Checkbox()
+            gr.Timer(1).tick(
+                lambda: gr.Checkbox(label=f"Include `{vim_get_current_buffer()}`"),
+                outputs=include_open_file,
+            )
+            include_selection = gr.Checkbox(label="Include selection")
+            gr.Timer(1).tick(
+                lambda: gr.Checkbox(label=f"Include {vim_get_cursor()}"),
+                outputs=include_selection,
+            )
+            dont_think = gr.Checkbox(label="/no_think (for qwen)", value=True)
+
+            send_context = gr.Checkbox(label="Send with chat message")
 
     model = gr.Radio(
         MODELS,
@@ -241,6 +240,7 @@ with gr.Blocks() as demo:
         type="messages",
         chatbot=chatbot,
         save_history=True,
+        additional_inputs=inputs,
     )
 
     find_code = gr.Button(value="Find code")
