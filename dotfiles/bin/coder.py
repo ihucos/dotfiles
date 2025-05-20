@@ -5,7 +5,9 @@ import jinja2
 import textwrap
 import subprocess
 import os
+import re
 
+FIND_CODE_REGEX = "```(.*?)(?:```|$)"
 
 MODELS = [
     ("qwen3 0.6b", "ollama/qwen3:0.6b"),
@@ -249,5 +251,38 @@ with gr.Blocks() as demo:
         save_history=True,
         additional_inputs=inputs,
     )
+
+    find_code = gr.Button(value="Find code")
+
+    @gr.render(inputs=chatbot, triggers=[find_code.click])
+    def show_code(history):
+        # Only do it every 5 tokens to avoid flicker
+        for part in reversed(history):
+            if part["role"] == "assistant":
+                codes = re.findall(FIND_CODE_REGEX, part["content"], re.DOTALL)
+                for code in reversed(codes):
+                    try:
+                        lang, code = code.split("\n", 1)
+                    except ValueError:
+                        continue
+                    fst_line = code.splitlines()[0]
+                    if (
+                        fst_line.startswith("#")
+                        or fst_line.startswith("//")
+                        or fst_line.startswith("<!--")
+                    ):
+                        filename = fst_line.split(" ")[1]
+                    else:
+                        filename = None
+
+                    with gr.Accordion(filename or "code"):
+                        if filename:
+                            gr.Button(value="write", size="sm")
+                        with gr.Row():
+                            try:
+                                gr.Code(code, language=lang, lines=1, container=False)
+                            except ValueError:
+                                gr.Code(code, lines=1, container=False)
+
 
 demo.launch()
