@@ -129,8 +129,6 @@ def submit(
     project_files,
     project_dir,
     send_context,
-    *,
-    copy_button=False,
 ):
     # chat_history.append(gr.ChatMessage(role="user", content="asdf"))
     # chat_history.append(dict(role="assistant", content=""))
@@ -142,10 +140,6 @@ def submit(
         prompt = template.render(open_file=vim_get_current_buffer(), **locals())
     else:
         prompt = message + "\nno_think"
-
-    if copy_button:
-        copy(prompt)
-        return
 
     print(prompt)
     from litellm import completion
@@ -166,12 +160,6 @@ def submit(
 
 with gr.Blocks() as demo:
     gr.Markdown("# Code Genie 2000")
-
-    model = gr.Radio(
-        MODELS,
-        value="ollama/qwen3:4b",
-        show_label=False,
-    )
 
     with gr.Group(), gr.Accordion("Additional context"):
         with gr.Row():
@@ -208,7 +196,8 @@ with gr.Blocks() as demo:
             outputs=project_files_dropdown,
         )
 
-        with gr.Accordion("More settings...", open=False):
+        # with gr.Accordion("More settings...", open=False):
+        with gr.Sidebar(open=False):
             temperature = gr.Slider(
                 0, 4, value=0.8, label="Temperature", info="How creative it is"
             )
@@ -220,9 +209,14 @@ with gr.Blocks() as demo:
                 info="Higher value for more diverse text.",
             )
 
-    with gr.Row():
-        copy_button = gr.Button(value="Copy to clipboard", scale=4)
-        send_context = gr.Checkbox(label="Send context to chat")
+        with gr.Row():
+            send_context = gr.Checkbox(label="Send context with chat message")
+
+    model = gr.Radio(
+        MODELS,
+        value="ollama/qwen3:4b",
+        show_label=False,
+    )
 
     inputs = [
         model,
@@ -236,8 +230,6 @@ with gr.Blocks() as demo:
         send_context,
     ]
 
-    copy_button.click(lambda *args: submit(*args, copy_button=True), inputs=inputs)
-
     chatbot = gr.Chatbot(
         allow_tags=True,
         type="messages",
@@ -249,7 +241,6 @@ with gr.Blocks() as demo:
         type="messages",
         chatbot=chatbot,
         save_history=True,
-        additional_inputs=inputs,
     )
 
     find_code = gr.Button(value="Find code")
@@ -279,10 +270,15 @@ with gr.Blocks() as demo:
                         if filename:
                             gr.Button(value="write", size="sm")
                         with gr.Row():
-                            try:
-                                gr.Code(code, language=lang, lines=1, container=False)
-                            except ValueError:
-                                gr.Code(code, lines=1, container=False)
+                            with gr.Tab("code"):
+                                try:
+                                    gr.Code(
+                                        code, language=lang, lines=1, container=False
+                                    )
+                                except ValueError:
+                                    gr.Code(code, lines=1, container=False)
+                            with gr.Tab("diff"):
+                                pass  # TODO
 
 
 demo.launch()
