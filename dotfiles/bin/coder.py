@@ -1,10 +1,12 @@
-#!/usr/bin/env python3.12
+#!/usr/bin/env python3
 
 import gradio as gr
 import jinja2
 import textwrap
 import subprocess
 import os
+
+
 import re
 
 FIND_CODE_REGEX = "```(.*?)(?:```|$)"
