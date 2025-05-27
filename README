@@ -7,7 +7,7 @@ $ stow dotfiles
 And install:
 
 ```
-brew install fzf ag bat lazygit ctags neovim node
+brew install fzf ag bat lazygit ctags neovim node python3
 ```
 
 ```
