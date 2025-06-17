@@ -16,12 +16,14 @@ MODELS = [
     ("qwen3 4b", "ollama/qwen3:4b"),
     ("qwen3 8b", "ollama/qwen3:8b"),
     ("qwen3 14b", "ollama/qwen3:14b"),
+    # ("vertex_ai/gemini-2.5-pro-preview-05-06"),
+    ("gemini/gemini-2.5-pro-preview-05-06"),
 ]
 
 PROMPT_TEMPLATE = textwrap.dedent(
     """
     {{message}}
-    {%- if selection and include_selection %}
+    {%- if include_selection %}
 
     Selected code:
     ```
@@ -50,12 +52,17 @@ PROMPT_TEMPLATE = textwrap.dedent(
 ).strip("\n ")
 
 
+def write_file(file, content):
+    with open(file, "w") as f:
+        f.write(content)
+
+
 def nvim(expr):
     out = subprocess.run(
         ["nvr", "--remote-expr", expr],
         capture_output=True,
         text=True,
-    ).stdout
+    ).stdout.strip("\n")
     return out
 
 
@@ -77,6 +84,21 @@ def vim_get_cursor():
     if start == stop:
         return f"line {start}"
     return f"lines {start} - {stop}"
+
+
+def nvim_get_selection():
+    a = int(nvim('getpos(".")').split(", ")[1])
+    b = int(nvim('getpos("v")').split(", ")[1])
+
+    start = min(a, b)
+    stop = max(a, b)
+
+    try:
+        f = open(vim_get_current_buffer())
+    except OSError as exc:
+        return f"Error: {exc}"
+    lines = f.readlines()[start - 1 : stop]
+    return "\n".join(lines)
 
 
 def get_project_files(project_dir):
@@ -138,6 +160,7 @@ def submit(
     env = jinja2.Environment()
     env.filters["cat"] = lambda f: cat(os.path.join(project_dir, os.path.expanduser(f)))
     template = env.from_string(PROMPT_TEMPLATE)
+    selection = nvim_get_selection()
     if send_context:
         prompt = template.render(open_file=vim_get_current_buffer(), **locals())
     else:
@@ -151,6 +174,7 @@ def submit(
         temperature=temperature,
         top_p=top_p,
         messages=history + [{"role": "user", "content": prompt}],
+        vertex_project="gen-lang-client-0087132308",
         stream=True,
     )
 
@@ -215,7 +239,7 @@ with gr.Blocks() as demo:
 
     model = gr.Radio(
         MODELS,
-        value="ollama/qwen3:4b",
+        value="ollama/qwen3:14b",
         show_label=False,
     )
 
@@ -270,7 +294,11 @@ with gr.Blocks() as demo:
 
                     with gr.Accordion(filename or "code"):
                         if filename:
-                            gr.Button(value="write", size="sm")
+                            gr.Button(value="write", size="sm").click(
+                                lambda filename=filename, code=code: write_file(
+                                    filename, code
+                                )
+                            )
                         with gr.Row():
                             with gr.Tab("code"):
                                 try:

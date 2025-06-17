@@ -25,12 +25,6 @@ function pr {
 	sed 's/ /:/1'
 }
 
-
-
-function startvpn {
-	(cd ~/Documents/vpn && sudo openvpn --config /home/irae/Documents/vpn/aws-byrd.ovpn --daemon)
-}
-
 function genctags {
 	git ls-files | xargs ctags --exclude=api_spec.json
 }
