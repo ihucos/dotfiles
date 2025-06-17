@@ -1,0 +1,35 @@
+#!/usr/bin/env siesta
+# vim: set ft=jinja
+
+{% set ticket|run()|trim("\n") %}
+jira issues list \
+  --assignee="irae.hueck.costa@codegaia.io" \
+  --status="IN PROGRESS" \
+  --plain \
+  --columns KEY,TYPE,SUMMARY \
+  --no-headers |
+fzf  \
+  --preview '/Users/ihucos/bin/jira issue show $(echo {1} | cut -d" " -f1)' \
+  --preview-window=bottom:70% |
+awk '{print $1}'
+{% endset %}
+
+
+{% set branch|prompt("ollama/qwen3:0.6b")|code %}
+# I need a branch name for this ticket title
+- Use dashes
+- Output a code block
+- lowercase
+```
+{% filter run() %}
+jira issue show {{ ticket|escape }} --raw | jq '.fields.summary' --raw-output
+{% endfilter %}
+```
+
+/no_think
+{% endset %}
+
+
+{% filter askrun -%}
+git checkout -b {{ ticket }}-{{ branch }}
+{%- endfilter %}

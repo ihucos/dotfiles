@@ -3,3 +3,13 @@ Notes to install in new system:
 clone to ~/dotfiles
 then:
 $ stow dotfiles
+
+And install:
+
+```
+brew install fzf ag bat lazygit ctags neovim node python3
+```
+
+```
+pip3 install black litellm gradio neovim-remote --break-system-packages
+```

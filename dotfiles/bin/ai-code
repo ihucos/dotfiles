@@ -1,0 +1,63 @@
+#!/usr/bin/env siesta
+# vim: set ft=jinja
+
+{% set changes %}
+...describe changes here... TODO: pull from jira ticket
+{% endset %}
+
+{% set files|prompt("gemini/gemini-2.5-flash-preview-05-20")|code %}
+
+# Requested code changes
+```
+{{changes}}
+```
+
+# Project files and their tags
+```
+{% filter run %}
+for file in $(git ls-files); do
+  echo -n "$file: "
+  ctags -f- "$file" 2>/dev/null | awk '{ print $1 }' | xargs | sed 's/ /, /g'
+done
+{% endfilter %}
+
+
+# Task
+
+List all files that could be relevant to the requested code. In a code block.
+
+{% endset %}
+
+# Files to change:
+{{files}}
+
+
+
+
+{% set changes|prompt("gemini/gemini-2.5-pro-preview-06-05") %}
+# Implement the following changes.
+```
+{{changes}}
+```
+
+# Files for context
+```
+{{files|catfiles}}
+```
+
+Output the whole files you changed.
+{% endset %}
+
+
+
+
+{% set changes_json|prompt("gemini/gemini-2.5-flash-preview-05-20")|code|json %}
+Map the following to a JSON dict: filename -> contents
+```
+{{changes}}
+```
+{% endset %}
+
+{% for filename, content in changes_json.items() %}
+  {{ content|write(filename) }}
+{% endfor %}

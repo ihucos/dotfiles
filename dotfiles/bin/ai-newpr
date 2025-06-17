@@ -1,0 +1,73 @@
+#!/usr/bin/env siesta
+# vim: set ft=jinja
+
+{% set branch|run|trim("\n") %}
+git rev-parse --abbrev-ref HEAD
+{% endset %}
+
+
+{% set title|prompt("ollama/qwen3:14b")|code|replace("'", " ")|trim %}
+We need a good pull request title. Only one suggestion in backticks please.
+
+# Use Semantic Commit Messages for the title
+feat: (new feature for the user, not a new feature for build script)
+fix: (bug fix for the user, not a fix to a build script)
+docs: (changes to the documentation)
+style: (formatting, missing semi colons, etc; no production code change)
+refactor: (refactoring production code, eg. renaming a variable)
+test: (adding missing tests, refactoring tests; no production code change)
+chore: (updating grunt tasks etc; no production code change)
+
+# Add the ticket numnber
+Infer the ticket number from the branch `{{ branch }}`. Example for a title: `Feat(DD-123): ....`.
+You can also use the branch name for inspiration.
+
+
+{% filter run(label=True) %}
+git diff $(git merge-base --fork-point test)
+{% endfilter %}
+/no_think
+{% endset %}
+
+{% set descr|prompt("ollama/qwen3:14b")|code %}
+
+# Task
+Write the pull request description
+
+## The PR template to use
+```
+{% filter run(label=True) %}
+cat .github/pull_request_template.md
+{% endfilter %}
+```
+
+## The code changes
+```
+{% filter run(label=True) %}
+git diff $(git merge-base --fork-point test)
+{% endfilter %}
+```
+
+# Notes:
+- Everything in triple quotes.
+- Be very concise.
+- The "What to look for?" section should not be too detailed.
+- A template for the Jira ticket url:  https://spenoki.atlassian.net/browse/DD-XXX
+- This is the current branch: {{ branch }}
+
+{% if input %}
+The user gave use some hints:
+{{ input }}
+{% endif %}
+
+/no_think
+{% endset %}
+
+
+{% filter run %}
+gh pr create --title \
+WIP:\ {{ title|quote }} \
+--body \
+{{ descr|quote }} \
+--web
+{% endfilter %}
