@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import shlex
+
+GLOBAL_BACKAGES = """
+requests
+"""
+
+python = os.path.basename(sys.argv[0])
+
+
+def has_file(filename):
+    path = os.path.abspath(".")
+    while path != "/":
+        if os.path.isfile(os.path.join(path, filename)):
+            return True
+        path = os.path.dirname(path)
+
+
+precmd = []
+
+if has_file("devbox.json"):
+    precmd.extend(["devbox", "run"])
+
+    if has_file("poetry.lock"):
+        precmd.extend(["poetry", "run", python])
+else:
+    # use uv run --no-project --python python3.13 --with pycowsay -- python
+    precmd.extend(
+        [
+            "uv",
+            "run",
+            "--no-project",
+            "--python",
+            "python3.13",
+            "--with",
+            *[i for i in GLOBAL_BACKAGES.splitlines() if i],
+            "--",
+            python,
+        ]
+    )
+
+run = precmd + sys.argv[1:]
+print(f"dotfiles: running {run}")
+os.execvp(run[0], run)
