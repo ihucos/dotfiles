@@ -1,43 +1,26 @@
 #!/usr/bin/env siesta
 # vim: set ft=jinja
 
-{% set comments|run()|json %}
+
+{% set comment_id|run()|trim("\n") %}
 repo="$(gh repo view --json nameWithOwner | jq '.nameWithOwner' --raw-output)"
-id="$(gh pr view --json url | jq '.url' --raw-output | cut -d/ -f7)"
+url="/repos/$repo/issues/comments?sort=created\&direction=desc"
+jq_query='.[] | (.id|tostring) + ";" + .user.login + ";" + .created_at + ";" + .body'
 gh api \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  /repos/"$repo"/pulls/"$id"/comments 
+  $url | jq "$jq_query" | column -t -s';' | cut -d'"' -f2 | fzf | awk '{print $1}'
 {% endset %}
 
-{% set comments_formatted -%}
-  {% for comment in comments -%}
-    ## Comment from {{ comment.user.login }}
-    ```
-    {{ comment.body }}
-    ```
-
-    {% if comment.diff_hunk -%}
-      ### Diff hunk
-      ```
-      {{ comment.diff_hunk }}
-      ```
-    {%- endif %}
-
-    {% if comment.path -%}
-      ### Path
-      ```
-      {{ comment.path }}
-      ```
-    {% endif -%}
-
-  {%- endfor %}
-{%- endset %}
-
-
-{% set diff|run %}
-gh pr diff
+{% set comment|run()|json %}
+repo="$(gh repo view --json nameWithOwner | jq '.nameWithOwner' --raw-output)"
+gh api \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "/repos/$repo/issues/comments/{{comment_id}}"
 {% endset %}
+
+
 
 {{diff}}
 
@@ -50,23 +33,38 @@ gh pr view --json files | jq '.files | .[] | .path' --raw-output
 
 {% set changes|prompt("gemini/gemini-2.5-pro-preview-06-05") %}
 
-# Task
-Apply the comments to the code, output all files with their changes
+# Instructions
+{{ comment.body }}
 
-# PR Diff
+{% if comment.diff_hunk -%}
+  ## Diff hunk
+  ```
+  {{ comment.diff_hunk }}
+  ```
+{%- endif %}
+
+{% if comment.path -%}
+  ## Path
+  ```
+  {{ comment.path }}
+  ```
+{% endif -%}
+
+### PR Diff
 ```
-{{diff}}
+{% filter run %}
+gh pr diff
+{% endfilter %}
 ```
 
-# PR Files
+### PR Files
 ```
 {{file_contents}}
 ```
 
-# Comments
-```
-{{comments_formatted}}
-```
+# Output
+Print whole changed files.
+
 {% endset %}
 
 
