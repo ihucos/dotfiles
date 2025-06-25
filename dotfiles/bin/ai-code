@@ -1,9 +1,22 @@
 #!/usr/bin/env siesta
 # vim: set ft=jinja
 
-{% set changes %}
-...describe changes here... TODO: pull from jira ticket
+
+{% set branch|run|trim("\n") %}
+git rev-parse --abbrev-ref HEAD
 {% endset %}
+
+{% if input %}
+  {% set changes = input %}
+{% else %}
+  {% set ticket = branch.split('-')[0] ~ '-' ~ branch.split('-')[1] %}
+  {% set changes|run %}
+  jira issues show {{ ticket|escape }} | sed '1d;2d;3d;5d;6d;7d;8d;$d' | sed 's/^  //'
+  {% endset %} 
+{% endif %}
+
+# Changes:
+{{changes}}
 
 {% set files|prompt("gemini/gemini-2.5-flash-preview-05-20")|code %}
 
@@ -61,3 +74,6 @@ Map the following to a JSON dict: filename -> contents
 {% for filename, content in changes_json.items() %}
   {{ content|write(filename) }}
 {% endfor %}
+
+
+Wrote changes.

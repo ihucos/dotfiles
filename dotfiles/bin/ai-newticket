@@ -15,7 +15,7 @@ awk '{print $1}'
 {% endset %}
 
 
-{% set branch|prompt("ollama/qwen3:0.6b")|code %}
+{% set branch|prompt("ollama/qwen3:4b")|code %}
 # I need a branch name for this ticket title
 - Use dashes
 - Output a code block

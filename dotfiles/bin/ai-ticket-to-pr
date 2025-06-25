@@ -1,0 +1,239 @@
+#!/usr/bin/env siesta
+# vim: set ft=jinja
+
+
+#
+# Load config
+#
+{% set conf = loadini("~/.ai.ini") %}
+{{print("Config:", conf) }}
+
+
+#
+# Let user pick a ticket
+#
+{% set ticket_id|run()|trim("\n") %}
+jira issues list \
+  --plain \
+  --columns KEY,TYPE,ASSIGNEE,SUMMARY \
+  --no-headers |
+fzf  \
+  --preview '/Users/ihucos/bin/jira issue show $(echo {1} | cut -d" " -f1)' \
+  --preview-window=bottom:50% |
+awk '{print $1}'
+{% endset %}
+{{ print("Ticket:", ticket_id) }}
+
+#
+# Load the ticket JSON
+#
+{% set ticket|run|json %}
+jira issues view {{ticket_id|escape}} --raw
+{% endset %}
+
+#
+# Load a rendered ticket description
+#
+{% set rendered_ticket|run %}
+jira issues show {{ticket_id|escape}} --plain --comments 0
+{% endset %}
+{% set description = rendered_ticket.splitlines()[8:-3]|join('\n') %}}
+
+#
+# Map ticket labels to Github repo
+#
+{% set ns = namespace(repo=None) %}
+{% for label in ticket.fields.labels %}
+  {% set ns.repo = conf.jira_labels[label] %}
+{% endfor %}
+{% if not ns.repo %}
+  {{ error("Could not find a repo for this ticket, labels: {}".format(ticket.fields.labels)) }}
+{% endif %}
+{% set repo = ns.repo %}
+{{print("Repo:", repo)}}
+
+
+#
+# Make a fresh project clone
+#
+{{ cd("mktemp -d"|run) }}
+{% filter run() %}
+  set -x
+  git clone --depth=1 git@github.com:{{repo|escape}} .
+{% endfilter %}
+
+#
+# Create a new branch
+#
+{% set ticket_slug = ticket.fields.summary|lower|replace('_', '-')|replace(' ', '-') %}
+{% set branch -%} {{ticket_id|escape}}-{{ticket_slug|escape}}-6 {%- endset %}
+{% filter run() %}
+  set -x
+  git checkout -b {{branch|escape}}
+{% endfilter %}
+
+#
+# Prompt for list of relevant files
+#
+{% set files|prompt("gemini/gemini-2.5-flash-preview-05-20")|code %}
+
+  # Requested code changes
+  ## {{ ticket.fields.summary }}
+  {{ description }}
+
+  # Project files and their tags
+  ```
+  {% filter run %}
+  for file in $(git ls-files | grep -v '/migrations/'); do
+    echo -n "$file: "
+    ctags -f- "$file" 2>/dev/null | awk '{ print $1 }' | xargs | sed 's/ /, /g'
+  done
+  {% endfilter %}
+
+  # Task
+  List all files that could be relevant to the requested code changes in a code block.
+{% endset %}
+
+
+{{print("Files for context:", files.splitlines())}}
+
+
+#
+# Prompt for implementation
+#
+{{print("Prompting for implementation...")}}
+{% set changes|prompt("gemini/gemini-2.5-pro-preview-06-05") %}
+  # Implement the following changes
+  ## {{ ticket.fields.summary }}
+  {{ description }}
+
+  # Files for context
+  ```
+  {{files|catfiles}}
+  ```
+
+  # Task
+  Output the whole files you changed.
+{% endset %}
+
+
+
+#
+# Convert implementation completion to JSON
+#
+{{print("Prompting to convert implementation into JSON...")}}
+{% set changes_json|prompt("gemini/gemini-2.5-flash-preview-05-20")|code|json %}
+Map the following to a JSON dict: filename -> contents
+```
+{{changes}}
+```
+{% endset %}
+
+#
+# Apply changes to filesystem
+#
+{{print("Writing changes to filesystem...")}}
+{% for filename, content in changes_json.items() %}
+  {{ content|write(filename) }}
+{% endfor %}
+
+#
+# Commit the changes
+#
+{{ print("Committing changes...\n", "git diff --stat"|run) }}
+{% filter run %}
+  set -x
+  git add .
+{% endfilter %}
+
+{% set commit|prompt("ollama/qwen3:4b")|striptags %}
+Create a very short commit message based on this diff:
+```
+  {% filter run() %}
+    git diff --cached --unified=0 | grep -v '^@'
+  {% endfilter %}
+```
+/no_think
+{% endset %}
+
+{% set commitstriptags=commit|striptags %}
+{% filter run %}
+set -x
+git commit -m {{ commitstriptags.splitlines()[0]|escape }}
+{% endfilter %}
+
+
+#
+# Prompt for PR title
+#
+{{print("Prompting for PR title...")}}
+  {% set title|prompt("ollama/qwen3:14b")|code|replace("'", " ")|trim %}
+  # Task
+  We need a good pull request title.
+  Only one suggestion in backticks please.
+
+  ## Use Semantic Commit Messages
+  feat: (new feature for the user, not a new feature for build script)
+  fix: (bug fix for the user, not a fix to a build script)
+  docs: (changes to the documentation)
+  style: (formatting, missing semi colons, etc; no production code change)
+  refactor: (refactoring production code, eg. renaming a variable)
+  test: (adding missing tests, refactoring tests; no production code change)
+  chore: (updating grunt tasks etc; no production code change)
+
+  ## Add the ticket number
+  Infer the ticket number from `{{ ticket_id }}`. Example for a title: `Feat(DD-123): ....`.
+
+  # These are the PR changes
+  {% filter run(label=True) %}
+  git diff $(git merge-base --fork-point test)
+  {% endfilter %}
+  /no_think
+{% endset %}
+
+
+#
+# Prompt for PR description
+#
+{{print("Prompting for PR description...")}}
+{% set descr|prompt("ollama/qwen3:14b")|code %}
+  # Task
+  Write the pull request description
+
+  ## The PR template to use
+  ```
+  {% filter run(label=True) %}
+  cat .github/pull_request_template.md || echo "No template found"
+  {% endfilter %}
+  ```
+
+  ## The code changes
+  ```
+  {% filter run(label=True) %}
+  git diff $(git merge-base --fork-point test)
+  {% endfilter %}
+  ```
+
+  # Notes:
+  - Everything in triple quotes.
+  - Be concise and clear.
+  - A template for the Jira ticket url: https://{{ conf.jira.org }}.atlassian.net/browse/XXXXX
+  - This is the current ticket number: {{ ticket_id }}
+
+  /no_think
+{% endset %}
+
+#
+# Create pull request
+#
+{% filter run %}
+  set -ex
+  git push --set-upstream origin {{branch|escape}}
+  sleep 5
+  gh pr create --title \
+  WIP:\ {{ title|escape }} \
+  --body \
+  {{ description|escape }} \
+  --web
+{% endfilter %}
+
