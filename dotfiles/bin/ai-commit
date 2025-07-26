@@ -1,6 +1,7 @@
 #! /usr/bin/env nix-shell
+#! nix-shell -p uv cacert git dialog
+#! nix-shell --pure
 #! nix-shell -i 'uv run --with git+https://github.com/ihucos/siesta.git --no-project siesta' 
-#! nix-shell -p uv
 
 {% set commit|dedent|prompt("ollama/qwen3:4b")|striptags %}
   Craft a very short commit message based on this diff:
