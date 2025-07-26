@@ -1,22 +1,16 @@
-#!/usr/bin/env siesta
-# vim: set ft=jinja
+#! /usr/bin/env nix-shell
+#! nix-shell -i 'uv run --with git+https://github.com/ihucos/siesta.git --no-project siesta' 
+#! nix-shell -p uv
 
-{% set commit|prompt("ollama/qwen3:4b")|striptags %}
-Craft a very short commit message based on this diff:
-```
-  {% filter run() %}
-    output=$(git diff --cached --unified=0 | grep -v '^@')
-    echo "$output"
-    if [[ -z "$output" ]]; then
-      echo "Error: No staged changes with git" >&2 
-      exit 1
-    fi
-  {% endfilter %}
-```
-/no_think
+{% set commit|dedent|prompt("ollama/qwen3:4b")|striptags %}
+  Craft a very short commit message based on this diff:
+  ```
+  {{ "git diff --cached --unified=0 | grep -v '^@' || true"|run
+      or error("No staged changes") }}
+  ```
+  /no_think
 {% endset %}
 
-{% set commitstriptags=commit|striptags %}
 {% filter run %}
-git commit -am {{ commitstriptags.splitlines()[0]|askedit|quote }}
+  git commit -am {{ commit.splitlines()|first|askedit|escape }}
 {% endfilter %}
