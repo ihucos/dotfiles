@@ -37,7 +37,8 @@ jira issues view {{ticket_id|escape}} --raw
 {% set rendered_ticket|run %}
 jira issues show {{ticket_id|escape}} --plain --comments 0
 {% endset %}
-{% set description = rendered_ticket.splitlines()[8:-3]|join('\n') %}}
+{% set description = rendered_ticket.splitlines()[8:-1]|join('\n')|dedent %}}
+
 
 #
 # Map ticket labels to Github repo
@@ -56,6 +57,7 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
 #
 # Make a fresh project clone
 #
+{{print("Cloning repo...")}}
 {{ cd("mktemp -d"|run) }}
 {% filter run() %}
   set -x
@@ -63,10 +65,17 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
 {% endfilter %}
 
 #
-# Create a new branch
+# Create a fresh branch
 #
-{% set ticket_slug = ticket.fields.summary|lower|replace('_', '-')|replace(' ', '-') %}
-{% set branch -%} {{ticket_id|escape}}-{{ticket_slug|escape}}-6 {%- endset %}
+{{print("Creating fresh branch...")}}
+{% set branch|run %}
+  branch_candiate={{ticket_id|escape}}-{{ticket.fields.summary|slugify|escape}}
+  if git ls-remote --heads origin "$branch_candiate" | grep -q "$branch_candiate"; then
+    echo "$branch_candiate"-"$RANDOM"
+  else
+    echo "$branch_candiate"
+  fi
+{% endset %}
 {% filter run() %}
   set -x
   git checkout -b {{branch|escape}}
@@ -75,7 +84,8 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
 #
 # Prompt for list of relevant files
 #
-{% set files|prompt("gemini/gemini-2.5-flash-preview-05-20")|code %}
+{{print("Prompting for relevant files list...")}}
+{% set files|dedent|prompt("gemini/gemini-2.5-flash-preview-05-20")|code %}
 
   # Requested code changes
   ## {{ ticket.fields.summary }}
@@ -93,9 +103,7 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
   # Task
   List all files that could be relevant to the requested code changes in a code block.
 {% endset %}
-
-
-{{print("Files for context:", files.splitlines())}}
+{{print("Files for context:", files.splitlines()|join(", "))}}
 
 
 #
@@ -103,17 +111,15 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
 #
 {{print("Prompting for implementation...")}}
 {% set changes|prompt("gemini/gemini-2.5-pro-preview-06-05") %}
-  # Implement the following changes
-  ## {{ ticket.fields.summary }}
-  {{ description }}
+# Implement the following changes
+## {{ ticket.fields.summary }}
+{{ description }}
 
-  # Files for context
-  ```
-  {{files|catfiles}}
-  ```
+# Files for context
+{{files|catfiles}}
 
-  # Task
-  Output the whole files you changed.
+# Task
+Output the whole files you changed.
 {% endset %}
 
 
@@ -122,11 +128,11 @@ jira issues show {{ticket_id|escape}} --plain --comments 0
 # Convert implementation completion to JSON
 #
 {{print("Prompting to convert implementation into JSON...")}}
-{% set changes_json|prompt("gemini/gemini-2.5-flash-preview-05-20")|code|json %}
-Map the following to a JSON dict: filename -> contents
-```
-{{changes}}
-```
+{% set changes_json|dedent|prompt("gemini/gemini-2.5-flash-preview-05-20")|code|json %}
+  Map the following to a JSON dict: filename -> contents
+  ```
+  {{changes}}
+  ```
 {% endset %}
 
 #
@@ -140,26 +146,25 @@ Map the following to a JSON dict: filename -> contents
 #
 # Commit the changes
 #
-{{ print("Committing changes...\n", "git diff --stat"|run) }}
+{{ print("Committing changes...\n") }}
 {% filter run %}
   set -x
   git add .
 {% endfilter %}
 
-{% set commit|prompt("ollama/qwen3:4b")|striptags %}
-Create a very short commit message based on this diff:
-```
-  {% filter run() %}
-    git diff --cached --unified=0 | grep -v '^@'
-  {% endfilter %}
-```
-/no_think
+{% set commit|dedent|prompt("ollama/qwen3:4b")|striptags %}
+  Create a very short commit message based on this diff:
+  ```
+    {% filter run() %}
+      git diff --cached --unified=0 | grep -v '^@'
+    {% endfilter %}
+  ```
+  /no_think
 {% endset %}
 
-{% set commitstriptags=commit|striptags %}
 {% filter run %}
 set -x
-git commit -m {{ commitstriptags.splitlines()[0]|escape }}
+git commit -m {{ commit.splitlines()[0]|escape }}
 {% endfilter %}
 
 
@@ -167,7 +172,7 @@ git commit -m {{ commitstriptags.splitlines()[0]|escape }}
 # Prompt for PR title
 #
 {{print("Prompting for PR title...")}}
-  {% set title|prompt("ollama/qwen3:14b")|code|replace("'", " ")|trim %}
+  {% set title|dedent|prompt("ollama/qwen3:14b")|code|replace("'", " ")|trim %}
   # Task
   We need a good pull request title.
   Only one suggestion in backticks please.
@@ -186,7 +191,7 @@ git commit -m {{ commitstriptags.splitlines()[0]|escape }}
 
   # These are the PR changes
   {% filter run(label=True) %}
-  git diff $(git merge-base --fork-point test)
+    git diff $(git merge-base --fork-point test)
   {% endfilter %}
   /no_think
 {% endset %}
@@ -196,31 +201,31 @@ git commit -m {{ commitstriptags.splitlines()[0]|escape }}
 # Prompt for PR description
 #
 {{print("Prompting for PR description...")}}
-{% set descr|prompt("ollama/qwen3:14b")|code %}
+{% set description|dedent|prompt("ollama/qwen3:14b") %}
   # Task
   Write the pull request description
 
   ## The PR template to use
   ```
-  {% filter run(label=True) %}
+  {% filter run %}
   cat .github/pull_request_template.md || echo "No template found"
   {% endfilter %}
   ```
 
   ## The code changes
   ```
-  {% filter run(label=True) %}
+  {% filter run %}
   git diff $(git merge-base --fork-point test)
   {% endfilter %}
   ```
 
+
   # Notes:
-  - Everything in triple quotes.
   - Be concise and clear.
   - A template for the Jira ticket url: https://{{ conf.jira.org }}.atlassian.net/browse/XXXXX
   - This is the current ticket number: {{ ticket_id }}
 
-  /no_think
+/no_think
 {% endset %}
 
 #
@@ -229,11 +234,17 @@ git commit -m {{ commitstriptags.splitlines()[0]|escape }}
 {% filter run %}
   set -ex
   git push --set-upstream origin {{branch|escape}}
-  sleep 5
-  gh pr create --title \
-  WIP:\ {{ title|escape }} \
-  --body \
-  {{ description|escape }} \
-  --web
+  gh pr create \
+    --title WIP\ {{ title|escape }} \
+    --body  {{ description|escape }} \
+    --head {{ branch|escape }} \
+    --web
 {% endfilter %}
 
+{#
+{% filter run %}
+  gh pr view --web
+{% endfilter %}
+#}
+
+{{print("\nDone.")}}
