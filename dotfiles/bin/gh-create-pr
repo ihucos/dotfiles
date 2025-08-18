@@ -68,7 +68,7 @@ git rev-parse --abbrev-ref HEAD
 
   # Notes:
   - Be concise, clear and brief.
-  - A template for the Jira ticket url: https://spenoki.atlassian.net/browse/XXXXX
+  - A template for the Jira ticket url: https://{{ "echo $JIRA_ORG"|run }}.atlassian.net/browse/XXXXX
   - If possible infer the ticket number from the branch: {{ current_branch }}
 {% endset %}
 
