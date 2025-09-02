@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+import subprocess, os
+
+new_migrations = (
+    subprocess.check_output(
+        "gh pr view --json files --jq '.files[].path' | grep '/migrations'",
+        shell=True,
+    )
+    .decode()
+    .splitlines()
+)
+assert len(new_migrations) == 1, f"Expected 1 new migration, got {new_migrations}"
+(new_migration,) = new_migrations
+print("New migration:    ", new_migration)
+
+migrations_dir = os.path.dirname(new_migration)
+current_id = max(
+    i for i in os.listdir(migrations_dir) if i.endswith(".py") and not i.startswith("_")
+).split("_")[0]
+print("latest id:        ", current_id)
+
+
+bumped_up_new_migration_file = os.path.join(
+    migrations_dir, f"{int(current_id) + 1}_{os.path.basename(new_migration).split('_', 1)[1]}"
+)
+print("Bumped up file:   ", bumped_up_new_migration_file)
+
+with open(new_migration, "r") as f:
+    new_migration_content = f.read()
+
+new_migration_content = new_migration_content.replace(f'"'
+
+asdf
+with open(bumped_up_new_migration_file, "w") as f:
+    f.write(new_migration_content)
+os.remove(new_migration)

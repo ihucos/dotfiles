@@ -2,7 +2,7 @@ Notes to install in new system:
 
 clone to ~/dotfiles
 then:
-$ stow dotfiles
+$ stow src
 
 And install:
 
