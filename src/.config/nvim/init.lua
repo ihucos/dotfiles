@@ -29,7 +29,7 @@ vim.env.PATH = vim.env.PATH .. ':/opt/homebrew/bin'
 --                                     |_|        
 vim.cmd([[
 autocmd InsertLeave,TextChanged * silent! write
-autocmd BufWritePre *.py %!ruff format -
+" autocmd BufWritePre *.py %!ruff format -
 set signcolumn=no
 set background=light
 colorscheme solarized
@@ -58,6 +58,9 @@ set statusline=\ \ \ \ \ \ \ \ \ ╰\ %f\ ╯
 
 
 vim.cmd([[
+hi! link WinSeparator TermCursor
+hi! link StatusLine TermCursor
+hi! link StatusLineNC TermCursor
 "hi link pythonString Normal
 "hi link pythonString Normal
 "hi link pythonStatement Function
