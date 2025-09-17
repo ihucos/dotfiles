@@ -10,15 +10,85 @@ local Plug = vim.fn['plug#']
 Plug 'maxmx03/solarized.nvim'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
+
+Plug "nvim-lua/plenary.nvim" -- dependency for codeium
+Plug "Exafunction/codeium.nvim"
+
 vim.call('plug#end')
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-require("nvim-tree").setup()
+require("nvim-tree").setup(
+	{
+		sync_root_with_cwd = true,
+		view = {
+                        float = {
+				enable = true,
+				open_win_config = function()
+					return {
+					  relative = "editor",
+					  border = "rounded",
+					  width = 1, -- adaptive size handles it
+					  height = vim.o.lines - 3,
+					  row = 0,
+					  col = 0,
+					}
+				      end,
+			},
+			adaptive_size = true,
+		},
+	}
+)
+
 vim.keymap.set("n", ",e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
 vim.env.PATH = vim.env.PATH .. ':/opt/homebrew/bin'
+
+
+
+require("codeium").setup({
+  -- Optionally disable cmp source if using virtual text only
+  enable_cmp_source = false,
+  virtual_text = {
+      enabled = true,
+
+      -- These are the defaults
+
+      -- Set to true if you never want completions to be shown automatically.
+      manual = false,
+      -- A mapping of filetype to true or false, to enable virtual text.
+      filetypes = {},
+      -- Whether to enable virtual text of not for filetypes not specifically listed above.
+      default_filetype_enabled = true,
+      -- How long to wait (in ms) before requesting completions after typing stops.
+      idle_delay = 75,
+      -- Priority of the virtual text. This usually ensures that the completions appear on top of
+      -- other plugins that also add virtual text, such as LSP inlay hints, but can be modified if
+      -- desired.
+      virtual_text_priority = 65535,
+      -- Set to false to disable all key bindings for managing completions.
+      map_keys = true,
+      -- The key to press when hitting the accept keybinding but no completion is showing.
+      -- Defaults to \t normally or <c-n> when a popup is showing. 
+      accept_fallback = nil,
+      -- Key bindings for managing completions in virtual text mode.
+      key_bindings = {
+	  -- Accept the current completion.
+	  accept = "<Tab>",
+	  -- Accept the next word.
+	  accept_word = false,
+	  -- Accept the next line.
+	  accept_line = false,
+	  -- Clear the virtual text.
+	  clear = false,
+	  -- Cycle to the next completion.
+	  next = "<M-]>",
+	  -- Cycle to the previous completion.
+	  prev = "<M-[>",
+      }
+  }
+})
 
 
 -- __     ___                         _       _   
@@ -45,7 +115,8 @@ nnoremap <C-h> <C-\><C-n><C-w>h
 nnoremap <C-j> <C-\><C-n><C-w>j
 nnoremap <C-k> <C-\><C-n><C-w>k
 nnoremap <C-l> <C-\><C-n><C-w>l
-set statusline=\ \ \ \ \ \ \ \ \ ╰\ %f\ ╯
+set statusline=\ \ %f\ \ ▄
+:set fillchars+=stl:▄,stlnc:▄,vert:\ 
 
 ]])
 
@@ -88,6 +159,8 @@ hi! link StatusLineNC TermCursor
 "hi link pythonAttribute Normal
 "hi link pythonExceptions Normal
 "hi link pythonSync     Normal
+au TermOpen * setlocal nonumber
+au TermOpen * setlocal statusline=▄
 ]])
 
 vim.diagnostic.config({
@@ -129,6 +202,15 @@ vim.lsp.config['ruff'] = {
   root_markers = { '.git' },
 }
 vim.lsp.enable('ruff')
+
+vim.api.nvim_create_augroup('AutoFormatting', {})
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*.py',
+  group = 'AutoFormatting',
+  callback = function()
+    vim.lsp.buf.format({ async = true })
+  end,
+})
 
 
 --  _____ _             _   
