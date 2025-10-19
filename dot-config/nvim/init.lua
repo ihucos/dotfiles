@@ -13,6 +13,8 @@ Plug 'nvim-tree/nvim-tree.lua'
 Plug "nvim-lua/plenary.nvim" -- dependency for codeium
 Plug "Exafunction/codeium.nvim"
 
+Plug "nvim-treesitter/nvim-treesitter"
+
 vim.call('plug#end')
 
 vim.g.loaded_netrw = 1
@@ -39,6 +41,17 @@ require("nvim-tree").setup(
 		},
 	}
 )
+
+require('nvim-treesitter.configs').setup({
+  ensure_installed = {
+    "lua", "python", "javascript", "typescript", "html",
+    "css", "json", "bash", "markdown", "cpp", "rust"
+  },
+  highlight = {
+    enable = true,                -- Turn on Tree-sitter highlighting
+    additional_vim_regex_highlighting = false, -- Disable old regex highlights
+  },
+})
 
 vim.keymap.set("n", ",e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
@@ -105,6 +118,7 @@ set shell=/bin/bash
 set number
 set termguicolors
 set mouse=a
+set numberwidth=1
 tnoremap <silent> <Esc><Esc> <C-\><C-n>
 inoremap <silent> <Space><Space> <Esc>
 nnoremap <silent> <Esc> <C-w><C-w>
@@ -228,6 +242,9 @@ function hsl(h,s,l)
         local function f(t) t=t%1; return t<1/6 and p+(q-p)*6*t or t<1/2 and q or t<2/3 and p+(q-p)*(2/3-t)*6 or p end
         r,g,b=f(h+1/3),f(h),f(h-1/3)
     end
+    r = math.max(0,math.min(1,r))
+    g = math.max(0,math.min(1,g))
+    b = math.max(0,math.min(1,b))
     return string.format("#%02X%02X%02X",r*255,g*255,b*255)
 end
 
@@ -248,13 +265,20 @@ function recolor_reset()
   recolor()
 end
 
+
+function recolor_status()
+  print("Contrast: " .. recolor_contrast_incr .. " Darkness: " .. recolor_darken .. " Colorshift: " .. recolor_colorshift)
+end
+
 function recolor_contrast(mod)
   recolor_contrast_incr = recolor_contrast_incr + mod
+  recolor_status()
   recolor()
 end
 
 function recolor_darkness(mod)
   recolor_darken = recolor_darken + mod
+  recolor_status()
   recolor()
 end
 
@@ -264,15 +288,16 @@ function recolor()
 
   local co_offset_h = 0
   local co_offset_s = 0.0
-  local co_offset_l = (vim.o.background == "dark" and 1 or -1) * recolor_contrast_incr / 10
+  local co_offset_l = (vim.o.background == "dark" and 1 or -1) * recolor_contrast_incr / 50
   
   local bg_offset_h = recolor_colorshift
   local bg_offset_s = 0
-  local bg_offset_l = -1 * recolor_darken / 70
+  local bg_offset_l = -1 * recolor_darken / 400
   
   local ac_offset_h = 0
   local ac_offset_s = 0
   local ac_offset_l = 0
+
   
   -- Solarized color palette
   
@@ -303,9 +328,13 @@ function recolor()
   if vim.o.background == "dark" then
       BG = Base03
       FG = Base00
+      FGSecondary = Base01
+      BGSecondary = Base02
   else
       BG = Base3
       FG = Base0
+      FGSecondary = Base1
+      BGSecondary = Base2
   end
   
   -- Base highlight groups
@@ -324,31 +353,37 @@ function recolor()
   vim.api.nvim_set_hl(0, "Visual",        { bg = FG,     fg = BG })
   vim.api.nvim_set_hl(0, "Search",        { bg = Yellow, fg = BG })
   vim.api.nvim_set_hl(0, "ModeMsg",       { bg = FG,     fg = BG })
+
+  vim.api.nvim_set_hl(0, "Comment",       { fg = FGSecondary, italic=true })
+  vim.api.nvim_set_hl(0, "String",       { fg = FGSecondary, italic=true })
   
   -- UI elements
-  vim.api.nvim_set_hl(0, "LineNr",        { link = "Blue" })
-  vim.api.nvim_set_hl(0, "StatusLine",    { link = "BlueInverted" })
-  vim.api.nvim_set_hl(0, "StatusLineNC",  { link = "BlueInverted" })
+  vim.api.nvim_set_hl(0, "LineNr",        { fg = Blue, bold=true })
+  vim.api.nvim_set_hl(0, "StatusLine",     { bg = Blue, fg = BG })
+  vim.api.nvim_set_hl(0, "StatusLineNC",   { bg = Blue, fg = BG })
   vim.api.nvim_set_hl(0, "WinSeparator",  { link = "BlueInverted" })
   
   -- Code syntax
+  vim.api.nvim_set_hl(0, "@type",     { link = "Normal" })
   vim.api.nvim_set_hl(0, "@variable",     { link = "Normal" })
+  vim.api.nvim_set_hl(0, "@operator",     { fg = Normal, bold = true })
+  vim.api.nvim_set_hl(0, "@constant.builin",     { link = "Yellow" })
+  vim.api.nvim_set_hl(0, "@constructor",     { link = "Normal" })
   vim.api.nvim_set_hl(0, "Delimiter",     { link = "Normal" })
   vim.api.nvim_set_hl(0, "Title",         { link = "Normal" })
-  vim.api.nvim_set_hl(0, "Comment",       { link = "Gray" })
   vim.api.nvim_set_hl(0, "Constant",      { link = "Normal" })
-  vim.api.nvim_set_hl(0, "String",        { link = "Cyan" })
   vim.api.nvim_set_hl(0, "Number",        { link = "Normal" })
   vim.api.nvim_set_hl(0, "Identifier",    { link = "Blue" })
   vim.api.nvim_set_hl(0, "Function",      { link = "Normal" })
   vim.api.nvim_set_hl(0, "Statement",     { link = "Blue" })
-  vim.api.nvim_set_hl(0, "Keyword",       { link = "Blue" })
+  vim.api.nvim_set_hl(0, "Keyword",       { fg = Blue, bold = true })
   vim.api.nvim_set_hl(0, "PreProc",       { link = "Blue" })
   vim.api.nvim_set_hl(0, "Type",          { link = "Blue" })
   vim.api.nvim_set_hl(0, "Special",       { link = "Blue" })
   vim.api.nvim_set_hl(0, "Operator",      { link = "Blue" })
   vim.api.nvim_set_hl(0, "Error",         { link = "Red" })
 
+  vim.api.nvim_set_hl(0, "NormalFloat",     { link = "Normal" })
 
   -- terminal colors
   vim.g.terminal_color_0 = BG
