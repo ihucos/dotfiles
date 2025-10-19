@@ -255,11 +255,6 @@ function recolor_init_vars()
 end
 recolor_init_vars()
 
-function recolor_shift()
-  recolor_colorshift = recolor_colorshift + 5
-  recolor()
-end
-
 function recolor_reset()
   recolor_init_vars()
   recolor()
@@ -283,6 +278,13 @@ function recolor_darkness(mod)
 end
 
 
+function recolor_color(mod)
+  recolor_colorshift = recolor_colorshift + mod
+  recolor_status()
+  recolor()
+end
+
+
 function recolor()
   vim.cmd("hi clear")
 
@@ -294,9 +296,9 @@ function recolor()
   local bg_offset_s = 0
   local bg_offset_l = -1 * recolor_darken / 400
   
-  local ac_offset_h = 0
+  local ac_offset_h = recolor_colorshift
   local ac_offset_s = 0
-  local ac_offset_l = 0
+  local ac_offset_l = co_offset_l * 0.5
 
   
   -- Solarized color palette
@@ -438,9 +440,13 @@ vim.diagnostic.config({
 -- })
 
 vim.cmd([[
-nnoremap <S-ScrollWheelUp> :lua recolor_contrast(1)<CR>
-nnoremap <S-ScrollWheelDown> :lua recolor_contrast(-1)<CR>
+nnoremap <S-ScrollWheelUp> :lua recolor_contrast(-1)<CR>
+nnoremap <S-ScrollWheelDown> :lua recolor_contrast(1)<CR>
 
 nnoremap <C-ScrollWheelUp> :lua recolor_darkness(1)<CR>
 nnoremap <C-ScrollWheelDown> :lua recolor_darkness(-1)<CR>
+
+
+nnoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
+nnoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
 ]])
