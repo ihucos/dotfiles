@@ -113,7 +113,7 @@ vim.cmd([[
 autocmd InsertLeave,TextChanged * silent! write
 " autocmd BufWritePre *.py %!ruff format -
 set signcolumn=no
-set background=dark
+set background=light
 set shell=/bin/bash
 set number
 set termguicolors
@@ -357,21 +357,36 @@ function recolor()
   vim.api.nvim_set_hl(0, "ModeMsg",       { bg = FG,     fg = BG })
 
   vim.api.nvim_set_hl(0, "Comment",       { fg = FGSecondary, italic=true })
-  vim.api.nvim_set_hl(0, "String",       { fg = FGSecondary, italic=true })
+  vim.api.nvim_set_hl(0, "String",       { fg = FGSecondary })
   
   -- UI elements
   vim.api.nvim_set_hl(0, "LineNr",        { fg = Blue, bold=true })
   vim.api.nvim_set_hl(0, "StatusLine",     { bg = Blue, fg = BG })
   vim.api.nvim_set_hl(0, "StatusLineNC",   { bg = Blue, fg = BG })
   vim.api.nvim_set_hl(0, "WinSeparator",  { link = "BlueInverted" })
-  
+
+
+  -- call
+  vim.api.nvim_set_hl(0, "@function.call",     { link = "Cyan" })
+  vim.api.nvim_set_hl(0, "@function.method.call",     { link = "Cyan" })
+  vim.api.nvim_set_hl(0, "@constructor",     { link = "normal" })
+
   -- Code syntax
   vim.api.nvim_set_hl(0, "@type",     { link = "Normal" })
+
+  vim.api.nvim_set_hl(0, "@type.builtin",     { fg = FG, bold = true })
+  vim.api.nvim_set_hl(0, "@constant.builtin",     { fg = FG, bold = true })
+  vim.api.nvim_set_hl(0, "@variable.builtin",     { fg = FG, bold = true })
+  vim.api.nvim_set_hl(0, "@function.builtin",     { fg = FG, bold = true })
+
+
+  vim.api.nvim_set_hl(0, "@function",     { link="Blue" })
+
   vim.api.nvim_set_hl(0, "@variable",     { link = "Normal" })
   vim.api.nvim_set_hl(0, "@operator",     { fg = Normal, bold = true })
-  vim.api.nvim_set_hl(0, "@constant.builin",     { link = "Yellow" })
-  vim.api.nvim_set_hl(0, "@constructor",     { link = "Normal" })
-  vim.api.nvim_set_hl(0, "Delimiter",     { link = "Normal" })
+  vim.api.nvim_set_hl(0, "@module",     { link = "Normal" })
+
+  vim.api.nvim_set_hl(0, "Delimiter",     { fg=FGSecondary })
   vim.api.nvim_set_hl(0, "Title",         { link = "Normal" })
   vim.api.nvim_set_hl(0, "Constant",      { link = "Normal" })
   vim.api.nvim_set_hl(0, "Number",        { link = "Normal" })
@@ -442,11 +457,23 @@ vim.diagnostic.config({
 vim.cmd([[
 nnoremap <S-ScrollWheelUp> :lua recolor_contrast(-1)<CR>
 nnoremap <S-ScrollWheelDown> :lua recolor_contrast(1)<CR>
+tnoremap <S-ScrollWheelUp> :lua recolor_contrast(-1)<CR>
+tnoremap <S-ScrollWheelDown> :lua recolor_contrast(1)<CR>
+inoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
+inoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
 
 nnoremap <C-ScrollWheelUp> :lua recolor_darkness(1)<CR>
 nnoremap <C-ScrollWheelDown> :lua recolor_darkness(-1)<CR>
-
+tnoremap <C-ScrollWheelUp> :lua recolor_darkness(1)<CR>
+tnoremap <C-ScrollWheelDown> :lua recolor_darkness(-1)<CR>
+inoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
+inoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
 
 nnoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
 nnoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
+tnoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
+tnoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
+inoremap <C-S-ScrollWheelUp> :lua recolor_color(1)<CR>
+inoremap <C-S-ScrollWheelDown> :lua recolor_color(-1)<CR>
+
 ]])
