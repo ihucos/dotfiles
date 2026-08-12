@@ -13,3 +13,8 @@ brew install fzf ag bat lazygit ctags neovim node python3
 ```
 pip3 install black litellm gradio neovim-remote --break-system-packages
 ```
+
+## Local based AI Completion
+```
+llama-server --fim-qwen-3b-default
+```
