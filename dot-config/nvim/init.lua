@@ -10,10 +10,12 @@ local Plug = vim.fn['plug#']
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
 
-Plug "nvim-lua/plenary.nvim" -- dependency for codeium
-Plug "Exafunction/codeium.nvim"
-
 Plug "nvim-treesitter/nvim-treesitter"
+
+vim.g.llama_config = {
+    show_info = false,
+}
+Plug "ggml-org/llama.vim"
 
 vim.call('plug#end')
 
@@ -56,51 +58,6 @@ require('nvim-treesitter.configs').setup({
 vim.keymap.set("n", ",e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
 vim.env.PATH = vim.env.PATH .. ':/opt/homebrew/bin'
-
-
-
-require("codeium").setup({
-  -- Optionally disable cmp source if using virtual text only
-  enable_cmp_source = false,
-  virtual_text = {
-      enabled = true,
-
-      -- These are the defaults
-
-      -- Set to true if you never want completions to be shown automatically.
-      manual = false,
-      -- A mapping of filetype to true or false, to enable virtual text.
-      filetypes = {},
-      -- Whether to enable virtual text of not for filetypes not specifically listed above.
-      default_filetype_enabled = true,
-      -- How long to wait (in ms) before requesting completions after typing stops.
-      idle_delay = 75,
-      -- Priority of the virtual text. This usually ensures that the completions appear on top of
-      -- other plugins that also add virtual text, such as LSP inlay hints, but can be modified if
-      -- desired.
-      virtual_text_priority = 65535,
-      -- Set to false to disable all key bindings for managing completions.
-      map_keys = true,
-      -- The key to press when hitting the accept keybinding but no completion is showing.
-      -- Defaults to \t normally or <c-n> when a popup is showing. 
-      accept_fallback = nil,
-      -- Key bindings for managing completions in virtual text mode.
-      key_bindings = {
-	  -- Accept the current completion.
-	  accept = "<Tab>",
-	  -- Accept the next word.
-	  accept_word = false,
-	  -- Accept the next line.
-	  accept_line = false,
-	  -- Clear the virtual text.
-	  clear = false,
-	  -- Cycle to the next completion.
-	  next = "<M-]>",
-	  -- Cycle to the previous completion.
-	  prev = "<M-[>",
-      }
-  }
-})
 
 
 -- __     ___                         _       _   
@@ -364,6 +321,10 @@ function recolor()
   vim.api.nvim_set_hl(0, "StatusLine",     { bg = Blue, fg = BG })
   vim.api.nvim_set_hl(0, "StatusLineNC",   { bg = Blue, fg = BG })
   vim.api.nvim_set_hl(0, "WinSeparator",  { link = "BlueInverted" })
+
+
+  -- UI elements
+  vim.api.nvim_set_hl(0, "llama_hl_fim_hint",  { link = "Yellow" })
 
 
   -- call
