@@ -21,6 +21,19 @@ vim.call('plug#end')
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- Enable OSC 52 so copying works seamlessly over SSH
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+', '+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*', '*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
+
 require("nvim-tree").setup(
 	{
 		sync_root_with_cwd = true,
