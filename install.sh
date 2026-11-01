@@ -2,28 +2,11 @@ set -e
 
 DOTFILES_REPO="https://github.com/ihucos/dotfiles.git"
 
-echo "==> Detecting package manager and installing system packages..."
+echo "==> Installing on alpine..."
 
-if command -v apk &> /dev/null; then
-    # Alpine Linux
-    apk add --no-cache git curl bash neovim stow build-base
-elif command -v apt-get &> /dev/null; then
-    # Debian / Ubuntu / Mint
-    apt-get update
-    apt-get install -y git curl bash neovim stow build-essential
-elif command -v pacman &> /dev/null; then
-    # Arch Linux / Manjaro
-    pacman -Syu --noconfirm git curl bash neovim stow base-devel
-elif command -v dnf &> /dev/null; then
-    # Fedora / RHEL
-    dnf install -y git curl bash neovim stow make automake gcc gcc-c++ kernel-devel
-elif command -v brew &> /dev/null; then
-    # macOS (Homebrew)
-    brew install git curl bash neovim stow
-else
-    echo "Error: No supported package manager found (apk, apt, pacman, dnf, brew)." >&2
-    exit 1
-fi
+apk add --no-cache git curl bash neovim stow build-base py3-psutil py3-pip
+pip3 install --no-build-isolation --break-system-packages neovim-remote 
+
 
 echo "==> Cloning dotfiles..."
 if [ -d "$HOME/.dotfiles" ]; then
