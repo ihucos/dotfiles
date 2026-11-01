@@ -78,3 +78,5 @@ function startticket(){
 	set +xe
 	echo "I wish you fun"
 }
+
+source /opt/homebrew/opt/autoenv/activate.sh
