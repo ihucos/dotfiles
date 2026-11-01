@@ -1,4 +1,3 @@
-
 --  ____  _             _           
 -- |  _ \| |_   _  __ _(_)_ __  ___ 
 -- | |_) | | | | |/ _` | | '_ \/ __|
@@ -44,16 +43,19 @@ require("nvim-tree").setup(
 	}
 )
 
-require('nvim-treesitter.configs').setup({
-  ensure_installed = {
-    "lua", "python", "javascript", "typescript", "html",
-    "css", "json", "bash", "markdown", "cpp", "rust"
-  },
-  highlight = {
-    enable = true,                -- Turn on Tree-sitter highlighting
-    additional_vim_regex_highlighting = false, -- Disable old regex highlights
-  },
-})
+local status_ok, treesitter_configs = pcall(require, 'nvim-treesitter.configs')
+if status_ok then
+  treesitter_configs.setup({
+    ensure_installed = {
+      "lua", "python", "javascript", "typescript", "html",
+      "css", "json", "bash", "markdown", "cpp", "rust"
+    },
+    highlight = {
+      enable = true,                -- Turn on Tree-sitter highlighting
+      additional_vim_regex_highlighting = false, -- Disable old regex highlights
+    },
+  })
+end
 
 vim.keymap.set("n", ",e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 
